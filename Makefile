@@ -5,6 +5,7 @@ LIBS = -L/usr/lib64 -lXext -lX11 -lm -lXpm
 PREFIX = /usr
 DESTDIR = ${DESTDIR:-""}
 DATADIR = "`/bin/pwd`/pixmaps"
+DATADIR=$(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps
 
 all:
 	gcc -o $(PROGRAM)  -DDATADIR=\"${DATADIR}\" $(SRC) $(LIBS)
