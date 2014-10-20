@@ -39,6 +39,9 @@ GC			gc;
 int			done=0;
 long		mainDelay=50000;
 
+Pixmap		snowManPixmap[2];
+Pixmap		snowManMaskPixmap[2];
+
 Pixmap		LampPixmap[2];
 Pixmap		LampMaskPixmap[2];
 
@@ -58,6 +61,15 @@ int			OnOff=0;
 
 uint		RunCounter=0;
 
+int			snowManSpeed=10;
+int			snowManX=100;
+int			snowManY=100;
+int			snowManW;
+int			snowManH;
+int			snowManCount=0;
+int			snowMan=0;
+int			snowManOnOff=0;
+
 int			LampSpeed=10;
 int			LampX=0;
 int			LampY=26;
@@ -65,6 +77,7 @@ int			LampWidth;
 int			LampHeight;
 int			LampCount=0;
 int			Lamps=1;
+int			lampOffset=0;
 
 int			TreeWidth;
 int			TreeHeight;
@@ -99,6 +112,35 @@ void uSsleep(unsigned long usec)
 	select(0,(void* )0,(void* )0,(void* )0,&t);
 }
 
+void initSnowMan(void)
+{
+	int				rc=0;
+	XpmAttributes	attrib;
+	char*			lampseton;
+	char*			lampsetoff;
+	const char*		hols;
+
+	attrib.valuemask=0;
+	if(useHalloween==1)
+		hols="Halloween";
+	else
+		hols="Xmas";
+	
+	asprintf(&lampseton,"%s/%sDecOn.XPM",DATADIR,hols);
+	asprintf(&lampsetoff,"%s/%sDecOff.XPM",DATADIR,hols);
+
+	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&snowManPixmap[0],&snowManMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&snowManPixmap[1],&snowManMaskPixmap[1],&attrib);
+	if(rc!=0)
+		snowMan=0;
+	snowManW=attrib.width;
+	snowManH=attrib.height;
+
+	free(lampseton);
+	free(lampsetoff);
+}
+
+
 void InitLamps(void)
 {
 	int				rc;
@@ -123,8 +165,15 @@ void InitLamps(void)
 	LampWidth=attrib.width;
 	LampHeight=attrib.height;
 
-	LampCount=(displayWidth/LampWidth)+1;
-	LampCount--;
+	LampCount=(displayWidth/LampWidth);
+	lampOffset=(displayWidth-(LampWidth*LampCount))/2;
+	printf("dw %i - lw %i cnt %i off %i\n",displayWidth,LampWidth,LampCount,lampOffset);
+	//exit(0);
+	//if(LampCount*LampWidth
+	//LampCount--;
+
+	free(lampseton);
+	free(lampsetoff);
 }
 
 void InitTree(void)
@@ -159,6 +208,21 @@ void InitTree(void)
 		Tree=0;
 }
 
+void drawSnowMan(void)
+{
+	int rc;
+	if (snowMan==1)
+		{
+			rc=XSetClipMask(display,gc,snowManMaskPixmap[snowManOnOff]);
+			rc=XSetClipOrigin(display,gc,snowManX,snowManY);
+			rc=XCopyArea(display,snowManPixmap[snowManOnOff],
+			             rootWin,
+			             gc,
+			             0,0,snowManW,snowManH,
+			             snowManX,snowManY);
+		}
+}
+
 void DrawLamps(void)
 {
 	int rc;
@@ -166,14 +230,14 @@ void DrawLamps(void)
 	int	CurrentLampX=LampX;
 	rc=XSetClipMask(display,gc,LampMaskPixmap[OnOff]);
 
-	for (loop=0; loop<=LampCount; loop++)
+	for (loop=0; loop<LampCount; loop++)
 		{
-			rc=XSetClipOrigin(display,gc,CurrentLampX,LampY);
+			rc=XSetClipOrigin(display,gc,CurrentLampX+lampOffset,LampY);
 			rc=XCopyArea(display,LampPixmap[OnOff],
 			             rootWin,
 			             gc,
 			             0,0,LampWidth,LampHeight,
-			             CurrentLampX,LampY);
+			             CurrentLampX+lampOffset,LampY);
 			CurrentLampX+=LampWidth;
 		}
 }
@@ -252,6 +316,11 @@ UpdateStar(void)
 	StarOnOff=(StarOnOff+1) & 1;
 }
 
+updateSnowMan(void)
+{
+	snowManOnOff=(snowManOnOff+1) & 1;
+}
+
 int main(int argc,char* argv[])
 {
 	XGCValues xgcv;
@@ -325,6 +394,22 @@ int main(int argc,char* argv[])
 				{
 					useHalloween=1;
 				}
+			else if (strcmp(arg,"-snowman")==0)
+				{
+					snowMan=1;
+				}
+			else if (strcmp(arg,"-snowmanx")==0)
+				{
+					snowManX=strtol(argv[++ax],(char* *)NULL,0);
+				}
+			else if (strcmp(arg,"-snowmany")==0)
+				{
+					snowManY=strtol(argv[++ax],(char* *)NULL,0);
+				}
+			else if (strcmp(arg,"-snowmanspeed")==0)
+				{
+					snowManSpeed=strtol(argv[++ax],(char* *)NULL,0);
+				}
 		}
 	srand((int)time((long* )NULL));
 
@@ -347,6 +432,7 @@ int main(int argc,char* argv[])
 
 	InitLamps();
 	InitTree();
+	initSnowMan();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
 	XGetGCValues(display,gc,0,&xgcv);
@@ -383,6 +469,14 @@ int main(int argc,char* argv[])
 
 					if ((RunCounter % StarSpeed)==0 && Star==1)
 						UpdateStar();
+				}
+
+			if (snowMan==1)
+				{
+					if ((RunCounter % snowManSpeed)==0)
+						updateSnowMan();
+					drawSnowMan();
+
 				}
 
 		}
