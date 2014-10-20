@@ -24,10 +24,10 @@
 #include <X11/xpm.h>
 
 #include <stdio.h>
-#include <math.h>
+//#include <math.h>
 #include <signal.h>
-#include <limits.h>
-#include <string.h>
+//#include <limits.h>
+//#include <string.h>
 #include <stdlib.h>
 
 #include "pixmaps/LampsOn.XPM"
@@ -47,7 +47,6 @@
 #include "pixmaps/Tree2.xpm"
 
 Display *display;
-int screen;
 Window rootWin;
 Window Parent;
 int display_width, display_height;
@@ -55,8 +54,6 @@ int center_x, center_y;
 GC gc;
 
 int done=0;
-int NoPopuphandling=1;
-unsigned int borderWidth=0;
 long mainDelay=50000;
 
 Pixmap LampPixmap[2];
@@ -74,9 +71,8 @@ Pixmap TreeLampsMaskPixmap[8];
 Pixmap TinselPixmap;
 Pixmap TinselMaskPixmap;
 
-Region rscrr=NULL;
-Region snscr=NULL;
-int stilltddr=0;
+int	OnOff=0;
+
 unsigned int RunCounter=0;
 
 int LampSpeed=10;
@@ -101,7 +97,6 @@ int Tree=1;
 
 /* Forward decls */
 void SigHandler();
-void SigHupHandler();
 
 void InitLamps(void);
 void DrawLamps(void);
@@ -109,12 +104,6 @@ void InitTree(void);
 void DrawTreeLamps(void);
 
 void uSsleep();
-Pixel AllocNamedColor();
-void sig_alarm();
-Pixel blackPix;
-Pixel trPix;
-/* GC's */
-GC SantaGC,RudolfGC,FurGC;
 
 int main(int ac,char *av[])
 {
@@ -130,6 +119,8 @@ int main(int ac,char *av[])
 	int winX, winY;
 	unsigned int winHeight, winWidth;
 	unsigned int depth;
+	int screen;
+
 	/*
 		 Process command line options.
 	*/
@@ -210,18 +201,15 @@ int main(int ac,char *av[])
 
 	gc=XCreateGC(display, rootWin, 0, NULL);
 	XGetGCValues(display, gc, 0, &xgcv);
-	XSetForeground(display, gc, blackPix);
 	XSetFillStyle(display, gc, FillStippled);
 
-	snscr=XCreateRegion();
-	rscrr=XCreateRegion();
 	XSelectInput(display, rootWin, ExposureMask | SubstructureNotifyMask);
 
 	while (!done)
 		{
 			Exposed=0;
 			ConfigureNotified=0;
-			while (XPending(display) || stilltddr)
+			while (XPending(display))
 				{
 					XNextEvent(display, &ev);
 
@@ -250,8 +238,6 @@ int main(int ac,char *av[])
 
 
 		}
-	XDestroyRegion(snscr);
-	XDestroyRegion(rscrr);
 	XClearWindow(display, rootWin);
 	XCloseDisplay(display);
 	exit(0);
@@ -260,18 +246,6 @@ int main(int ac,char *av[])
 void SigHandler()
 {
 	done=1;
-}
-
-void SigHupHandler()
-{
-	void (*Sig_Hup_ptr)()=SigHupHandler;
-	XFlush(display);
-	XSetForeground(display,FurGC,trPix);
-	XSetFillStyle(display,FurGC, FillSolid);
-	XSetRegion(display,FurGC,snscr);
-	XFillRectangle(display,rootWin,FurGC,0,0,display_width,display_height);
-	XFlush(display);
-	signal(SIGHUP, Sig_Hup_ptr);
 }
 
 int RandInt(int maxVal)
@@ -322,8 +296,6 @@ void InitTree()
 	rc=XpmCreatePixmapFromData(display,rootWin,Tinsel_xpm, &TinselPixmap, &TinselMaskPixmap, NULL);
 
 }
-
-int	OnOff=0;
 
 void DrawLamps()
 {
