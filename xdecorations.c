@@ -78,6 +78,9 @@ int			Tinsel=1;
 int			Star=1;
 int			Tree=1;
 
+int		useHalloween=0;
+int		useCustom=0;
+
 void SigHandler()
 {
 	done=1;
@@ -100,10 +103,21 @@ void InitLamps(void)
 {
 	int				rc;
 	XpmAttributes	attrib;
+	char*			lampseton;
+	char*			lampsetoff;
+	const char*		hols;
 
 	attrib.valuemask=0;
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LampsOff.XPM",&LampPixmap[0],&LampMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LampsOn.XPM",&LampPixmap[1],&LampMaskPixmap[1],&attrib);
+	if(useHalloween==1)
+		hols="Halloween";
+	else
+		hols="Xmas";
+	
+	asprintf(&lampseton,"%s/%sLampsOn.XPM",DATADIR,hols);
+	asprintf(&lampsetoff,"%s/%sLampsOff.XPM",DATADIR,hols);
+
+	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&LampPixmap[0],&LampMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&LampPixmap[1],&LampMaskPixmap[1],&attrib);
 	if(rc!=0)
 		Lamps=0;
 	LampWidth=attrib.width;
@@ -115,8 +129,8 @@ void InitLamps(void)
 
 void InitTree(void)
 {
-	int	rc;
-	XpmAttributes attrib;
+	int				rc;
+	XpmAttributes	attrib;
 	attrib.valuemask=0;
 
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree1.xpm",&TreePixmap[0],&TreeMaskPixmap[0],&attrib);
@@ -306,6 +320,10 @@ int main(int argc,char* argv[])
 			else if (strcmp(arg,"-notinsel")==0)
 				{
 					Tinsel=0;
+				}
+			else if (strcmp(arg,"-halloween")==0)
+				{
+					useHalloween=1;
 				}
 		}
 	srand((int)time((long* )NULL));
