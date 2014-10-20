@@ -91,7 +91,7 @@ int			Tinsel=1;
 int			Star=1;
 int			Tree=1;
 
-const char*	prefix=NULL;
+const char*	prefix="Xmas";
 
 void SigHandler()
 {
@@ -120,8 +120,8 @@ void initSnowMan(void)
 
 	attrib.valuemask=0;
 	
-	asprintf(&lampseton,"%s/%sDecOn.XPM",DATADIR,prefix);
-	asprintf(&lampsetoff,"%s/%sDecOff.XPM",DATADIR,prefix);
+	asprintf(&lampseton,"%s/%sDecOn.xpm",DATADIR,prefix);
+	asprintf(&lampsetoff,"%s/%sDecOff.xpm",DATADIR,prefix);
 
 	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&snowManPixmap[0],&snowManMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&snowManPixmap[1],&snowManMaskPixmap[1],&attrib);
@@ -134,18 +134,17 @@ void initSnowMan(void)
 	free(lampsetoff);
 }
 
-
 void InitLamps(void)
 {
-	int				rc;
+	int				rc=0;
 	XpmAttributes	attrib;
 	char*			lampseton;
 	char*			lampsetoff;
 
 	attrib.valuemask=0;
 	
-	asprintf(&lampseton,"%s/%sLampsOn.XPM",DATADIR,prefix);
-	asprintf(&lampsetoff,"%s/%sLampsOff.XPM",DATADIR,prefix);
+	asprintf(&lampseton,"%s/%sLampsOn.xpm",DATADIR,prefix);
+	asprintf(&lampsetoff,"%s/%sLampsOff.xpm",DATADIR,prefix);
 
 	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&LampPixmap[0],&LampMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&LampPixmap[1],&LampMaskPixmap[1],&attrib);
@@ -163,7 +162,7 @@ void InitLamps(void)
 
 void InitTree(void)
 {
-	int				rc;
+	int				rc=0;
 	XpmAttributes	attrib;
 	attrib.valuemask=0;
 
