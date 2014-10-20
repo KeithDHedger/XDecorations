@@ -91,8 +91,7 @@ int			Tinsel=1;
 int			Star=1;
 int			Tree=1;
 
-int		useHalloween=0;
-int		useCustom=0;
+const char*	prefix=NULL;
 
 void SigHandler()
 {
@@ -118,16 +117,11 @@ void initSnowMan(void)
 	XpmAttributes	attrib;
 	char*			lampseton;
 	char*			lampsetoff;
-	const char*		hols;
 
 	attrib.valuemask=0;
-	if(useHalloween==1)
-		hols="Halloween";
-	else
-		hols="Xmas";
 	
-	asprintf(&lampseton,"%s/%sDecOn.XPM",DATADIR,hols);
-	asprintf(&lampsetoff,"%s/%sDecOff.XPM",DATADIR,hols);
+	asprintf(&lampseton,"%s/%sDecOn.XPM",DATADIR,prefix);
+	asprintf(&lampsetoff,"%s/%sDecOff.XPM",DATADIR,prefix);
 
 	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&snowManPixmap[0],&snowManMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&snowManPixmap[1],&snowManMaskPixmap[1],&attrib);
@@ -147,16 +141,11 @@ void InitLamps(void)
 	XpmAttributes	attrib;
 	char*			lampseton;
 	char*			lampsetoff;
-	const char*		hols;
 
 	attrib.valuemask=0;
-	if(useHalloween==1)
-		hols="Halloween";
-	else
-		hols="Xmas";
 	
-	asprintf(&lampseton,"%s/%sLampsOn.XPM",DATADIR,hols);
-	asprintf(&lampsetoff,"%s/%sLampsOff.XPM",DATADIR,hols);
+	asprintf(&lampseton,"%s/%sLampsOn.XPM",DATADIR,prefix);
+	asprintf(&lampsetoff,"%s/%sLampsOff.XPM",DATADIR,prefix);
 
 	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&LampPixmap[0],&LampMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&LampPixmap[1],&LampMaskPixmap[1],&attrib);
@@ -167,10 +156,6 @@ void InitLamps(void)
 
 	LampCount=(displayWidth/LampWidth);
 	lampOffset=(displayWidth-(LampWidth*LampCount))/2;
-	printf("dw %i - lw %i cnt %i off %i\n",displayWidth,LampWidth,LampCount,lampOffset);
-	//exit(0);
-	//if(LampCount*LampWidth
-	//LampCount--;
 
 	free(lampseton);
 	free(lampsetoff);
@@ -390,9 +375,9 @@ int main(int argc,char* argv[])
 				{
 					Tinsel=0;
 				}
-			else if (strcmp(arg,"-halloween")==0)
+			else if (strcmp(arg,"-holiday")==0)
 				{
-					useHalloween=1;
+					prefix=argv[++ax];
 				}
 			else if (strcmp(arg,"-snowman")==0)
 				{
