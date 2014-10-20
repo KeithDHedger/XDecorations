@@ -27,70 +27,56 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "pixmaps/LampsOn.XPM"
-#include "pixmaps/LampsOff.XPM"
-#include "pixmaps/LightsBlue0.xpm"
-#include "pixmaps/LightsBlue1.xpm"
-#include "pixmaps/LightsGreen0.xpm"
-#include "pixmaps/LightsGreen1.xpm"
-#include "pixmaps/LightsPurple0.xpm"
-#include "pixmaps/LightsPurple1.xpm"
-#include "pixmaps/LightsRed0.xpm"
-#include "pixmaps/LightsRed1.xpm"
-#include "pixmaps/Star0.xpm"
-#include "pixmaps/Star1.xpm"
-#include "pixmaps/Tinsel.xpm"
-#include "pixmaps/Tree1.xpm"
-#include "pixmaps/Tree2.xpm"
+Display*	display;
+Window		rootWin;
+Window		Parent;
+int			displayWidth;
+int			displayHeight;
+int			centerX;
+int			centerY;
+GC			gc;
 
-Display* display;
-Window rootWin;
-Window Parent;
-int display_width,display_height;
-int center_x,center_y;
-GC gc;
+int			done=0;
+long		mainDelay=50000;
 
-int done=0;
-long mainDelay=50000;
+Pixmap		LampPixmap[2];
+Pixmap		LampMaskPixmap[2];
 
-Pixmap LampPixmap[2];
-Pixmap LampMaskPixmap[2];
+Pixmap		TreePixmap[2];
+Pixmap		TreeMaskPixmap[2];
 
-Pixmap TreePixmap[2];
-Pixmap TreeMaskPixmap[2];
+Pixmap		StarPixmap[2];
+Pixmap		StarMaskPixmap[2];
 
-Pixmap StarPixmap[2];
-Pixmap StarMaskPixmap[2];
+Pixmap		TreeLampsPixmap[8];
+Pixmap		TreeLampsMaskPixmap[8];
 
-Pixmap TreeLampsPixmap[8];
-Pixmap TreeLampsMaskPixmap[8];
+Pixmap		TinselPixmap;
+Pixmap		TinselMaskPixmap;
 
-Pixmap TinselPixmap;
-Pixmap TinselMaskPixmap;
+int			OnOff=0;
 
-int	OnOff=0;
+uint		RunCounter=0;
 
-unsigned int RunCounter=0;
+int			LampSpeed=10;
+int			LampX=0;
+int			LampY=26;
+int			LampWidth;
+int			LampHeight;
+int			LampCount=0;
+int			Lamps=1;
 
-int LampSpeed=10;
-int LampX=0;
-int LampY=26;
-int LampWidth;
-int LampHeight;
-int	LampCount=0;
-int Lamps=1;
-
-int TreeWidth;
-int TreeHeight;
-int TreeNumber=1;
-int TreeLampSpeed=8;
-int StarSpeed=6;
-int TreeX=100;
-int TreeY=100;
-int TreeLampSet=1;
-int Tinsel=1;
-int Star=1;
-int Tree=1;
+int			TreeWidth;
+int			TreeHeight;
+int			TreeNumber=1;
+int			TreeLampSpeed=8;
+int			StarSpeed=6;
+int			TreeX=100;
+int			TreeY=100;
+int			TreeLampSet=1;
+int			Tinsel=1;
+int			Star=1;
+int			Tree=1;
 
 void SigHandler()
 {
@@ -112,37 +98,51 @@ void uSsleep(unsigned long usec)
 
 void InitLamps(void)
 {
-	int	rc;
-	rc=XpmCreatePixmapFromData(display,rootWin,LampsOff_XPM,&LampPixmap[0],&LampMaskPixmap[0],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,LampsOn_XPM,&LampPixmap[1],&LampMaskPixmap[1],NULL);
-	sscanf(*LampsOff_XPM,"%d %d",&LampWidth,&LampHeight);
-	LampCount=(display_width/LampWidth)+1;
+	int				rc;
+	XpmAttributes	attrib;
+
+	attrib.valuemask=0;
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LampsOff.XPM",&LampPixmap[0],&LampMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LampsOn.XPM",&LampPixmap[1],&LampMaskPixmap[1],&attrib);
+	if(rc!=0)
+		Lamps=0;
+	LampWidth=attrib.width;
+	LampHeight=attrib.height;
+
+	LampCount=(displayWidth/LampWidth)+1;
 	LampCount--;
 }
 
 void InitTree(void)
 {
 	int	rc;
-	rc=XpmCreatePixmapFromData(display,rootWin,Tree1_xpm,&TreePixmap[0],&TreeMaskPixmap[0],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,Tree2_xpm,&TreePixmap[1],&TreeMaskPixmap[1],NULL);
-	sscanf(*Tree1_xpm,"%d %d",&TreeWidth,&TreeHeight);
+	XpmAttributes attrib;
+	attrib.valuemask=0;
 
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsBlue0_xpm,&TreeLampsPixmap[0],&TreeLampsMaskPixmap[0],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsBlue1_xpm,&TreeLampsPixmap[4],&TreeLampsMaskPixmap[4],NULL);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree1.xpm",&TreePixmap[0],&TreeMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree2.xpm",&TreePixmap[1],&TreeMaskPixmap[1],&attrib);
 
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsGreen0_xpm,&TreeLampsPixmap[1],&TreeLampsMaskPixmap[1],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsGreen1_xpm,&TreeLampsPixmap[5],&TreeLampsMaskPixmap[5],NULL);
+	TreeWidth=attrib.width;
+	TreeHeight=attrib.height;
 
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsPurple0_xpm,&TreeLampsPixmap[2],&TreeLampsMaskPixmap[2],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsPurple1_xpm,&TreeLampsPixmap[6],&TreeLampsMaskPixmap[6],NULL);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsBlue0.xpm",&TreeLampsPixmap[0],&TreeLampsMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsBlue1.xpm",&TreeLampsPixmap[4],&TreeLampsMaskPixmap[4],&attrib);
 
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsRed0_xpm,&TreeLampsPixmap[3],&TreeLampsMaskPixmap[3],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,LightsRed1_xpm,&TreeLampsPixmap[7],&TreeLampsMaskPixmap[7],NULL);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsGreen0.xpm",&TreeLampsPixmap[1],&TreeLampsMaskPixmap[1],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsGreen1.xpm",&TreeLampsPixmap[5],&TreeLampsMaskPixmap[5],&attrib);
 
-	rc=XpmCreatePixmapFromData(display,rootWin,Star0_xpm,&StarPixmap[0],&StarMaskPixmap[0],NULL);
-	rc=XpmCreatePixmapFromData(display,rootWin,Star1_xpm,&StarPixmap[1],&StarMaskPixmap[1],NULL);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsPurple0.xpm",&TreeLampsPixmap[2],&TreeLampsMaskPixmap[2],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsPurple1.xpm",&TreeLampsPixmap[6],&TreeLampsMaskPixmap[6],&attrib);
 
-	rc=XpmCreatePixmapFromData(display,rootWin,Tinsel_xpm,&TinselPixmap,&TinselMaskPixmap,NULL);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsRed0.xpm",&TreeLampsPixmap[3],&TreeLampsMaskPixmap[3],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsRed1.xpm",&TreeLampsPixmap[7],&TreeLampsMaskPixmap[7],&attrib);
+
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Star0.xpm",&StarPixmap[0],&StarMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Star1.xpm",&StarPixmap[1],&StarMaskPixmap[1],&attrib);
+
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tinsel.xpm",&TinselPixmap,&TinselMaskPixmap,&attrib);
+	if(rc!=0)
+		Tree=0;
 }
 
 void DrawLamps(void)
@@ -322,10 +322,10 @@ int main(int argc,char* argv[])
 	screen=DefaultScreen(display);
 	rootWin=ToonGetRootWindow(display,screen,&Parent);
 
-	display_width=DisplayWidth(display,screen);
-	display_height=DisplayHeight(display,screen);
-	center_x=display_width / 2;
-	center_y=display_height / 2;
+	displayWidth=DisplayWidth(display,screen);
+	displayHeight=DisplayHeight(display,screen);
+	centerX=displayWidth / 2;
+	centerY=displayHeight / 2;
 
 	InitLamps();
 	InitTree();
