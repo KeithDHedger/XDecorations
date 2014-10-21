@@ -119,6 +119,73 @@ int			starOnOff=0;
 
 const char*	prefix="Xmas";
 
+//struct args
+//{
+//	const char*	name;
+//	int			type;
+//	void*		data;
+//};
+//
+//enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
+//
+//int indent=0;
+//
+//args			kkedit_rc[]=
+//{
+//	//bools
+//	{"indentcode",TYPEBOOL,&indent},
+//	{NULL,0,NULL}
+//};
+
+//void loadVarsFromFile(char* filepath,args* dataptr)
+//{
+//	FILE*	fd=NULL;
+//	char	buffer[2048];
+//	int		cnt;
+//	char*	argname=NULL;
+//	char*	strarg=NULL;
+//
+//	fd=fopen(filepath,"r");
+//	if(fd!=NULL)
+//		{
+//			while(feof(fd)==0)
+//				{
+//					buffer[0]=0;
+//					fgets(buffer,2048,fd);
+//					sscanf(buffer,"%as %as",&argname,&strarg);
+//					cnt=0;
+//					while(dataptr[cnt].name!=NULL)
+//						{
+//							if((strarg!=NULL) && (argname!=NULL) && (strcmp(argname,dataptr[cnt].name)==0))
+//								{
+//									switch(dataptr[cnt].type)
+//										{
+//											case TYPEINT:
+//												*(int*)dataptr[cnt].data=atoi(strarg);
+//												break;
+//											case TYPESTRING:
+//												if(*(char**)(dataptr[cnt].data)!=NULL)
+//													free(*(char**)(dataptr[cnt].data));
+//												sscanf(buffer,"%*s %a[^n]s",(char**)dataptr[cnt].data);
+//												break;
+//											case TYPEBOOL:
+//												*(bool*)dataptr[cnt].data=(bool)atoi(strarg);
+//												break;
+//										}
+//								}
+//							cnt++;
+//						}
+//					if(argname!=NULL)
+//						free(argname);
+//					if(strarg!=NULL)
+//						free(strarg);
+//					argname=NULL;
+//					strarg=NULL;
+//				}
+//			fclose(fd);
+//		}
+//}
+
 void signalHandler()
 {
 	done=1;
