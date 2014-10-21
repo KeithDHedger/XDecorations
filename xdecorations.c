@@ -32,8 +32,9 @@ if not,write to the Free Software
 #include <stdlib.h>
 
 #define MAXPATHNAMELEN 2048
+#define NUMBEROFFLYERS 2
 
-	char		pathname[MAXPATHNAMELEN];
+char		pathname[MAXPATHNAMELEN];
 
 Display*	display;
 Window		rootWin;
@@ -64,9 +65,23 @@ Pixmap		treeLampsMaskPixmap[8];
 Pixmap		tinselPixmap;
 Pixmap		tinselMaskPixmap;
 
+Pixmap		flyersPixmap[NUMBEROFFLYERS];
+Pixmap		flyersMaskPixmap[NUMBEROFFLYERS];
+
 int			onOff=0;
 
 uint		runCounter=0;
+
+int			flyersSpeed=1;
+int			flyersStep=10;
+int			flyersWidth[NUMBEROFFLYERS];
+int			flyersHeight[NUMBEROFFLYERS];
+int			flyersX[NUMBEROFFLYERS];
+int			flyersY[NUMBEROFFLYERS];
+int			showFlyers=1;
+int			flyersMaxY=400;
+int			flyersActive[NUMBEROFFLYERS];
+int			flyerSpread=400;
 
 int			figureSpeed=10;
 int			figureX=100;
@@ -122,6 +137,33 @@ void uSsleep(unsigned long usec)
 	select(0,(void* )0,(void* )0,(void* )0,&t);
 }
 
+void initFlyers(void)
+{
+	int				rc=0;
+	int				j=0;
+	XpmAttributes	attrib;
+
+	attrib.valuemask=0;
+
+	rc=0;
+	for(j=0; j<NUMBEROFFLYERS;j++)
+		{
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFly%i.xpm",DATADIR,prefix,j+1);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&flyersPixmap[j],&flyersMaskPixmap[j],&attrib);
+			flyersWidth[j]=attrib.width;
+			flyersHeight[j]=attrib.height;
+			flyersY[j]=(rand() % flyersMaxY);
+			flyersX[j]=10;
+			if((rand() % flyerSpread)==0)
+				flyersActive[j]=1;
+			else
+				flyersActive[j]=0;
+				
+		}
+	if(rc!=0)
+		showFlyers=0;
+}
+
 void initFigure(void)
 {
 	int				rc=0;
@@ -164,7 +206,7 @@ void initLamps(void)
 	lampWidth=attrib.width;
 	lampHeight=attrib.height;
 
-	lampCount=(displayWidth/lampWidth);
+	lampCount=(displayWidth/lampWidth)+1;
 	lampOffset=(displayWidth-(lampWidth*lampCount))/2;
 
 	free(lampseton);
@@ -213,6 +255,42 @@ void initTree(void)
 		showTinsel=0;
 }
 
+void drawFlyers(void)
+{
+	int rc;
+	int	j;
+
+	Region	flyreg=XCreateRegion();
+	Region	final;
+	XRectangle AddRect;
+
+//	for(j=0;j<NUMBEROFFLYERS;j++)
+//		{
+//			rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+////			AddRect.x=flyersX[j];
+////			AddRect.y=flyersY[j];
+////			AddRect.width=flyersWidth[j];
+////			AddRect.height=flyersHeight[j];
+////			
+////			final=XUnionRectWithRegion(AddRect,flyreg);
+//		}
+//	rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+
+	if (showFlyers==1)
+		{
+			for(j=0;j<NUMBEROFFLYERS;j++)
+				{
+					if(flyersActive[j]==1)
+						{
+							rc=XSetClipMask(display,gc,flyersMaskPixmap[j]);
+							rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
+	//						rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+							rc=XCopyArea(display,flyersPixmap[j],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
+						}
+				}
+		}
+}
+
 void drawFigure(void)
 {
 	int rc;
@@ -220,7 +298,7 @@ void drawFigure(void)
 		{
 			rc=XSetClipMask(display,gc,figureMaskPixmap[figureOnOff]);
 			rc=XSetClipOrigin(display,gc,figureX,figureY);
-			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+//			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
 			rc=XCopyArea(display,figurePixmap[figureOnOff],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
 		}
 }
@@ -258,7 +336,7 @@ void drawTreeLamps(void)
 
 	rc=XSetClipMask(display,gc,treeMaskPixmap[treeNumber-1]);
 	rc=XSetClipOrigin(display,gc,treeX,treeY);
-	rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+//	rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
 	rc=XCopyArea(display,treePixmap[treeNumber-1],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 
 	if(showTreeLamps==1)
@@ -280,7 +358,7 @@ void drawTreeLamps(void)
 		}
 }
 
-updateTreeLamps(void)
+void updateTreeLamps(void)
 {
 	treeOnOff++;
 
@@ -288,14 +366,60 @@ updateTreeLamps(void)
 		treeOnOff=0;
 }
 
-updateStar(void)
+void updateStar(void)
 {
 	starOnOff=(starOnOff+1) & 1;
 }
 
-updateFigure(void)
+void updateFigure(void)
 {
 	figureOnOff=(figureOnOff+1) & 1;
+}
+
+void updateFlyers(void)
+{
+	int	j=0;
+
+	for(j=0;j<NUMBEROFFLYERS;j++)
+		{
+			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
+				flyersActive[j]=1;
+
+			if(flyersActive[j]==1)
+				{
+					flyersX[j]+=flyersStep;
+
+					if(flyersX[j]>displayWidth)
+						{
+							flyersActive[j]=0;
+							flyersX[j]=0;
+							flyersY[j]=(rand() % flyersMaxY);
+						}
+				}
+		}
+}
+
+void eraseRects(void)
+{
+	int	rc;
+	int	j;
+
+	if (showTree==1)
+		{
+			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+		}
+
+	if (figure==1)
+		{
+			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+		}
+
+	if (showFlyers==1)
+		{
+			for(j=0;j<NUMBEROFFLYERS;j++)
+				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+		}
+
 }
 
 int main(int argc,char* argv[])
@@ -311,8 +435,27 @@ int main(int argc,char* argv[])
 		{
 			arg=argv[argnum];
 
+
+			if (strcmp(arg,"-speed")==0)
+				mainDelay=atol(argv[++argnum]);
+	
+			if (strcmp(arg,"-flyermaxy")==0)
+				flyersMaxY=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-spread")==0)
+				flyerSpread=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-noflyer")==0)
+				showFlyers=0;
+
 			if (strcmp(arg,"-lampspeed")==0)
 				lampSpeed=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-flyspeed")==0)
+				flyersSpeed=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-flystep")==0)
+				flyersStep=atol(argv[++argnum]);
 
 			if (strcmp(arg,"-lampy")==0)
 				lampY=atol(argv[++argnum]);
@@ -389,6 +532,7 @@ int main(int argc,char* argv[])
 	initLamps();
 	initTree();
 	initFigure();
+	initFlyers();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
 	XSetFillStyle(display,gc,FillStippled);
@@ -406,12 +550,13 @@ int main(int argc,char* argv[])
 
 			runCounter++;
 
+			eraseRects();
+
 			if (showLamps==1)
 				{
 					if ((runCounter % lampSpeed)==0)
 						updateLamps();
 					drawLamps();
-
 				}
 
 			if (showTree==1)
@@ -429,8 +574,15 @@ int main(int argc,char* argv[])
 					if ((runCounter % figureSpeed)==0)
 						updateFigure();
 					drawFigure();
-
 				}
+
+			if (showFlyers==1)
+				{
+					if ((runCounter % flyersSpeed)==0)
+						updateFlyers();
+					drawFlyers();
+				}
+
 		}
 	XClearWindow(display,rootWin);
 	XCloseDisplay(display);
