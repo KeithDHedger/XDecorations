@@ -1,17 +1,21 @@
 #if 0
-	©Keith Hedger Mon 20 Oct 14:21:11 BST 2014 kdhedger68713@gmail.com
-*   This program is free software; you can redistribute it and/or modify
+©Keith Hedger Mon 20 Oct 14:21:11 BST 2014 kdhedger68713@gmail.com
+*   This program is free software;
+you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License,or
+*   the Free Software Foundation;
+either version 2 of the License,or
 *   (at your option) any later version.
-* 
+*
 *   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   but WITHOUT ANY WARRANTY;
+without even the implied warranty of
 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 *   GNU General Public License for more details.
-* 
+*
 *   You should hargve received a copy of the GNU General Public License
-*   along with this program; if not,write to the Free Software
+*   along with this program;
+if not,write to the Free Software
 *   Foundation,Inc.,59 Temple Place,Suite 330,Boston,MA  02111-1307  USA
 
 *   toon_root.c Copyright (C) 1999-2001  Robin Hogan
@@ -29,7 +33,7 @@
 
 #define MAXPATHNAMELEN 2048
 
-char		pathname[MAXPATHNAMELEN];
+	char		pathname[MAXPATHNAMELEN];
 
 Display*	display;
 Window		rootWin;
@@ -126,7 +130,7 @@ void initFigure(void)
 	char*			lampsetoff;
 
 	attrib.valuemask=0;
-	
+
 	asprintf(&lampseton,"%s/%sFigureOn.xpm",DATADIR,prefix);
 	asprintf(&lampsetoff,"%s/%sFigureOff.xpm",DATADIR,prefix);
 
@@ -149,7 +153,7 @@ void initLamps(void)
 	char*			lampsetoff;
 
 	attrib.valuemask=0;
-	
+
 	asprintf(&lampseton,"%s/%sLampsOn.xpm",DATADIR,prefix);
 	asprintf(&lampsetoff,"%s/%sLampsOff.xpm",DATADIR,prefix);
 
@@ -186,18 +190,17 @@ void initTree(void)
 	treeHeight=attrib.height;
 
 	rc=0;
-	for(j=0;j<8;j++)
+	for(j=0; j<8; j++)
 		{
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.xpm",DATADIR,prefix,j+1);
 			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j],&treeLampsMaskPixmap[j],&attrib);
-			
+
 		}
 	if(rc!=0)
 		showTreeLamps=0;
 
 	rc=0;
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.xpm",DATADIR,prefix);
-	printf("%s\n",pathname);
 	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[0],&starMaskPixmap[0],&attrib);
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar1.xpm",DATADIR,prefix);
 	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[1],&starMaskPixmap[1],&attrib);
@@ -297,110 +300,84 @@ updateFigure(void)
 
 int main(int argc,char* argv[])
 {
-	XGCValues xgcv;
-	int ax;
+	int argnum;
 	char* arg;
 	XEvent ev;
-	int Exposed;
-	int ConfigureNotified;
-	int i;
-	int x,y;
 	Window root;
-	int winX,winY;
-	unsigned int winHeight,winWidth;
-	unsigned int depth;
 	int screen;
 	Window		parentWindow;
 //command line options.
-	for (ax=1; ax<argc; ax++)
+	for (argnum=1; argnum<argc; argnum++)
 		{
-			arg=argv[ax];
+			arg=argv[argnum];
 
 			if (strcmp(arg,"-lampspeed")==0)
-				{
-					lampSpeed=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-lampy")==0)
-				{
-					lampY=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-treelampspeed")==0)
-				{
-					treelampSpeed=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-treelampset")==0)
-				{
-					treeLampSet=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-treenumber")==0)
-				{
-					treeNumber=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-treex")==0)
-				{
-					treeX=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-treey")==0)
-				{
-					treeY=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-starspeed")==0)
-				{
-					starSpeed=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-noxmastree")==0)
-				{
-					showTree=0;
-				}
-			else if (strcmp(arg,"-nolamps")==0)
-				{
-					showLamps=0;
-				}
-			else if (strcmp(arg,"-notreelamps")==0)
-				{
-					showTreeLamps=0;
-				}
-			else if (strcmp(arg,"-nostar")==0)
-				{
-					showStar=0;
-				}
-			else if (strcmp(arg,"-notinsel")==0)
-				{
-					showTinsel=0;
-				}
-			else if (strcmp(arg,"-holiday")==0)
-				{
-					prefix=argv[++ax];
-				}
-			else if (strcmp(arg,"-figure")==0)
-				{
-					figure=1;
-				}
-			else if (strcmp(arg,"-figurex")==0)
-				{
-					figureX=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-figurey")==0)
-				{
-					figureY=strtol(argv[++ax],(char* *)NULL,0);
-				}
-			else if (strcmp(arg,"-figurespeed")==0)
-				{
-					figureSpeed=strtol(argv[++ax],(char* *)NULL,0);
-				}
+				lampSpeed=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-lampy")==0)
+				lampY=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-treelampspeed")==0)
+				treelampSpeed=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-treelampset")==0)
+				treeLampSet=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-treenumber")==0)
+				treeNumber=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-treex")==0)
+				treeX=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-treey")==0)
+				treeY=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-starspeed")==0)
+				starSpeed=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-noxmastree")==0)
+				showTree=0;
+
+			if (strcmp(arg,"-nolamps")==0)
+				showLamps=0;
+
+			if (strcmp(arg,"-notreelamps")==0)
+				showTreeLamps=0;
+
+			if (strcmp(arg,"-nostar")==0)
+				showStar=0;
+
+			if (strcmp(arg,"-notinsel")==0)
+				showTinsel=0;
+
+			if (strcmp(arg,"-holiday")==0)
+				prefix=argv[++argnum];
+
+			if (strcmp(arg,"-figure")==0)
+				figure=1;
+
+			if (strcmp(arg,"-figurex")==0)
+				figureX=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-figurey")==0)
+				figureY=atol(argv[++argnum]);
+
+			if (strcmp(arg,"-figurespeed")==0)
+				figureSpeed=atol(argv[++argnum]);
 		}
+
 	srand((int)time((long* )NULL));
 
 	signal(SIGKILL,signalHandler);
-	signal(SIGINT,signalHandler);
 	signal(SIGTERM,signalHandler);
-	signal(SIGHUP,signalHandler);
 	signal(SIGQUIT,signalHandler);
+	signal(SIGINT,signalHandler);
+	signal(SIGHUP,signalHandler);
+
 	display=XOpenDisplay(NULL);
 	if (display==NULL)
-		{
-			exit(1);
-		}
+		exit(1);
+
 	screen=DefaultScreen(display);
 	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
 
@@ -414,15 +391,12 @@ int main(int argc,char* argv[])
 	initFigure();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
-	XGetGCValues(display,gc,0,&xgcv);
 	XSetFillStyle(display,gc,FillStippled);
 
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
 	while (!done)
 		{
-			Exposed=0;
-			ConfigureNotified=0;
 			while (XPending(display))
 				{
 					XNextEvent(display,&ev);
@@ -457,9 +431,10 @@ int main(int argc,char* argv[])
 					drawFigure();
 
 				}
-
 		}
 	XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 	exit(0);
 }
+
+
