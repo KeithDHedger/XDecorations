@@ -199,11 +199,7 @@ void drawSnowMan(void)
 		{
 			rc=XSetClipMask(display,gc,snowManMaskPixmap[snowManOnOff]);
 			rc=XSetClipOrigin(display,gc,snowManX,snowManY);
-			rc=XCopyArea(display,snowManPixmap[snowManOnOff],
-			             rootWin,
-			             gc,
-			             0,0,snowManW,snowManH,
-			             snowManX,snowManY);
+			rc=XCopyArea(display,snowManPixmap[snowManOnOff],rootWin,gc,0,0,snowManW,snowManH,snowManX,snowManY);
 		}
 }
 
@@ -240,34 +236,22 @@ void DrawTreeLamps(void)
 	int lastlamp;
 	int lampset;
 
-	if (TreeLampSet<3)
-		lampset=(TreeLampSet-1)*4;
+	if (TreeLampSet==2)
+		lampset=4;
 	else
 		lampset=0;
 
 	rc=XSetClipMask(display,gc,TreeMaskPixmap[TreeNumber-1]);
 	rc=XSetClipOrigin(display,gc,TreeX,TreeY);
-	rc=XCopyArea(display,TreePixmap[TreeNumber-1],
-	             rootWin,
-	             gc,
-	             0,0,TreeWidth,TreeHeight,
-	             TreeX,TreeY);
+	rc=XCopyArea(display,TreePixmap[TreeNumber-1],rootWin,gc,0,0,TreeWidth,TreeHeight,TreeX,TreeY);
 
 	rc=XSetClipMask(display,gc,TreeLampsMaskPixmap[TreeOnOff+lampset]);
-	rc=XCopyArea(display,TreeLampsPixmap[TreeOnOff+lampset],
-	             rootWin,
-	             gc,
-	             0,0,TreeWidth,TreeHeight,
-	             TreeX,TreeY);
+	rc=XCopyArea(display,TreeLampsPixmap[TreeOnOff+lampset],rootWin,gc,0,0,TreeWidth,TreeHeight,TreeX,TreeY);
 
 	if (Star==1)
 		{
 			rc=XSetClipMask(display,gc,StarMaskPixmap[StarOnOff]);
-			rc=XCopyArea(display,StarPixmap[StarOnOff],
-			             rootWin,
-			             gc,
-			             0,0,TreeWidth,TreeHeight,
-			             TreeX,TreeY);
+			rc=XCopyArea(display,StarPixmap[StarOnOff],rootWin,gc,0,0,TreeWidth,TreeHeight,TreeX,TreeY);
 		}
 
 	if (Tinsel==1)
@@ -283,15 +267,9 @@ void DrawTreeLamps(void)
 
 UpdateTreeLamps(void)
 {
-	int lastlamp;
-
-	if (TreeLampSet==3)
-		lastlamp=8;
-	else
-		lastlamp=4;
-
 	TreeOnOff++;
-	if (TreeOnOff==lastlamp)
+
+	if (TreeOnOff==4)
 		TreeOnOff=0;
 }
 
@@ -401,6 +379,7 @@ int main(int argc,char* argv[])
 	signal(SIGINT,SigHandler);
 	signal(SIGTERM,SigHandler);
 	signal(SIGHUP,SigHandler);
+	signal(SIGQUIT,SigHandler);
 	display=XOpenDisplay(NULL);
 	if (display==NULL)
 		{
