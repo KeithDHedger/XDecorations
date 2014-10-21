@@ -38,8 +38,8 @@ GC			gc;
 int			done=0;
 long		mainDelay=50000;
 
-Pixmap		snowManPixmap[2];
-Pixmap		snowManMaskPixmap[2];
+Pixmap		figurePixmap[2];
+Pixmap		figureMaskPixmap[2];
 
 Pixmap		lampsPixmap[2];
 Pixmap		lampsMaskPixmap[2];
@@ -60,14 +60,14 @@ int			onOff=0;
 
 uint		runCounter=0;
 
-int			snowManSpeed=10;
-int			snowManX=100;
-int			snowManY=100;
-int			snowManW;
-int			snowManH;
-int			snowManCount=0;
-int			snowMan=0;
-int			snowManonOff=0;
+int			figureSpeed=10;
+int			figureX=100;
+int			figureY=100;
+int			figureW;
+int			figureH;
+int			figureCount=0;
+int			figure=0;
+int			figureOnOff=0;
 
 int			lampSpeed=10;
 int			lampX=0;
@@ -89,6 +89,7 @@ int			treeLampSet=1;
 int			showTinsel=1;
 int			showStar=1;
 int			showTree=1;
+int			showTreeLamps=1;
 
 int			treeOnOff=0;
 int			starOnOff=0;
@@ -113,7 +114,7 @@ void uSsleep(unsigned long usec)
 	select(0,(void* )0,(void* )0,(void* )0,&t);
 }
 
-void initSnowMan(void)
+void initFigure(void)
 {
 	int				rc=0;
 	XpmAttributes	attrib;
@@ -125,12 +126,12 @@ void initSnowMan(void)
 	asprintf(&lampseton,"%s/%sFigureOn.xpm",DATADIR,prefix);
 	asprintf(&lampsetoff,"%s/%sFigureOff.xpm",DATADIR,prefix);
 
-	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&snowManPixmap[0],&snowManMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&snowManPixmap[1],&snowManMaskPixmap[1],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&figurePixmap[0],&figureMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&figurePixmap[1],&figureMaskPixmap[1],&attrib);
 	if(rc!=0)
-		snowMan=0;
-	snowManW=attrib.width;
-	snowManH=attrib.height;
+		figure=0;
+	figureW=attrib.width;
+	figureH=attrib.height;
 
 	free(lampseton);
 	free(lampsetoff);
@@ -170,10 +171,13 @@ void initTree(void)
 
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree1.xpm",&treePixmap[0],&treeMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree2.xpm",&treePixmap[1],&treeMaskPixmap[1],&attrib);
+	if(rc!=0)
+		showTree=0;
 
 	treeWidth=attrib.width;
 	treeHeight=attrib.height;
 
+	rc=0;
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsBlue0.xpm",&treeLampsPixmap[0],&treeLampsMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsBlue1.xpm",&treeLampsPixmap[4],&treeLampsMaskPixmap[4],&attrib);
 
@@ -185,23 +189,30 @@ void initTree(void)
 
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsRed0.xpm",&treeLampsPixmap[3],&treeLampsMaskPixmap[3],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsRed1.xpm",&treeLampsPixmap[7],&treeLampsMaskPixmap[7],&attrib);
+	if(rc!=0)
+		showTreeLamps=0;
 
+	rc=0;
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Star0.xpm",&starPixmap[0],&starMaskPixmap[0],&attrib);
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Star1.xpm",&starPixmap[1],&starMaskPixmap[1],&attrib);
+	if(rc!=0)
+		showStar=0;
 
+	rc=0;
 	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tinsel.xpm",&tinselPixmap,&tinselMaskPixmap,&attrib);
 	if(rc!=0)
-		showTree=0;
+		showTinsel=0;
 }
 
-void drawSnowMan(void)
+void drawFigure(void)
 {
 	int rc;
-	if (snowMan==1)
+	if (figure==1)
 		{
-			rc=XSetClipMask(display,gc,snowManMaskPixmap[snowManonOff]);
-			rc=XSetClipOrigin(display,gc,snowManX,snowManY);
-			rc=XCopyArea(display,snowManPixmap[snowManonOff],rootWin,gc,0,0,snowManW,snowManH,snowManX,snowManY);
+			rc=XSetClipMask(display,gc,figureMaskPixmap[figureOnOff]);
+			rc=XSetClipOrigin(display,gc,figureX,figureY);
+			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+			rc=XCopyArea(display,figurePixmap[figureOnOff],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
 		}
 }
 
@@ -215,11 +226,7 @@ void drawLamps(void)
 	for (loop=0; loop<lampCount; loop++)
 		{
 			rc=XSetClipOrigin(display,gc,CurrentlampX+lampOffset,lampY);
-			rc=XCopyArea(display,lampsPixmap[onOff],
-			             rootWin,
-			             gc,
-			             0,0,lampWidth,lampHeight,
-			             CurrentlampX+lampOffset,lampY);
+			rc=XCopyArea(display,lampsPixmap[onOff],rootWin,gc,0,0,lampWidth,lampHeight,CurrentlampX+lampOffset,lampY);
 			CurrentlampX+=lampWidth;
 		}
 }
@@ -244,8 +251,12 @@ void drawTreeLamps(void)
 	rc=XSetClipOrigin(display,gc,treeX,treeY);
 	rc=XCopyArea(display,treePixmap[treeNumber-1],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 
-	rc=XSetClipMask(display,gc,treeLampsMaskPixmap[treeOnOff+lampset]);
-	rc=XCopyArea(display,treeLampsPixmap[treeOnOff+lampset],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+	if(showTreeLamps==1)
+		{
+			rc=XSetClipMask(display,gc,treeLampsMaskPixmap[treeOnOff+lampset]);
+			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+			rc=XCopyArea(display,treeLampsPixmap[treeOnOff+lampset],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+		}
 
 	if (showStar==1)
 		{
@@ -256,11 +267,7 @@ void drawTreeLamps(void)
 	if (showTinsel==1)
 		{
 			rc=XSetClipMask(display,gc,tinselMaskPixmap);
-			rc=XCopyArea(display,tinselPixmap,
-			             rootWin,
-			             gc,
-			             0,0,treeWidth,treeHeight,
-			             treeX,treeY);
+			rc=XCopyArea(display,tinselPixmap,rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 }
 
@@ -277,9 +284,9 @@ updateStar(void)
 	starOnOff=(starOnOff+1) & 1;
 }
 
-updateSnowMan(void)
+updateFigure(void)
 {
-	snowManonOff=(snowManonOff+1) & 1;
+	figureOnOff=(figureOnOff+1) & 1;
 }
 
 int main(int argc,char* argv[])
@@ -343,6 +350,10 @@ int main(int argc,char* argv[])
 				{
 					showLamps=0;
 				}
+			else if (strcmp(arg,"-notreelamps")==0)
+				{
+					showTreeLamps=0;
+				}
 			else if (strcmp(arg,"-nostar")==0)
 				{
 					showStar=0;
@@ -355,21 +366,21 @@ int main(int argc,char* argv[])
 				{
 					prefix=argv[++ax];
 				}
-			else if (strcmp(arg,"-snowman")==0)
+			else if (strcmp(arg,"-figure")==0)
 				{
-					snowMan=1;
+					figure=1;
 				}
-			else if (strcmp(arg,"-snowmanx")==0)
+			else if (strcmp(arg,"-figurex")==0)
 				{
-					snowManX=strtol(argv[++ax],(char* *)NULL,0);
+					figureX=strtol(argv[++ax],(char* *)NULL,0);
 				}
-			else if (strcmp(arg,"-snowmany")==0)
+			else if (strcmp(arg,"-figurey")==0)
 				{
-					snowManY=strtol(argv[++ax],(char* *)NULL,0);
+					figureY=strtol(argv[++ax],(char* *)NULL,0);
 				}
-			else if (strcmp(arg,"-snowmanspeed")==0)
+			else if (strcmp(arg,"-figurespeed")==0)
 				{
-					snowManSpeed=strtol(argv[++ax],(char* *)NULL,0);
+					figureSpeed=strtol(argv[++ax],(char* *)NULL,0);
 				}
 		}
 	srand((int)time((long* )NULL));
@@ -394,7 +405,7 @@ int main(int argc,char* argv[])
 
 	initLamps();
 	initTree();
-	initSnowMan();
+	initFigure();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
 	XGetGCValues(display,gc,0,&xgcv);
@@ -433,11 +444,11 @@ int main(int argc,char* argv[])
 						updateStar();
 				}
 
-			if (snowMan==1)
+			if (figure==1)
 				{
-					if ((runCounter % snowManSpeed)==0)
-						updateSnowMan();
-					drawSnowMan();
+					if ((runCounter % figureSpeed)==0)
+						updateFigure();
+					drawFigure();
 
 				}
 
