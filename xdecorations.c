@@ -27,6 +27,10 @@
 #include <signal.h>
 #include <stdlib.h>
 
+#define MAXPATHNAMELEN 2048
+
+char		pathname[MAXPATHNAMELEN];
+
 Display*	display;
 Window		rootWin;
 int			displayWidth;
@@ -166,11 +170,15 @@ void initLamps(void)
 void initTree(void)
 {
 	int				rc=0;
+	int				j=0;
 	XpmAttributes	attrib;
+
 	attrib.valuemask=0;
 
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree1.xpm",&treePixmap[0],&treeMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tree2.xpm",&treePixmap[1],&treeMaskPixmap[1],&attrib);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree1.xpm",DATADIR,prefix);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[0],&treeMaskPixmap[0],&attrib);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree2.xpm",DATADIR,prefix);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[1],&treeMaskPixmap[1],&attrib);
 	if(rc!=0)
 		showTree=0;
 
@@ -178,23 +186,21 @@ void initTree(void)
 	treeHeight=attrib.height;
 
 	rc=0;
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsBlue0.xpm",&treeLampsPixmap[0],&treeLampsMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsBlue1.xpm",&treeLampsPixmap[4],&treeLampsMaskPixmap[4],&attrib);
-
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsGreen0.xpm",&treeLampsPixmap[1],&treeLampsMaskPixmap[1],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsGreen1.xpm",&treeLampsPixmap[5],&treeLampsMaskPixmap[5],&attrib);
-
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsPurple0.xpm",&treeLampsPixmap[2],&treeLampsMaskPixmap[2],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsPurple1.xpm",&treeLampsPixmap[6],&treeLampsMaskPixmap[6],&attrib);
-
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsRed0.xpm",&treeLampsPixmap[3],&treeLampsMaskPixmap[3],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/LightsRed1.xpm",&treeLampsPixmap[7],&treeLampsMaskPixmap[7],&attrib);
+	for(j=0;j<8;j++)
+		{
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.xpm",DATADIR,prefix,j+1);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j],&treeLampsMaskPixmap[j],&attrib);
+			
+		}
 	if(rc!=0)
 		showTreeLamps=0;
 
 	rc=0;
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Star0.xpm",&starPixmap[0],&starMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Star1.xpm",&starPixmap[1],&starMaskPixmap[1],&attrib);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.xpm",DATADIR,prefix);
+	printf("%s\n",pathname);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[0],&starMaskPixmap[0],&attrib);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar1.xpm",DATADIR,prefix);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[1],&starMaskPixmap[1],&attrib);
 	if(rc!=0)
 		showStar=0;
 
@@ -249,12 +255,12 @@ void drawTreeLamps(void)
 
 	rc=XSetClipMask(display,gc,treeMaskPixmap[treeNumber-1]);
 	rc=XSetClipOrigin(display,gc,treeX,treeY);
+	rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
 	rc=XCopyArea(display,treePixmap[treeNumber-1],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 
 	if(showTreeLamps==1)
 		{
 			rc=XSetClipMask(display,gc,treeLampsMaskPixmap[treeOnOff+lampset]);
-			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
 			rc=XCopyArea(display,treeLampsPixmap[treeOnOff+lampset],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
