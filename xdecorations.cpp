@@ -137,13 +137,13 @@ enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
 args	xdecorations_rc[]=
 {
 //bools
-	{"showflyer",TYPEBOOL,&showFlyers},
-	{"showtree",TYPEBOOL,&showTree},
-	{"showtinsel",TYPEBOOL,&showTinsel},
-	{"showfigure",TYPEBOOL,&showFigure},
-	{"showlamps",TYPEBOOL,&showLamps},
-	{"showstar",TYPEBOOL,&showStar},
-	{"showtreelamps",TYPEBOOL,&showTreeLamps},
+	{"flyer",TYPEBOOL,&showFlyers},
+	{"tree",TYPEBOOL,&showTree},
+	{"tinsel",TYPEBOOL,&showTinsel},
+	{"figure",TYPEBOOL,&showFigure},
+	{"lamps",TYPEBOOL,&showLamps},
+	{"star",TYPEBOOL,&showStar},
+	{"treelamps",TYPEBOOL,&showTreeLamps},
 //strings
 	{"holiday",TYPESTRING,&prefix},
 //ints
