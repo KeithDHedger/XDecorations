@@ -620,11 +620,12 @@ int main(int argc,char* argv[])
 		exit(1);
 
 	screen=DefaultScreen(display);
-	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+//	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+rootWin=DefaultRootWindow(display);
 
 	displayWidth=DisplayWidth(display,screen);
 	displayHeight=DisplayHeight(display,screen);
-
+printf("%i\n",displayWidth);
 	initLamps();
 	initTree();
 	initFigure();
