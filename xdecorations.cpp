@@ -143,26 +143,26 @@ args	xdecorations_rc[]=
 	{"figure",TYPEBOOL,&showFigure},
 	{"lamps",TYPEBOOL,&showLamps},
 	{"star",TYPEBOOL,&showStar},
-	{"treelamps",TYPEBOOL,&showTreeLamps},
+	{"xtralamps",TYPEBOOL,&showTreeLamps},
 //strings
 	{"holiday",TYPESTRING,&prefix},
 //ints
-	{"speed",TYPEINT,&mainDelay},
+	{"delay",TYPEINT,&mainDelay},
 	{"flyermaxy",TYPEINT,&flyersMaxY},
 	{"spread",TYPEINT,&flyerSpread},
-	{"lampspeed",TYPEINT,&lampSpeed},
-	{"flyspeed",TYPEINT,&flyersSpeed},
+	{"lampdelay",TYPEINT,&lampSpeed},
+	{"flydelay",TYPEINT,&flyersSpeed},
 	{"flystep",TYPEINT,&flyersStep},
 	{"lampy",TYPEINT,&lampY},
-	{"treelampspeed",TYPEINT,&treelampSpeed},
+	{"treelampdelay",TYPEINT,&treelampSpeed},
 	{"treelampset",TYPEINT,&treeLampSet},
 	{"treenumber",TYPEINT,&treeNumber},
 	{"treex",TYPEINT,&treeX},
 	{"treey",TYPEINT,&treeY},
-	{"starspeed",TYPEINT,&starSpeed},
+	{"stardelay",TYPEINT,&starSpeed},
 	{"figurex",TYPEINT,&figureX},
 	{"figurey",TYPEINT,&figureY},
-	{"figurespeed",TYPEINT,&figureSpeed},
+	{"figuredelay",TYPEINT,&figureSpeed},
 	{NULL,0,NULL}
 };
 
@@ -502,6 +502,16 @@ void eraseRects(void)
 	flyerNeedsUpdate=false;
 }
 
+void showUnShow(char* arg1,const char* arg2,bool *value)
+{
+	if(strcasestr(arg1,arg2)!=NULL)
+		{
+			*value=true;
+			if(strcasestr(arg1,"no-")!=NULL)
+				*value=false;
+		}
+}
+
 int main(int argc,char* argv[])
 {
 	int argnum;
@@ -521,32 +531,18 @@ int main(int argc,char* argv[])
 		{
 			arg=argv[argnum];
 
-
-			if(strcmp(arg,"-showflyer")==0)
-				showFlyers=true;
-
-			if(strcmp(arg,"-showtree")==0)
-				showTree=true;
-
-			if(strcmp(arg,"-showlamps")==0)
-				showLamps=true;
-
-			if(strcmp(arg,"-showfigure")==0)
-				showFigure=true;
-
-			if(strcmp(arg,"-showstar")==0)
-				showStar=true;
-
-			if(strcmp(arg,"-showtinsel")==0)
-				showTinsel=true;
-
-			if(strcmp(arg,"-showtreelamps")==0)
-				showTreeLamps=true;
+			showUnShow(arg,"showflyer",&showFlyers);
+			showUnShow(arg,"showtree",&showTree);
+			showUnShow(arg,"showlamps",&showLamps);
+			showUnShow(arg,"showfigure",&showFigure);
+			showUnShow(arg,"showstar",&showStar);
+			showUnShow(arg,"showtinsel",&showTinsel);
+			showUnShow(arg,"showxtralamps",&showTreeLamps);
 
 			if(strcmp(arg,"-holiday")==0)
 				prefix=argv[++argnum];
 
-			if(strcmp(arg,"-speed")==0)
+			if(strcmp(arg,"-delay")==0)
 				mainDelay=atol(argv[++argnum]);
 	
 			if(strcmp(arg,"-flyermaxy")==0)
@@ -555,10 +551,10 @@ int main(int argc,char* argv[])
 			if(strcmp(arg,"-spread")==0)
 				flyerSpread=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-lampspeed")==0)
+			if(strcmp(arg,"-lampdelay")==0)
 				lampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-flyspeed")==0)
+			if(strcmp(arg,"-flydelay")==0)
 				flyersSpeed=atol(argv[++argnum]);
 
 			if(strcmp(arg,"-flystep")==0)
@@ -567,7 +563,7 @@ int main(int argc,char* argv[])
 			if(strcmp(arg,"-lampy")==0)
 				lampY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-treelampspeed")==0)
+			if(strcmp(arg,"-treelampdelay")==0)
 				treelampSpeed=atol(argv[++argnum]);
 
 			if(strcmp(arg,"-treelampset")==0)
@@ -582,7 +578,7 @@ int main(int argc,char* argv[])
 			if(strcmp(arg,"-treey")==0)
 				treeY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-starspeed")==0)
+			if(strcmp(arg,"-stardelay")==0)
 				starSpeed=atol(argv[++argnum]);
 
 			if(strcmp(arg,"-figurex")==0)
@@ -591,7 +587,7 @@ int main(int argc,char* argv[])
 			if(strcmp(arg,"-figurey")==0)
 				figureY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-figurespeed")==0)
+			if(strcmp(arg,"-figuredelay")==0)
 				figureSpeed=atol(argv[++argnum]);
 		}
 
