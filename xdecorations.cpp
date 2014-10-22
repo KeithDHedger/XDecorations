@@ -34,7 +34,7 @@ if not,write to the Free Software
 #include "toon.h"
 
 #define MAXPATHNAMELEN 2048
-#define NUMBEROFFLYERS 2
+#define MAXNUMBEROFFLYERS 10
 
 char		pathname[MAXPATHNAMELEN];
 
@@ -42,8 +42,6 @@ Display*	display;
 Window		rootWin;
 int			displayWidth;
 int			displayHeight;
-int			centerX;
-int			centerY;
 GC			gc;
 
 int			done=0;
@@ -67,8 +65,8 @@ Pixmap		treeLampsMaskPixmap[8];
 Pixmap		tinselPixmap;
 Pixmap		tinselMaskPixmap;
 
-Pixmap		flyersPixmap[NUMBEROFFLYERS];
-Pixmap		flyersMaskPixmap[NUMBEROFFLYERS];
+Pixmap		flyersPixmap[MAXNUMBEROFFLYERS];
+Pixmap		flyersMaskPixmap[MAXNUMBEROFFLYERS];
 
 int			onOff=0;
 
@@ -76,14 +74,15 @@ uint		runCounter=0;
 
 int			flyersSpeed=1;
 int			flyersStep=10;
-int			flyersWidth[NUMBEROFFLYERS];
-int			flyersHeight[NUMBEROFFLYERS];
-int			flyersX[NUMBEROFFLYERS];
-int			flyersY[NUMBEROFFLYERS];
+int			flyersWidth[MAXNUMBEROFFLYERS];
+int			flyersHeight[MAXNUMBEROFFLYERS];
+int			flyersX[MAXNUMBEROFFLYERS];
+int			flyersY[MAXNUMBEROFFLYERS];
 bool		showFlyers=false;
 int			flyersMaxY=400;
-int			flyersActive[NUMBEROFFLYERS];
+int			flyersActive[MAXNUMBEROFFLYERS];
 int			flyerSpread=400;
+int			flyerCount=0;
 
 int			figureSpeed=10;
 int			figureX=100;
@@ -96,7 +95,7 @@ int			figureOnOff=0;
 
 int			lampSpeed=10;
 int			lampX=0;
-int			lampY=26;
+int			lampY=16;
 int			lampWidth;
 int			lampHeight;
 int			lampCount=0;
@@ -143,7 +142,7 @@ args	xdecorations_rc[]=
 	{"figure",TYPEBOOL,&showFigure},
 	{"lamps",TYPEBOOL,&showLamps},
 	{"star",TYPEBOOL,&showStar},
-	{"xtralamps",TYPEBOOL,&showTreeLamps},
+	{"treelamps",TYPEBOOL,&showTreeLamps},
 //strings
 	{"holiday",TYPESTRING,&prefix},
 //ints
@@ -242,21 +241,26 @@ void initFlyers(void)
 	attrib.valuemask=0;
 
 	rc=0;
-	for(j=0; j<NUMBEROFFLYERS;j++)
+	for(j=0; j<MAXNUMBEROFFLYERS;j++)
 		{
+			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFly%i.xpm",DATADIR,prefix,j+1);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&flyersPixmap[j],&flyersMaskPixmap[j],&attrib);
-			flyersWidth[j]=attrib.width;
-			flyersHeight[j]=attrib.height;
-			flyersY[j]=(rand() % flyersMaxY);
-			flyersX[j]=10;
-			if((rand() % flyerSpread)==0)
-				flyersActive[j]=1;
-			else
-				flyersActive[j]=0;
-				
+			rc=XpmReadFileToPixmap(display,rootWin,pathname,&flyersPixmap[flyerCount],&flyersMaskPixmap[flyerCount],&attrib);
+			if(rc==0)
+				{
+					flyersWidth[flyerCount]=attrib.width;
+					flyersHeight[flyerCount]=attrib.height;
+					flyersY[flyerCount]=(rand() % flyersMaxY);
+					flyersX[flyerCount]=0-flyersWidth[j];
+					if((rand() % flyerSpread)==0)
+						flyersActive[flyerCount]=1;
+					else
+						flyersActive[flyerCount]=0;
+					flyerCount++;
+				}
 		}
-	if(rc!=0)
+
+	if(flyerCount==0)
 		showFlyers=false;
 }
 
@@ -359,7 +363,7 @@ void drawFlyers(void)
 	if(showFlyers==false)
 		return;
 
-	for(j=0;j<NUMBEROFFLYERS;j++)
+	for(j=0;j<flyerCount;j++)
 		{
 			if(flyersActive[j]==1)
 				{
@@ -461,7 +465,7 @@ void updateFlyers(void)
 {
 	int	j=0;
 
-	for(j=0;j<NUMBEROFFLYERS;j++)
+	for(j=0;j<flyerCount;j++)
 		{
 			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
 				flyersActive[j]=1;
@@ -473,7 +477,7 @@ void updateFlyers(void)
 					if(flyersX[j]>displayWidth)
 						{
 							flyersActive[j]=0;
-							flyersX[j]=0;
+							flyersX[j]=0-flyersWidth[j];
 							flyersY[j]=(rand() % flyersMaxY);
 						}
 				}
@@ -486,15 +490,22 @@ void eraseRects(void)
 	int	j;
 
 	if((showTree==true) && (treeNeedsUpdate==true))
-		rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+		{
+			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+			updateTreeLamps();
+		}
 
 	if((showFigure==true) && (figureNeedsUpdate==true))
-		rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+		{
+			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+			updateFigure();
+		}
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
-			for(j=0;j<NUMBEROFFLYERS;j++)
+			for(j=0;j<flyerCount;j++)
 				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+			updateFlyers();
 		}
 
 	treeNeedsUpdate=false;
@@ -504,8 +515,13 @@ void eraseRects(void)
 
 void showUnShow(char* arg1,const char* arg2,bool *value)
 {
-	if(strcasestr(arg1,arg2)!=NULL)
+	char*	ptr=NULL;
+
+	ptr=strcasestr(arg1,arg2);
+	if(ptr!=NULL)
 		{
+			if(strcasecmp(ptr,arg2)!=0)
+				return;
 			*value=true;
 			if(strcasestr(arg1,"no-")!=NULL)
 				*value=false;
@@ -515,7 +531,7 @@ void showUnShow(char* arg1,const char* arg2,bool *value)
 int main(int argc,char* argv[])
 {
 	int argnum;
-	char* arg;
+	char* argstr;
 	XEvent ev;
 	Window root;
 	int screen;
@@ -523,71 +539,71 @@ int main(int argc,char* argv[])
 
 	prefix=strdup("Xmas");
 
-	asprintf(&arg,"%s/.config/xdecorations.rc",getenv("HOME"));
-	loadVarsFromFile(arg,xdecorations_rc);
-	free(arg);
+	asprintf(&argstr,"%s/.config/xdecorations.rc",getenv("HOME"));
+	loadVarsFromFile(argstr,xdecorations_rc);
+	free(argstr);
 //command line options.
 	for (argnum=1; argnum<argc; argnum++)
 		{
-			arg=argv[argnum];
+			argstr=argv[argnum];
 
-			showUnShow(arg,"showflyer",&showFlyers);
-			showUnShow(arg,"showtree",&showTree);
-			showUnShow(arg,"showlamps",&showLamps);
-			showUnShow(arg,"showfigure",&showFigure);
-			showUnShow(arg,"showstar",&showStar);
-			showUnShow(arg,"showtinsel",&showTinsel);
-			showUnShow(arg,"showxtralamps",&showTreeLamps);
+			showUnShow(argstr,"showflyer",&showFlyers);
+			showUnShow(argstr,"showtree",&showTree);
+			showUnShow(argstr,"showlamps",&showLamps);
+			showUnShow(argstr,"showfigure",&showFigure);
+			showUnShow(argstr,"showstar",&showStar);
+			showUnShow(argstr,"showtinsel",&showTinsel);
+			showUnShow(argstr,"showtreelamps",&showTreeLamps);
 
-			if(strcmp(arg,"-holiday")==0)
+			if(strcmp(argstr,"-holiday")==0)
 				prefix=argv[++argnum];
 
-			if(strcmp(arg,"-delay")==0)
+			if(strcmp(argstr,"-delay")==0)
 				mainDelay=atol(argv[++argnum]);
 	
-			if(strcmp(arg,"-flyermaxy")==0)
+			if(strcmp(argstr,"-flyermaxy")==0)
 				flyersMaxY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-spread")==0)
+			if(strcmp(argstr,"-spread")==0)
 				flyerSpread=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-lampdelay")==0)
+			if(strcmp(argstr,"-lampdelay")==0)
 				lampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-flydelay")==0)
+			if(strcmp(argstr,"-flydelay")==0)
 				flyersSpeed=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-flystep")==0)
+			if(strcmp(argstr,"-flystep")==0)
 				flyersStep=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-lampy")==0)
+			if(strcmp(argstr,"-lampy")==0)
 				lampY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-treelampdelay")==0)
+			if(strcmp(argstr,"-treelampdelay")==0)
 				treelampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-treelampset")==0)
+			if(strcmp(argstr,"-treelampset")==0)
 				treeLampSet=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-treenumber")==0)
+			if(strcmp(argstr,"-treenumber")==0)
 				treeNumber=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-treex")==0)
+			if(strcmp(argstr,"-treex")==0)
 				treeX=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-treey")==0)
+			if(strcmp(argstr,"-treey")==0)
 				treeY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-stardelay")==0)
+			if(strcmp(argstr,"-stardelay")==0)
 				starSpeed=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-figurex")==0)
+			if(strcmp(argstr,"-figurex")==0)
 				figureX=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-figurey")==0)
+			if(strcmp(argstr,"-figurey")==0)
 				figureY=atol(argv[++argnum]);
 
-			if(strcmp(arg,"-figuredelay")==0)
+			if(strcmp(argstr,"-figuredelay")==0)
 				figureSpeed=atol(argv[++argnum]);
 		}
 
@@ -608,8 +624,6 @@ int main(int argc,char* argv[])
 
 	displayWidth=DisplayWidth(display,screen);
 	displayHeight=DisplayHeight(display,screen);
-	centerX=displayWidth / 2;
-	centerY=displayHeight / 2;
 
 	initLamps();
 	initTree();
@@ -617,19 +631,17 @@ int main(int argc,char* argv[])
 	initFlyers();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
-	XSetFillStyle(display,gc,FillStippled);
+	XSetFillStyle(display,gc,FillSolid);
 
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
 	while (!done)
 		{
 			while (XPending(display))
-				{
 					XNextEvent(display,&ev);
 
-				}
-			uSsleep(mainDelay);
-
+			//uSsleep(mainDelay);
+			usleep(mainDelay);
 			runCounter++;
 
 			if(showLamps==true)
@@ -641,10 +653,7 @@ int main(int argc,char* argv[])
 			if(showTree==true)
 				{
 					if((runCounter % treelampSpeed)==0)
-						{
-							updateTreeLamps();
-							treeNeedsUpdate=true;
-						}
+						treeNeedsUpdate=true;
 
 					if((runCounter % starSpeed)==0 && showStar==true)
 						updateStar();
@@ -653,19 +662,13 @@ int main(int argc,char* argv[])
 			if(showFigure==true)
 				{
 					if((runCounter % figureSpeed)==0)
-						{
-							updateFigure();
-							figureNeedsUpdate=true;
-						}
+						figureNeedsUpdate=true;
 				}
 
 			if(showFlyers==true)
 				{
 					if((runCounter % flyersSpeed)==0)
-						{
-							updateFlyers();
-							flyerNeedsUpdate=true;
-						}
+						flyerNeedsUpdate=true;
 				}
 
 			eraseRects();
