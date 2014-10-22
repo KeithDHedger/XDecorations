@@ -356,20 +356,16 @@ void drawFlyers(void)
 	int rc;
 	int	j;
 
-	Region	flyreg=XCreateRegion();
-	Region	final;
-	XRectangle AddRect;
+	if(showFlyers==false)
+		return;
 
-	if (showFlyers==true)
+	for(j=0;j<NUMBEROFFLYERS;j++)
 		{
-			for(j=0;j<NUMBEROFFLYERS;j++)
+			if(flyersActive[j]==1)
 				{
-					if(flyersActive[j]==1)
-						{
-							rc=XSetClipMask(display,gc,flyersMaskPixmap[j]);
-							rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
-							rc=XCopyArea(display,flyersPixmap[j],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
-						}
+					rc=XSetClipMask(display,gc,flyersMaskPixmap[j]);
+					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
+					rc=XCopyArea(display,flyersPixmap[j],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
 				}
 		}
 }
@@ -377,19 +373,25 @@ void drawFlyers(void)
 void drawFigure(void)
 {
 	int rc;
-	if (showFigure==true)
-		{
-			rc=XSetClipMask(display,gc,figureMaskPixmap[figureOnOff]);
-			rc=XSetClipOrigin(display,gc,figureX,figureY);
-			rc=XCopyArea(display,figurePixmap[figureOnOff],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
-		}
+
+	if(showFigure==false)
+		return;
+
+	rc=XSetClipMask(display,gc,figureMaskPixmap[figureOnOff]);
+	rc=XSetClipOrigin(display,gc,figureX,figureY);
+	rc=XCopyArea(display,figurePixmap[figureOnOff],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
 }
 
 void drawLamps(void)
 {
 	int rc;
 	int loop;
-	int	CurrentlampX=lampX;
+	int	CurrentlampX;
+
+	if(showLamps==false)
+		return;
+
+	CurrentlampX=lampX;
 	rc=XSetClipMask(display,gc,lampsMaskPixmap[onOff]);
 
 	for (loop=0; loop<lampCount; loop++)
@@ -410,6 +412,9 @@ void drawTreeLamps(void)
 	int rc;
 	int lampset;
 
+	if(showTree==false)
+		return;
+
 	lampset=(treeLampSet-1)*4;
 	rc=XSetClipMask(display,gc,treeMaskPixmap[treeNumber-1]);
 	rc=XSetClipOrigin(display,gc,treeX,treeY);
@@ -421,13 +426,13 @@ void drawTreeLamps(void)
 			rc=XCopyArea(display,treeLampsPixmap[treeOnOff+lampset],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
-	if (showStar==true)
+	if(showStar==true)
 		{
 			rc=XSetClipMask(display,gc,starMaskPixmap[starOnOff]);
 			rc=XCopyArea(display,starPixmap[starOnOff],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
-	if (showTinsel==true)
+	if(showTinsel==true)
 		{
 			rc=XSetClipMask(display,gc,tinselMaskPixmap);
 			rc=XCopyArea(display,tinselPixmap,rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
@@ -438,7 +443,7 @@ void updateTreeLamps(void)
 {
 	treeOnOff++;
 
-	if (treeOnOff==4)
+	if(treeOnOff==4)
 		treeOnOff=0;
 }
 
@@ -455,7 +460,7 @@ void updateFigure(void)
 void updateFlyers(void)
 {
 	int	j=0;
-int rc;
+
 	for(j=0;j<NUMBEROFFLYERS;j++)
 		{
 			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
@@ -463,7 +468,6 @@ int rc;
 
 			if(flyersActive[j]==1)
 				{
-rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
 					flyersX[j]+=flyersStep;
 
 					if(flyersX[j]>displayWidth)
@@ -480,31 +484,14 @@ void eraseRects(void)
 {
 	int	rc=0;
 	int	j;
-//
-//	if (showTree==true)
-//		rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
-//
-//
-//	if (showFigure==true)
-//		rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
-//	if (showFlyers==true)
-//		{
-//			for(j=0;j<NUMBEROFFLYERS;j++)
-//				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
-//printf("%in",rc);
-//		}
 
-//	treeNeedsUpdate=true;
-//	figureNeedsUpdate=true;
-//	flyerNeedsUpdate=true;
-
-	if ((showTree==true) && (treeNeedsUpdate==true))
+	if((showTree==true) && (treeNeedsUpdate==true))
 		rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
 
-	if ((showFigure==true) && (figureNeedsUpdate==true))
+	if((showFigure==true) && (figureNeedsUpdate==true))
 		rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
 
-	if ((showFlyers==true) && (flyerNeedsUpdate==true))
+	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
 			for(j=0;j<NUMBEROFFLYERS;j++)
 				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
@@ -535,76 +522,76 @@ int main(int argc,char* argv[])
 			arg=argv[argnum];
 
 
-			if (strcmp(arg,"-showflyer")==0)
+			if(strcmp(arg,"-showflyer")==0)
 				showFlyers=true;
 
-			if (strcmp(arg,"-showtree")==0)
+			if(strcmp(arg,"-showtree")==0)
 				showTree=true;
 
-			if (strcmp(arg,"-showlamps")==0)
+			if(strcmp(arg,"-showlamps")==0)
 				showLamps=true;
 
-			if (strcmp(arg,"-showfigure")==0)
+			if(strcmp(arg,"-showfigure")==0)
 				showFigure=true;
 
-			if (strcmp(arg,"-showstar")==0)
+			if(strcmp(arg,"-showstar")==0)
 				showStar=true;
 
-			if (strcmp(arg,"-showtinsel")==0)
+			if(strcmp(arg,"-showtinsel")==0)
 				showTinsel=true;
 
-			if (strcmp(arg,"-showtreelamps")==0)
+			if(strcmp(arg,"-showtreelamps")==0)
 				showTreeLamps=true;
 
-			if (strcmp(arg,"-holiday")==0)
+			if(strcmp(arg,"-holiday")==0)
 				prefix=argv[++argnum];
 
-			if (strcmp(arg,"-speed")==0)
+			if(strcmp(arg,"-speed")==0)
 				mainDelay=atol(argv[++argnum]);
 	
-			if (strcmp(arg,"-flyermaxy")==0)
+			if(strcmp(arg,"-flyermaxy")==0)
 				flyersMaxY=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-spread")==0)
+			if(strcmp(arg,"-spread")==0)
 				flyerSpread=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-lampspeed")==0)
+			if(strcmp(arg,"-lampspeed")==0)
 				lampSpeed=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-flyspeed")==0)
+			if(strcmp(arg,"-flyspeed")==0)
 				flyersSpeed=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-flystep")==0)
+			if(strcmp(arg,"-flystep")==0)
 				flyersStep=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-lampy")==0)
+			if(strcmp(arg,"-lampy")==0)
 				lampY=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-treelampspeed")==0)
+			if(strcmp(arg,"-treelampspeed")==0)
 				treelampSpeed=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-treelampset")==0)
+			if(strcmp(arg,"-treelampset")==0)
 				treeLampSet=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-treenumber")==0)
+			if(strcmp(arg,"-treenumber")==0)
 				treeNumber=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-treex")==0)
+			if(strcmp(arg,"-treex")==0)
 				treeX=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-treey")==0)
+			if(strcmp(arg,"-treey")==0)
 				treeY=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-starspeed")==0)
+			if(strcmp(arg,"-starspeed")==0)
 				starSpeed=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-figurex")==0)
+			if(strcmp(arg,"-figurex")==0)
 				figureX=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-figurey")==0)
+			if(strcmp(arg,"-figurey")==0)
 				figureY=atol(argv[++argnum]);
 
-			if (strcmp(arg,"-figurespeed")==0)
+			if(strcmp(arg,"-figurespeed")==0)
 				figureSpeed=atol(argv[++argnum]);
 		}
 
@@ -617,7 +604,7 @@ int main(int argc,char* argv[])
 	signal(SIGHUP,(sighandler_t)signalHandler);
 
 	display=XOpenDisplay(NULL);
-	if (display==NULL)
+	if(display==NULL)
 		exit(1);
 
 	screen=DefaultScreen(display);
@@ -649,55 +636,49 @@ int main(int argc,char* argv[])
 
 			runCounter++;
 
-	//		eraseRects();
-
-			if (showLamps==true)
+			if(showLamps==true)
 				{
-					if ((runCounter % lampSpeed)==0)
+					if((runCounter % lampSpeed)==0)
 						updateLamps();
-					drawLamps();
 				}
 
-			if (showTree==true)
+			if(showTree==true)
 				{
-					if ((runCounter % treelampSpeed)==0)
+					if((runCounter % treelampSpeed)==0)
 						{
 							updateTreeLamps();
 							treeNeedsUpdate=true;
 						}
 
-					if ((runCounter % starSpeed)==0 && showStar==true)
+					if((runCounter % starSpeed)==0 && showStar==true)
 						updateStar();
-
-					//drawTreeLamps();
 				}
 
-			if (showFigure==true)
+			if(showFigure==true)
 				{
-					if ((runCounter % figureSpeed)==0)
+					if((runCounter % figureSpeed)==0)
 						{
 							updateFigure();
 							figureNeedsUpdate=true;
 						}
-					//drawFigure();
 				}
 
-			if (showFlyers==true)
+			if(showFlyers==true)
 				{
-					if ((runCounter % flyersSpeed)==0)
+					if((runCounter % flyersSpeed)==0)
 						{
 							updateFlyers();
 							flyerNeedsUpdate=true;
 						}
-				//	drawFlyers();
 				}
+
 			eraseRects();
-								drawTreeLamps();
-				drawFigure();
-					drawFlyers();
-
-
+			drawTreeLamps();
+			drawFigure();
+			drawFlyers();
+			drawLamps();
 		}
+
 	XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 	exit(0);
