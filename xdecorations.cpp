@@ -38,7 +38,7 @@ if not,write to the Free Software
 #define MAXNUMBEROFTREES 10
 #define MAXNUMBEROFLAMPS 10
 
-#define VERSION "0.1.0"
+#define VERSION "0.1.1"
 
 char		pathname[MAXPATHNAMELEN];
 
