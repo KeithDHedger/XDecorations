@@ -35,6 +35,9 @@ if not,write to the Free Software
 
 #define MAXPATHNAMELEN 2048
 #define MAXNUMBEROFFLYERS 10
+#define MAXNUMBEROFTREES 10
+#define MAXNUMBEROFLAMPS 10
+
 #define VERSION "0.1.0"
 
 char		pathname[MAXPATHNAMELEN];
@@ -51,11 +54,11 @@ long		mainDelay=20000;
 Pixmap		figurePixmap[2];
 Pixmap		figureMaskPixmap[2];
 
-Pixmap		lampsPixmap[2];
-Pixmap		lampsMaskPixmap[2];
+Pixmap		lampsPixmap[MAXNUMBEROFLAMPS][2];
+Pixmap		lampsMaskPixmap[MAXNUMBEROFLAMPS][2];
 
-Pixmap		treePixmap[2];
-Pixmap		treeMaskPixmap[2];
+Pixmap		treePixmap[MAXNUMBEROFTREES];
+Pixmap		treeMaskPixmap[MAXNUMBEROFTREES];
 
 Pixmap		starPixmap[2];
 Pixmap		starMaskPixmap[2];
@@ -97,19 +100,21 @@ int			figureOnOff=0;
 int			lampSpeed=100;
 int			lampX=0;
 int			lampY=16;
-int			lampWidth;
-int			lampHeight;
-int			lampCount=0;
+int			lampWidth[MAXNUMBEROFLAMPS];
+int			lampHeight[MAXNUMBEROFLAMPS];
+int			lampCount[MAXNUMBEROFLAMPS];
 bool		showLamps=true;
-int			lampOffset=0;
+
+int			lampSetsCount=0;
+int			lampSet=1;
 
 int			treeWidth;
 int			treeHeight;
 int			treeNumber=1;
 int			treelampSpeed=100;
 int			starSpeed=100;
-int			treeX=100;
-int			treeY=100;
+int			treeX;
+int			treeY;
 int			treeLampSet=1;
 bool		showTinsel=false;
 bool		showStar=false;
@@ -151,6 +156,7 @@ args	xdecorations_rc[]=
 	{"flyermaxy",TYPEINT,&flyersMaxY},
 	{"spread",TYPEINT,&flyerSpread},
 	{"lampdelay",TYPEINT,&lampSpeed},
+	{"lampset",TYPEINT,&lampSet},
 	{"flydelay",TYPEINT,&flyersSpeed},
 	{"flystep",TYPEINT,&flyersStep},
 	{"lampy",TYPEINT,&lampY},
@@ -296,22 +302,26 @@ void initLamps(void)
 	char*			lampsetoff;
 
 	attrib.valuemask=0;
+	rc=0;
+	lampSetsCount=0;
 
-	asprintf(&lampseton,"%s/%sLampsOn.xpm",DATADIR,prefix);
-	asprintf(&lampsetoff,"%s/%sLampsOff.xpm",DATADIR,prefix);
-
-	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&lampsPixmap[0],&lampsMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&lampsPixmap[1],&lampsMaskPixmap[1],&attrib);
-	if(rc!=0)
+	for(int j=0; j<MAXNUMBEROFLAMPS;j++)
+		{
+			rc=0;
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.xpm",DATADIR,prefix,j+1);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[lampSetsCount][0],&lampsMaskPixmap[lampSetsCount][0],&attrib);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOff%i.xpm",DATADIR,prefix,j+1);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[lampSetsCount][1],&lampsMaskPixmap[lampSetsCount][1],&attrib);
+			if(rc==0)
+				{
+					lampWidth[lampSetsCount]=attrib.width;
+					lampHeight[lampSetsCount]=attrib.height;
+					lampCount[lampSetsCount]=(displayWidth/lampWidth[lampSetsCount])+1;
+					lampSetsCount++;
+				}
+		}
+	if(lampSetsCount==0)
 		showLamps=false;
-	lampWidth=attrib.width;
-	lampHeight=attrib.height;
-
-	lampCount=(displayWidth/lampWidth)+1;
-	lampOffset=(displayWidth-(lampWidth*lampCount))/2;
-
-	free(lampseton);
-	free(lampsetoff);
 }
 
 void initTree(void)
@@ -397,13 +407,13 @@ void drawLamps(void)
 		return;
 
 	CurrentlampX=lampX;
-	rc=XSetClipMask(display,gc,lampsMaskPixmap[onOff]);
+	rc=XSetClipMask(display,gc,lampsMaskPixmap[lampSet-1][onOff]);
 
-	for (loop=0; loop<lampCount; loop++)
+	for (loop=0; loop<lampCount[lampSet-1]; loop++)
 		{
-			rc=XSetClipOrigin(display,gc,CurrentlampX+lampOffset,lampY);
-			rc=XCopyArea(display,lampsPixmap[onOff],rootWin,gc,0,0,lampWidth,lampHeight,CurrentlampX+lampOffset,lampY);
-			CurrentlampX+=lampWidth;
+			rc=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+			rc=XCopyArea(display,lampsPixmap[lampSet-1][onOff],rootWin,gc,0,0,lampWidth[lampSet-1],lampHeight[lampSet-1],CurrentlampX,lampY);
+			CurrentlampX+=lampWidth[lampSet-1];
 		}
 }
 
@@ -557,6 +567,8 @@ void doHelp(void)
 	printf("-lampy\n");
 	printf("Lamp delay\n");
 	printf("-lampdelay\n");
+	printf("Lamp set\n");
+	printf("-lampset\n");
 	printf("Lowest point on screen for flying objects\n");
 	printf("-flyermaxy\n");
 	printf("Random delay for flying objects\n");
@@ -624,6 +636,9 @@ int main(int argc,char* argv[])
 
 			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
 				lampSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-lampset")==0)//lampSet=0
+				lampSet=atol(argv[++argnum]);
 
 			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
 				flyersMaxY=atol(argv[++argnum]);
