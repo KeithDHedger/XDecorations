@@ -19,7 +19,7 @@ uninstall:
 	rm -r $(DESTDIR)$(PREFIX)/bin/$(PROGRAM) $(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps
 
 clean:
-	rm $(PROGRAM)
+	rm $(PROGRAM)||true
 
 installconfig:
 	cp $(PROGRAM).rc ~/.config
