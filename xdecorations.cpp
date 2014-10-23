@@ -45,7 +45,7 @@ int			displayHeight;
 GC			gc;
 
 int			done=0;
-long		mainDelay=50000;
+long		mainDelay=20000;
 
 Pixmap		figurePixmap[2];
 Pixmap		figureMaskPixmap[2];
@@ -73,7 +73,7 @@ int			onOff=0;
 uint		runCounter=0;
 
 int			flyersSpeed=1;
-int			flyersStep=10;
+int			flyersStep=8;
 int			flyersWidth[MAXNUMBEROFFLYERS];
 int			flyersHeight[MAXNUMBEROFFLYERS];
 int			flyersX[MAXNUMBEROFFLYERS];
@@ -81,7 +81,7 @@ int			flyersY[MAXNUMBEROFFLYERS];
 bool		showFlyers=false;
 int			flyersMaxY=400;
 int			flyersActive[MAXNUMBEROFFLYERS];
-int			flyerSpread=400;
+int			flyerSpread=500;
 int			flyerCount=0;
 
 int			figureSpeed=10;
@@ -93,19 +93,19 @@ int			figureCount=0;
 bool		showFigure=false;
 int			figureOnOff=0;
 
-int			lampSpeed=10;
+int			lampSpeed=100;
 int			lampX=0;
 int			lampY=16;
 int			lampWidth;
 int			lampHeight;
 int			lampCount=0;
-bool		showLamps=false;
+bool		showLamps=true;
 int			lampOffset=0;
 
 int			treeWidth;
 int			treeHeight;
 int			treeNumber=1;
-int			treelampSpeed=8;
+int			treelampSpeed=100;
 int			starSpeed=6;
 int			treeX=100;
 int			treeY=100;
@@ -547,63 +547,63 @@ int main(int argc,char* argv[])
 		{
 			argstr=argv[argnum];
 
-			showUnShow(argstr,"showflyer",&showFlyers);
-			showUnShow(argstr,"showtree",&showTree);
-			showUnShow(argstr,"showlamps",&showLamps);
-			showUnShow(argstr,"showfigure",&showFigure);
-			showUnShow(argstr,"showstar",&showStar);
-			showUnShow(argstr,"showtinsel",&showTinsel);
-			showUnShow(argstr,"showtreelamps",&showTreeLamps);
+			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
+			showUnShow(argstr,"showtree",&showTree);//showTree=false
+			showUnShow(argstr,"showlamps",&showLamps);//showLamps=true
+			showUnShow(argstr,"showfigure",&showFigure);//showFigure=false
+			showUnShow(argstr,"showstar",&showStar);//showStar=false
+			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
+			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
 
-			if(strcmp(argstr,"-holiday")==0)
+			if(strcmp(argstr,"-holiday")==0)//
 				prefix=argv[++argnum];
 
-			if(strcmp(argstr,"-delay")==0)
+			if(strcmp(argstr,"-delay")==0)//mainDelay=20000
 				mainDelay=atol(argv[++argnum]);
 	
-			if(strcmp(argstr,"-flyermaxy")==0)
-				flyersMaxY=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-spread")==0)
-				flyerSpread=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-lampdelay")==0)
-				lampSpeed=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-flydelay")==0)
-				flyersSpeed=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-flystep")==0)
-				flyersStep=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-lampy")==0)
+			if(strcmp(argstr,"-lampy")==0)//lampY=16
 				lampY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treelampdelay")==0)
+			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
+				lampSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
+				flyersMaxY=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-spread")==0)//flyerSpread=500
+				flyerSpread=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-flydelay")==0)//flyersSpeed=1
+				flyersSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-flystep")==0)//flyersStep=8
+				flyersStep=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
 				treelampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treelampset")==0)
+			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
 				treeLampSet=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treenumber")==0)
+			if(strcmp(argstr,"-treenumber")==0)//
 				treeNumber=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treex")==0)
+			if(strcmp(argstr,"-treex")==0)//
 				treeX=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treey")==0)
+			if(strcmp(argstr,"-treey")==0)//
 				treeY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-stardelay")==0)
+			if(strcmp(argstr,"-stardelay")==0)//
 				starSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurex")==0)
+			if(strcmp(argstr,"-figurex")==0)//
 				figureX=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurey")==0)
+			if(strcmp(argstr,"-figurey")==0)//
 				figureY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figuredelay")==0)
+			if(strcmp(argstr,"-figuredelay")==0)//
 				figureSpeed=atol(argv[++argnum]);
 		}
 
@@ -621,11 +621,10 @@ int main(int argc,char* argv[])
 
 	screen=DefaultScreen(display);
 	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-//rootWin=DefaultRootWindow(display);
 
 	displayWidth=DisplayWidth(display,screen);
 	displayHeight=DisplayHeight(display,screen);
-printf("%i\n",displayWidth);
+
 	initLamps();
 	initTree();
 	initFigure();

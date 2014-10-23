@@ -1,0 +1,114 @@
+
+#Example xdecorations config file should be in ~/.config and named xdecorations.rc
+#Lines begining with '#' are comments and ignored.
+#To use the default values either comment out the relevent line or remove it.
+
+##### Application config #####
+#Set theme base name for image files.
+holiday Halloween
+
+#Set main delay, this will adjust the overall speed of the program keeping the relative delays of the various animations the same.
+#If the delay is to small ( <1000, depending on the system ) you may find the graphics breaking up and the program will hog too much processor time, 8000 to 10000 is a good compromise.
+#defaults to 20000
+delay 10000
+
+
+##### Tree and tree decorations. #####
+#Show tree, 1=show, 0=don't show.
+#Defaults to 0.
+tree 1
+
+#Show tinsel, 1=show, 0=don't show.
+#Defaults to 0.
+tinsel 0
+
+#Show treelamps, 1=show, 0=don't show.
+#Defaults to 0.
+treelamps 1
+
+#Show star, 1=show, 0=don't show.
+#Defaults to 0.
+star 1
+
+#The tree to use, currently 1 or 2
+treenumber 1
+
+#The absolute x position of the tree on the screen.
+treex 1025
+
+#The absolute y position of the tree on the screen.
+treey 1405
+
+#Lampset to use on the tree, at the moment 1 or 2.
+#Defaults to 1
+treelampset 2
+
+#The delay between the tree lamp animation. 
+#Defaults to 100
+treelampdelay 200
+
+#The delay between the 'star' animations, the star does not have to be a star, for instance in the Halloween theme it is actually the eyes of the tree.
+stardelay 400
+
+
+##### Screen Lamps #####
+#Show lamps, 1=show, 0=don't show.
+#Currently lamps are only shown at the top of the screen.
+#Defaults to 1.
+lamps 1
+
+#The delay between the lamp animation.
+Defaults to 100
+lampdelay 100
+
+#The absolute y position of the figure on the screen.
+#Defaults to 16
+lampy 17
+
+
+##### Figure #####
+#Show figure, 1=show, 0=don't show.
+#Defaults to 0.
+figure 1
+
+#The delay between the figure animation. 
+figuredelay 250
+
+#The absolute x position of the figure on the screen.
+figurex 400
+
+#The absolute y position of the figure on the screen.
+figurey 300
+
+
+##### Flying objects #####
+#Show flyers, 1=show, 0=don't show.
+#Defaults to 0,
+flyer 1
+
+#Set delay for flying objects, larger delay slower the movement, should be kept quite low,
+#Defaults to 1
+flydelay 2
+
+#Set the number of pixels to move, larger number=faster, lower number=smoother, should be kept quite low,
+#Defaults to 8
+flystep 8
+
+#The random delay between flyers appearing on screen, larger=less frequently.
+#Defaults to 500
+spread 1000
+
+#The lowest point that the flyers will fly at, good for confining them to the top screen in a multi-screen setup.
+#Defaults to 400
+flyermaxy 900
+
+
+
+
+
+
+
+
+
+
+
