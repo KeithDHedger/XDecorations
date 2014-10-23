@@ -1,4 +1,5 @@
 0.1.1
+Added -configfile option to command line to force useing a specific config file.
 Added -figurenumber to commonad line and config file.
 Added multiple figures.
 Added -lampset option to commonad line and config file.

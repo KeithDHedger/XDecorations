@@ -40,7 +40,7 @@ if not,write to the Free Software
 #define MAXNUMBEROFFIGURES 10
 #define VERSION "0.1.1"
 
-enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
+	enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
 
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
@@ -199,17 +199,17 @@ void loadVarsFromFile(char* filepath,args* dataptr)
 								{
 									switch(dataptr[cnt].type)
 										{
-											case TYPEINT:
-												*(int*)dataptr[cnt].data=atoi(strarg);
-												break;
-											case TYPESTRING:
-												if(*(char**)(dataptr[cnt].data)!=NULL)
-													free(*(char**)(dataptr[cnt].data));
-												sscanf(buffer,"%*s %a[^\n]s",(char**)dataptr[cnt].data);
-												break;
-											case TYPEBOOL:
-												*(bool*)dataptr[cnt].data=(bool)atoi(strarg);
-												break;
+										case TYPEINT:
+											*(int*)dataptr[cnt].data=atoi(strarg);
+											break;
+										case TYPESTRING:
+											if(*(char**)(dataptr[cnt].data)!=NULL)
+												free(*(char**)(dataptr[cnt].data));
+											sscanf(buffer,"%*s %a[^\n]s",(char**)dataptr[cnt].data);
+											break;
+										case TYPEBOOL:
+											*(bool*)dataptr[cnt].data=(bool)atoi(strarg);
+											break;
 										}
 								}
 							cnt++;
@@ -235,14 +235,6 @@ int randInt(int maxVal)
 	return rand() % maxVal;
 }
 
-void uSsleep(unsigned long usec)
-{
-	struct timeval t;
-	t.tv_usec=usec%(unsigned long)1000000;
-	t.tv_sec=usec/(unsigned long)1000000;
-	select(0,(fd_set* )0,(fd_set* )0,(fd_set* )0,&t);
-}
-
 void initFlyers(void)
 {
 	int				rc=0;
@@ -252,7 +244,7 @@ void initFlyers(void)
 	attrib.valuemask=0;
 
 	rc=0;
-	for(j=0; j<MAXNUMBEROFFLYERS;j++)
+	for(j=0; j<MAXNUMBEROFFLYERS; j++)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFly%i.xpm",DATADIR,prefix,j+1);
@@ -283,7 +275,7 @@ void initFigure(void)
 	attrib.valuemask=0;
 	figureCount=0;
 
-	for(int j=0; j<MAXNUMBEROFFIGURES;j++)
+	for(int j=0; j<MAXNUMBEROFFIGURES; j++)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOn%i.xpm",DATADIR,prefix,j);
@@ -314,7 +306,7 @@ void initLamps(void)
 	rc=0;
 	lampSetsCount=0;
 
-	for(int j=0; j<MAXNUMBEROFLAMPS;j++)
+	for(int j=0; j<MAXNUMBEROFLAMPS; j++)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.xpm",DATADIR,prefix,j+1);
@@ -383,7 +375,7 @@ void drawFlyers(void)
 	if(showFlyers==false)
 		return;
 
-	for(j=0;j<flyerCount;j++)
+	for(j=0; j<flyerCount; j++)
 		{
 			if(flyersActive[j]==1)
 				{
@@ -485,7 +477,7 @@ void updateFlyers(void)
 {
 	int	j=0;
 
-	for(j=0;j<flyerCount;j++)
+	for(j=0; j<flyerCount; j++)
 		{
 			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
 				flyersActive[j]=1;
@@ -524,7 +516,7 @@ void eraseRects(void)
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
-			for(j=0;j<flyerCount;j++)
+			for(j=0; j<flyerCount; j++)
 				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
 			updateFlyers();
 		}
@@ -534,9 +526,9 @@ void eraseRects(void)
 	flyerNeedsUpdate=false;
 }
 
-void showUnShow(char* arg1,const char* arg2,bool *value)
+void showUnShow(const char* arg1,const char* arg2,bool *value)
 {
-	char*	ptr=NULL;
+	const char*	ptr=NULL;
 
 	ptr=strcasestr(arg1,arg2);
 	if(ptr!=NULL)
@@ -549,11 +541,61 @@ void showUnShow(char* arg1,const char* arg2,bool *value)
 		}
 }
 
+
+/*
 void doHelp(void)
 {
 	printf("XDecorations (c)2014 K. D. Hedger - Version %s\n",VERSION);
 	printf("Released under the gpl-3.0 license\n\n");
 	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
+
+	printf("-holiday					Set prefix for theme\n");
+	printf("-delay						Set main delay\n");
+	printf("-configfile					Set new config file ( only the first of instance of this will be used )\n\n");
+
+	printf("-showflyer/-no-showflyer			Show flying objects\n");
+	printf("-showtree/-no-showtree				Show tree\n");
+	printf("-showlamps/-no-showlamps			Show lamps\n");
+	printf("-showfigure/-no-showfigure			Show figure\n");
+	printf("-showstar/-no-showstar				Show star\n");
+	printf("-showtinsel/-no-showtinsel			Show tinsel\n");
+	printf("-showtreelamps/-no-showtreelamps		Show tree lamps\n");
+	printf("\n\n");
+	printf("-lampy						Lamp Y position\n");
+	printf("-lampdelay					Lamp delay\n");
+	printf("-lampset					Lamp set\n");
+	printf("-flyermaxy					Lowest point on screen for flying objects\n");
+	printf("-spread						Random delay for flying objects\n");
+	printf("-flydelay					Flying objects delay\n");
+	printf("-flystep					Amount to move flying objects\n");
+	printf("-treelampdelay					Tree lamps delay\n");
+	printf("-treelampset					Lampset to use on tree\n");
+	printf("-treenumber					The tree to use\n");
+	printf("-treex						Absolute X position of tree\n");
+	printf("-treey						Absolute Y position of tree\n");
+	printf("-stardelay					Delay for star\n");
+	printf("-figurex					Absolute X position of figure\n");
+	printf("-figuredelay					Delay for figure\n");
+	printf("-figurenumber					Number of figure to use\n");
+
+	exit(0);
+}
+
+*/
+
+void doHelp(void)
+{
+	printf("XDecorations (c)2014 K. D. Hedger - Version %s\n",VERSION);
+	printf("Released under the gpl-3.0 license\n\n");
+	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
+
+	printf("Set prefix for theme\t");
+	printf("-holiday\n");
+	printf("Set main delay\t");
+	printf("-delay\n");
+	printf("Set new config file ( only the first of instance of this will be used )\t");
+	printf("-configfile\n\n");
+
 	printf("Show flying objects\n");
 	printf("-showflyer/-no-showflyer\n");
 	printf("Show tree\n");
@@ -569,10 +611,6 @@ void doHelp(void)
 	printf("Show tree lamps\n");
 	printf("-showtreelamps/-no-showtreelamps\n");
 	printf("\n\n");
-	printf("Set prefix for theme\n");
-	printf("-holiday\n");
-	printf("Set main delay\n");
-	printf("-delay\n");
 	printf("Lamp Y position\n");
 	printf("-lampy\n");
 	printf("Lamp delay\n");
@@ -612,112 +650,109 @@ void doHelp(void)
 
 int main(int argc,char* argv[])
 {
-	int argnum;
-	char* argstr;
-	XEvent ev;
-	Window root;
-	int screen;
-	Window		parentWindow;
-	bool		redoconfig=true;
-	bool		doneconfig=false;
+	int		argnum;
+	const	char* argstr;
+	XEvent	ev;
+	Window	root;
+	int		screen;
+	Window	parentWindow;
+	bool	redoconfig=true;
+	bool	doneconfig=false;
 
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 
-//	asprintf(&argstr,"%s/.config/xdecorations.rc",getenv("HOME"));
 	while(redoconfig==true)
 		{
-	loadVarsFromFile(configFilePath,xdecorations_rc);
-//	free(argstr);
-
+			loadVarsFromFile(configFilePath,xdecorations_rc);
 			redoconfig=false;
 //command line options.
-	for (argnum=1; argnum<argc; argnum++)
-		{
-			argstr=argv[argnum];
-
-			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
-			showUnShow(argstr,"showtree",&showTree);//showTree=false
-			showUnShow(argstr,"showlamps",&showLamps);//showLamps=true
-			showUnShow(argstr,"showfigure",&showFigure);//showFigure=false
-			showUnShow(argstr,"showstar",&showStar);//showStar=false
-			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
-			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
-
-			if(strcmp(argstr,"-configfile")==0)//
+			for (argnum=1; argnum<argc; argnum++)
 				{
-					if(doneconfig==false)
+					argstr=argv[argnum];
+
+					showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
+					showUnShow(argstr,"showtree",&showTree);//showTree=false
+					showUnShow(argstr,"showlamps",&showLamps);//showLamps=true
+					showUnShow(argstr,"showfigure",&showFigure);//showFigure=false
+					showUnShow(argstr,"showstar",&showStar);//showStar=false
+					showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
+					showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
+
+					if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 						{
-							doneconfig=true;
-					free(configFilePath);
-					asprintf(&configFilePath,"%s",argv[++argnum]);
-					redoconfig=true;
-					continue;
-					}
-				}
+							if(doneconfig==false)
+								{
+									doneconfig=true;
+									free(configFilePath);
+									asprintf(&configFilePath,"%s",argv[++argnum]);
+									redoconfig=true;
+									continue;
+								}
+						}
 
-			if(strcmp(argstr,"-holiday")==0)//
-				prefix=argv[++argnum];
+					if(strcmp(argstr,"-holiday")==0)//Xmas
+						prefix=argv[++argnum];
 
-			if(strcmp(argstr,"-delay")==0)//mainDelay=20000
-				mainDelay=atol(argv[++argnum]);
-	
-			if(strcmp(argstr,"-lampy")==0)//lampY=16
-				lampY=atol(argv[++argnum]);
+					if(strcmp(argstr,"-delay")==0)//mainDelay=20000
+						mainDelay=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
-				lampSpeed=atol(argv[++argnum]);
+					if(strcmp(argstr,"-lampy")==0)//lampY=16
+						lampY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-lampset")==0)//lampSet=0
-				lampSet=atol(argv[++argnum]);
+					if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
+						lampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
-				flyersMaxY=atol(argv[++argnum]);
+					if(strcmp(argstr,"-lampset")==0)//lampSet=0
+						lampSet=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-spread")==0)//flyerSpread=500
-				flyerSpread=atol(argv[++argnum]);
+					if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
+						flyersMaxY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-flydelay")==0)//flyersSpeed=1
-				flyersSpeed=atol(argv[++argnum]);
+					if(strcmp(argstr,"-spread")==0)//flyerSpread=500
+						flyerSpread=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-flystep")==0)//flyersStep=8
-				flyersStep=atol(argv[++argnum]);
+					if(strcmp(argstr,"-flydelay")==0)//flyersSpeed=1
+						flyersSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
-				treelampSpeed=atol(argv[++argnum]);
+					if(strcmp(argstr,"-flystep")==0)//flyersStep=8
+						flyersStep=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
-				treeLampSet=atol(argv[++argnum]);
+					if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
+						treelampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treenumber")==0)//treeNumber=1
-				treeNumber=atol(argv[++argnum]);
+					if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
+						treeLampSet=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treex")==0)//treeX=100
-				treeX=atol(argv[++argnum]);
+					if(strcmp(argstr,"-treenumber")==0)//treeNumber=1
+						treeNumber=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treey")==0)//treeY=100
-				treeY=atol(argv[++argnum]);
+					if(strcmp(argstr,"-treex")==0)//treeX=100
+						treeX=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-stardelay")==0)//starSpeed
-				starSpeed=atol(argv[++argnum]);
+					if(strcmp(argstr,"-treey")==0)//treeY=100
+						treeY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurex")==0)//figureX=100
-				figureX=atol(argv[++argnum]);
+					if(strcmp(argstr,"-stardelay")==0)//starSpeed
+						starSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurey")==0)//figureY=100
-				figureY=atol(argv[++argnum]);
+					if(strcmp(argstr,"-figurex")==0)//figureX=100
+						figureX=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
-				figureSpeed=atol(argv[++argnum]);
+					if(strcmp(argstr,"-figurey")==0)//figureY=100
+						figureY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
-				figureNumber=atol(argv[++argnum]);
+					if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
+						figureSpeed=atol(argv[++argnum]);
+
+					if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
+						figureNumber=atol(argv[++argnum]);
 
 //print help
-			if(strcmp(argstr,"-help")==0)
-				doHelp();
+					if(strcmp(argstr,"-help")==0)
+						doHelp();
+				}
 		}
-}
 	srand((int)time((long* )NULL));
 
 	signal(SIGKILL,(sighandler_t)&signalHandler);
@@ -749,9 +784,8 @@ int main(int argc,char* argv[])
 	while (!done)
 		{
 			while (XPending(display))
-					XNextEvent(display,&ev);
+				XNextEvent(display,&ev);
 
-			//uSsleep(mainDelay);
 			usleep(mainDelay);
 			runCounter++;
 
@@ -791,7 +825,8 @@ int main(int argc,char* argv[])
 
 	XClearWindow(display,rootWin);
 	XCloseDisplay(display);
-	exit(0);
+	return(0);
 }
+
 
 
