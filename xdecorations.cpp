@@ -43,6 +43,7 @@ if not,write to the Free Software
 enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
 
 char		pathname[MAXPATHNAMELEN];
+char*		configFilePath;
 
 Display*	display;
 Window		rootWin;
@@ -617,12 +618,19 @@ int main(int argc,char* argv[])
 	Window root;
 	int screen;
 	Window		parentWindow;
+	bool		redoconfig=true;
+	bool		doneconfig=false;
 
 	prefix=strdup("Xmas");
+	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 
-	asprintf(&argstr,"%s/.config/xdecorations.rc",getenv("HOME"));
-	loadVarsFromFile(argstr,xdecorations_rc);
-	free(argstr);
+//	asprintf(&argstr,"%s/.config/xdecorations.rc",getenv("HOME"));
+	while(redoconfig==true)
+		{
+	loadVarsFromFile(configFilePath,xdecorations_rc);
+//	free(argstr);
+
+			redoconfig=false;
 //command line options.
 	for (argnum=1; argnum<argc; argnum++)
 		{
@@ -635,6 +643,18 @@ int main(int argc,char* argv[])
 			showUnShow(argstr,"showstar",&showStar);//showStar=false
 			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
 			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
+
+			if(strcmp(argstr,"-configfile")==0)//
+				{
+					if(doneconfig==false)
+						{
+							doneconfig=true;
+					free(configFilePath);
+					asprintf(&configFilePath,"%s",argv[++argnum]);
+					redoconfig=true;
+					continue;
+					}
+				}
 
 			if(strcmp(argstr,"-holiday")==0)//
 				prefix=argv[++argnum];
@@ -697,7 +717,7 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
 		}
-
+}
 	srand((int)time((long* )NULL));
 
 	signal(SIGKILL,(sighandler_t)&signalHandler);
