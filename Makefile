@@ -16,7 +16,7 @@ install:
 	cp $(PROGRAM) $(DESTDIR)$(PREFIX)/bin||true
 
 uninstall:
-	rm -r $(DESTDIR)$(PREFIX)/bin/$(PROGRAM) $(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps
+	rm -r $(DESTDIR)$(PREFIX)/bin/$(PROGRAM) $(DESTDIR)$(PREFIX)/share/$(PROGRAM)
 
 clean:
 	rm $(PROGRAM)||true
