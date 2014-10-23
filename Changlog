@@ -1,4 +1,6 @@
 0.1.1
+Added -figurenumber to commonad line and config file.
+Added multiple figures.
 Added -lampset option to commonad line and config file.
 Added multiple lamps.
 0.1.0

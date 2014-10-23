@@ -37,8 +37,10 @@ if not,write to the Free Software
 #define MAXNUMBEROFFLYERS 10
 #define MAXNUMBEROFTREES 10
 #define MAXNUMBEROFLAMPS 10
-
+#define MAXNUMBEROFFIGURES 10
 #define VERSION "0.1.1"
+
+enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
 
 char		pathname[MAXPATHNAMELEN];
 
@@ -51,8 +53,7 @@ GC			gc;
 int			done=0;
 long		mainDelay=20000;
 
-Pixmap		figurePixmap[2];
-Pixmap		figureMaskPixmap[2];
+Pixmap		figurePixmap[MAXNUMBEROFFIGURES][4];
 
 Pixmap		lampsPixmap[MAXNUMBEROFLAMPS][2];
 Pixmap		lampsMaskPixmap[MAXNUMBEROFLAMPS][2];
@@ -91,11 +92,12 @@ int			flyerCount=0;
 int			figureSpeed=100;
 int			figureX=100;
 int			figureY=100;
-int			figureW;
-int			figureH;
+int			figureW[MAXNUMBEROFFIGURES];
+int			figureH[MAXNUMBEROFFIGURES];
 int			figureCount=0;
 bool		showFigure=false;
 int			figureOnOff=0;
+int			figureNumber=1;
 
 int			lampSpeed=100;
 int			lampX=0;
@@ -169,6 +171,7 @@ args	xdecorations_rc[]=
 	{"figurex",TYPEINT,&figureX},
 	{"figurey",TYPEINT,&figureY},
 	{"figuredelay",TYPEINT,&figureSpeed},
+	{"figurenumber",TYPEINT,&figureNumber},
 	{NULL,0,NULL}
 };
 
@@ -275,23 +278,28 @@ void initFigure(void)
 {
 	int				rc=0;
 	XpmAttributes	attrib;
-	char*			lampseton;
-	char*			lampsetoff;
 
 	attrib.valuemask=0;
+	figureCount=0;
 
-	asprintf(&lampseton,"%s/%sFigureOn.xpm",DATADIR,prefix);
-	asprintf(&lampsetoff,"%s/%sFigureOff.xpm",DATADIR,prefix);
+	for(int j=0; j<MAXNUMBEROFFIGURES;j++)
+		{
+			rc=0;
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOn%i.xpm",DATADIR,prefix,j);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[figureCount][FIGUREONPIXMAP],&figurePixmap[figureCount][FIGUREONMASK],&attrib);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOff%i.xpm",DATADIR,prefix,j);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[figureCount][FIGUREOFFPIXMAP],&figurePixmap[figureCount][FIGUREOFFMASK],&attrib);
 
-	rc+=XpmReadFileToPixmap(display,rootWin,lampsetoff,&figurePixmap[0],&figureMaskPixmap[0],&attrib);
-	rc+=XpmReadFileToPixmap(display,rootWin,lampseton,&figurePixmap[1],&figureMaskPixmap[1],&attrib);
-	if(rc!=0)
+			if(rc==0)
+				{
+					figureW[figureCount]=attrib.width;
+					figureH[figureCount]=attrib.height;
+					figureCount++;
+				}
+		}
+
+	if(figureCount==0)
 		showFigure=false;
-	figureW=attrib.width;
-	figureH=attrib.height;
-
-	free(lampseton);
-	free(lampsetoff);
 }
 
 void initLamps(void)
@@ -392,14 +400,14 @@ void drawFigure(void)
 	if(showFigure==false)
 		return;
 
-	rc=XSetClipMask(display,gc,figureMaskPixmap[figureOnOff]);
+	rc=XSetClipMask(display,gc,figurePixmap[figureNumber-1][FIGUREONMASK+(2*figureOnOff)]);
 	rc=XSetClipOrigin(display,gc,figureX,figureY);
-	rc=XCopyArea(display,figurePixmap[figureOnOff],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
+	rc=XCopyArea(display,figurePixmap[figureNumber-1][FIGUREONPIXMAP+(2*figureOnOff)],rootWin,gc,0,0,figureW[figureNumber-1],figureH[figureNumber-1],figureX,figureY);
 }
 
 void drawLamps(void)
 {
-	int rc;
+	int rc=0;
 	int loop;
 	int	CurrentlampX;
 
@@ -411,8 +419,8 @@ void drawLamps(void)
 
 	for (loop=0; loop<lampCount[lampSet-1]; loop++)
 		{
-			rc=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-			rc=XCopyArea(display,lampsPixmap[lampSet-1][onOff],rootWin,gc,0,0,lampWidth[lampSet-1],lampHeight[lampSet-1],CurrentlampX,lampY);
+			rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+			rc+=XCopyArea(display,lampsPixmap[lampSet-1][onOff],rootWin,gc,0,0,lampWidth[lampSet-1],lampHeight[lampSet-1],CurrentlampX,lampY);
 			CurrentlampX+=lampWidth[lampSet-1];
 		}
 }
@@ -508,7 +516,8 @@ void eraseRects(void)
 
 	if((showFigure==true) && (figureNeedsUpdate==true))
 		{
-			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+//			rc=XClearArea(display,rootWin,100,100,figureW[0],figureH[0],False);
+			rc=XClearArea(display,rootWin,figureX,figureY,figureW[0],figureH[0],False);
 			updateFigure();
 		}
 
@@ -593,6 +602,8 @@ void doHelp(void)
 	printf("-figurex\n");
 	printf("Delay for figure\n");
 	printf("-figuredelay\n");
+	printf("Number of figure to use\n");
+	printf("-figurenumber\n");
 	printf("\n");
 
 	exit(0);
@@ -678,6 +689,10 @@ int main(int argc,char* argv[])
 
 			if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
 				figureSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
+				figureNumber=atol(argv[++argnum]);
+
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
