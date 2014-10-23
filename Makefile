@@ -20,3 +20,6 @@ uninstall:
 
 clean:
 	rm $(PROGRAM)
+
+installconfig:
+	cp $(PROGRAM).rc ~/.config

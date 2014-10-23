@@ -44,11 +44,11 @@ treenumber 1
 
 #The absolute x position of the tree on the screen.
 #Defaults to 100
-treex 1025
+treex 0
 
 #The absolute y position of the tree on the screen.
 #Defaults to 100
-treey 1405
+treey 500
 
 #Lampset to use on the tree, at the moment 1 or 2.
 #Defaults to 1
@@ -89,11 +89,11 @@ figuredelay 250
 
 #The absolute x position of the figure on the screen.
 #Defaults to 100
-figurex 400
+figurex 800
 
 #The absolute y position of the figure on the screen.
 #Defaults to 100
-figurey 300
+figurey 420
 
 
 ##### Flying objects #####
@@ -115,5 +115,5 @@ spread 1000
 
 #The lowest point that the flyers will fly at, good for confining them to the top screen in a multi-screen setup.
 #Defaults to 400
-flyermaxy 900
+flyermaxy 800
 

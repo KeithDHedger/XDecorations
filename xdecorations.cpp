@@ -35,6 +35,7 @@ if not,write to the Free Software
 
 #define MAXPATHNAMELEN 2048
 #define MAXNUMBEROFFLYERS 10
+#define VERSION "0.1.0"
 
 char		pathname[MAXPATHNAMELEN];
 
@@ -530,6 +531,9 @@ void showUnShow(char* arg1,const char* arg2,bool *value)
 
 void doHelp(void)
 {
+	printf("XDecorations (c)2014 K. D. Hedger - Version %s\n",VERSION);
+	printf("Released under the gpl-3.0 license\n\n");
+	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
 	printf("Show flying objects\n");
 	printf("-showflyer/-no-showflyer\n");
 	printf("Show tree\n");
