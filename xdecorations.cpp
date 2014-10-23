@@ -84,7 +84,7 @@ int			flyersActive[MAXNUMBEROFFLYERS];
 int			flyerSpread=500;
 int			flyerCount=0;
 
-int			figureSpeed=10;
+int			figureSpeed=100;
 int			figureX=100;
 int			figureY=100;
 int			figureW;
@@ -106,7 +106,7 @@ int			treeWidth;
 int			treeHeight;
 int			treeNumber=1;
 int			treelampSpeed=100;
-int			starSpeed=6;
+int			starSpeed=100;
 int			treeX=100;
 int			treeY=100;
 int			treeLampSet=1;
@@ -528,6 +528,60 @@ void showUnShow(char* arg1,const char* arg2,bool *value)
 		}
 }
 
+void doHelp(void)
+{
+	printf("Show flying objects\n");
+	printf("-showflyer/-no-showflyer\n");
+	printf("Show tree\n");
+	printf("-showtree/-no-showtree\n");
+	printf("Show lamps\n");
+	printf("-showlamps/-no-showlamps\n");
+	printf("Show figure\n");
+	printf("-showfigure/-no-showfigure\n");
+	printf("Show star\n");
+	printf("-showstar/-no-showstar\n");
+	printf("Show tinsel\n");
+	printf("-showtinsel/-no-showtinsel\n");
+	printf("Show tree lamps\n");
+	printf("-showtreelamps/-no-showtreelamps\n");
+	printf("\n\n");
+	printf("Set prefix for theme\n");
+	printf("-holiday\n");
+	printf("Set main delay\n");
+	printf("-delay\n");
+	printf("Lamp Y position\n");
+	printf("-lampy\n");
+	printf("Lamp delay\n");
+	printf("-lampdelay\n");
+	printf("Lowest point on screen for flying objects\n");
+	printf("-flyermaxy\n");
+	printf("Random delay for flying objects\n");
+	printf("-spread\n");
+	printf("Flying objects delay\n");
+	printf("-flydelay\n");
+	printf("Amount to move flying objects\n");
+	printf("-flystep\n");
+	printf("Tree lamps delay\n");
+	printf("-treelampdelay\n");
+	printf("Lampset to use on tree\n");
+	printf("-treelampset\n");
+	printf("The tree to use\n");
+	printf("-treenumber\n");
+	printf("Absolute X position of tree\n");
+	printf("-treex\n");
+	printf("Absolute Y position of tree\n");
+	printf("-treey\n");
+	printf("Delay for star\n");
+	printf("-stardelay\n");
+	printf("Absolute X position of figure\n");
+	printf("-figurex\n");
+	printf("Delay for figure\n");
+	printf("-figuredelay\n");
+	printf("\n");
+
+	exit(0);
+}
+
 int main(int argc,char* argv[])
 {
 	int argnum;
@@ -585,26 +639,29 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
 				treeLampSet=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treenumber")==0)//
+			if(strcmp(argstr,"-treenumber")==0)//treeNumber=1
 				treeNumber=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treex")==0)//
+			if(strcmp(argstr,"-treex")==0)//treeX=100
 				treeX=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treey")==0)//
+			if(strcmp(argstr,"-treey")==0)//treeY=100
 				treeY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-stardelay")==0)//
+			if(strcmp(argstr,"-stardelay")==0)//starSpeed
 				starSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurex")==0)//
+			if(strcmp(argstr,"-figurex")==0)//figureX=100
 				figureX=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurey")==0)//
+			if(strcmp(argstr,"-figurey")==0)//figureY=100
 				figureY=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figuredelay")==0)//
+			if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
 				figureSpeed=atol(argv[++argnum]);
+//print help
+			if(strcmp(argstr,"-help")==0)
+				doHelp();
 		}
 
 	srand((int)time((long* )NULL));
