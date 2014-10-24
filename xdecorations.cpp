@@ -54,20 +54,16 @@ GC			gc;
 int			done=0;
 long		mainDelay=20000;
 
-Pixmap		starPixmap[2];
-Pixmap		starMaskPixmap[2];
 
 Pixmap		treeLampsPixmap[8];
 Pixmap		treeLampsMaskPixmap[8];
 
-Pixmap		tinselPixmap;
-Pixmap		tinselMaskPixmap;
 
-Pixmap		flyersPixmap[MAXNUMBEROFFLYERS];
-Pixmap		flyersMaskPixmap[MAXNUMBEROFFLYERS];
 
 uint		runCounter=0;
 
+//flyers
+Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
 int			flyersSpeed=1;
 int			flyersStep=8;
 int			flyersWidth[MAXNUMBEROFFLYERS];
@@ -117,9 +113,11 @@ int			treeOnOff=0;
 bool		showTree=false;
 
 //tinsel`
+Pixmap		tinselPixmap[2];
 bool		showTinsel=false;
 
 //star
+Pixmap		starPixmap[4];
 bool		showStar=false;
 int			starOnOff=0;
 
@@ -246,7 +244,7 @@ void initFlyers(void)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFly%i.xpm",DATADIR,prefix,j+1);
-			rc=XpmReadFileToPixmap(display,rootWin,pathname,&flyersPixmap[flyerCount],&flyersMaskPixmap[flyerCount],&attrib);
+			rc=XpmReadFileToPixmap(display,rootWin,pathname,&flyersPixmap[flyerCount][ONPIXMAP],&flyersPixmap[flyerCount][ONMASK],&attrib);
 			if(rc==0)
 				{
 					flyersWidth[flyerCount]=attrib.width;
@@ -320,8 +318,6 @@ void initTree(void)
 
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree%i.xpm",DATADIR,prefix,treeNumber);
 	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[ONPIXMAP],&treePixmap[ONMASK],&attrib);
-//	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree%i.xpm",DATADIR,prefix,treeNumber);
-//	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[1],&treePixmap[1],&attrib);
 	if(rc==0)
 		{
 			treeWidth=attrib.width;
@@ -343,14 +339,14 @@ void initTree(void)
 
 	rc=0;
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.xpm",DATADIR,prefix);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[0],&starMaskPixmap[0],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[ONPIXMAP],&starPixmap[ONMASK],&attrib);
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar1.xpm",DATADIR,prefix);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[1],&starMaskPixmap[1],&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[OFFPIXMAP],&starPixmap[OFFMASK],&attrib);
 	if(rc!=0)
 		showStar=false;
 
 	rc=0;
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tinsel.xpm",&tinselPixmap,&tinselMaskPixmap,&attrib);
+	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tinsel.xpm",&tinselPixmap[ONPIXMAP],&tinselPixmap[ONMASK],&attrib);
 	if(rc!=0)
 		showTinsel=false;
 }
@@ -367,9 +363,9 @@ void drawFlyers(void)
 		{
 			if(flyersActive[j]==1)
 				{
-					rc=XSetClipMask(display,gc,flyersMaskPixmap[j]);
+					rc=XSetClipMask(display,gc,flyersPixmap[j][ONMASK]);
 					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
-					rc=XCopyArea(display,flyersPixmap[j],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
+					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
 				}
 		}
 }
@@ -432,14 +428,14 @@ void drawTreeLamps(void)
 
 	if(showStar==true)
 		{
-			rc=XSetClipMask(display,gc,starMaskPixmap[starOnOff]);
-			rc=XCopyArea(display,starPixmap[starOnOff],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			rc=XSetClipMask(display,gc,starPixmap[_SELECTPIXMAP(ONMASK,starOnOff)]);
+			rc=XCopyArea(display,starPixmap[_SELECTPIXMAP(ONPIXMAP,starOnOff)],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showTinsel==true)
 		{
-			rc=XSetClipMask(display,gc,tinselMaskPixmap);
-			rc=XCopyArea(display,tinselPixmap,rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			rc=XSetClipMask(display,gc,tinselPixmap[ONMASK]);
+			rc=XCopyArea(display,tinselPixmap[ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 }
 
@@ -526,16 +522,6 @@ void showUnShow(const char* arg1,const char* arg2,bool *value)
 			if(strcasestr(arg1,"no-")!=NULL)
 				*value=false;
 		}
-}
-
-void sanityCheck(void)
-{
-//	if(lampSet>lampSetsCount)
-//		lampSet=lampSetsCount;
-	if(treeNumber>2)
-		treeNumber=2;
-//	if(figureNumber>figureCount)
-//		figureNumber=figureCount;
 }
 
 void doHelp(void)
@@ -732,8 +718,6 @@ int main(int argc,char* argv[])
 	initTree();
 	initFigure();
 	initFlyers();
-
-	sanityCheck();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
 	XSetFillStyle(display,gc,FillSolid);

@@ -1,3 +1,7 @@
+0.1.2
+Removed unneeded sanity check.
+Now only loads the needed xpm files.
+
 0.1.1
 Added INSTALL file.
 Added out of bounds check for figure number/tree number/lamp number.
@@ -6,5 +10,6 @@ Added -figurenumber to command line and config file.
 Added multiple figures.
 Added -lampset option to command line and config file.
 Added multiple lamps.
+
 0.1.0
 First release.
