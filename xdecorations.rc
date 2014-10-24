@@ -69,6 +69,10 @@ stardelay 400
 #Defaults to 1.
 lamps 1
 
+#The lamp set to use
+#Defaults to 1
+lampset 2
+
 #The delay between the lamp animation.
 Defaults to 100
 lampdelay 100
@@ -83,6 +87,10 @@ lampy 17
 #Defaults to 0.
 figure 1
 
+#The figure to use
+#Default to 1
+figurenumber 2
+
 #The delay between the figure animation. 
 #Defaults to 100
 figuredelay 250
@@ -94,7 +102,6 @@ figurex 800
 #The absolute y position of the figure on the screen.
 #Defaults to 100
 figurey 420
-
 
 ##### Flying objects #####
 #Show flyers, 1=show, 0=don't show.

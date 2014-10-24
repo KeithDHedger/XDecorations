@@ -1,5 +1,5 @@
 0.1.1
-Added -configfile option to command line to force using a specific config file.
+Added -configfile option to command line to use a different config file.
 Added -figurenumber to command line and config file.
 Added multiple figures.
 Added -lampset option to command line and config file.

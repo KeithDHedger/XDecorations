@@ -1,7 +1,7 @@
 Building
-To build just extract the tarball cd into the extracted folder and run 'make', there is no configure script, the app can be run from the build folder like so ./xdecorations or you can run 'sudo make install' which will install it globally, default is to install in /usr, but if you want to install elsewhere you will need to manually change the Makefile, DESTDIR is honered for packaging.
+To build just extract the tarball cd into the extracted folder and run 'make', there is no configure script, the app can be run from the build folder like so ./xdecorations or you can run 'sudo make install' which will install it globally, default is to install in /usr, but if you want to install elsewhere you will need to manually change the Makefile, DESTDIR is honoured for packaging.
 
-If you use one of the sorce based distros like LFS, Slackware etc you probably have all the development files you need but if your distro splits the dev files out from the main packages you will need to install them, this varies from distro to distro.
+If you use one of the source based distros like LFS, Slackware etc you probably have all the development files you need but if your distro splits the dev files out from the main packages you will need to install them, this varies from distro to distro.
 
 If you are using debian you may have to install some -dev packages like so:
 sudo apt-get install build-essentials
@@ -17,5 +17,5 @@ Bugs suggestions etc to:
 kdhedger68713@gmail.com
 
 Please donate
-If you have a PayPal account you can donate any amount you like by logging into yor account and click the 'Send Money' tab, enter my email address and then send it
+If you have a PayPal account you can donate any amount you like by logging into your account and click the 'Send Money' tab, enter my email address and then send it
 Thank you for helping to support Free software.
