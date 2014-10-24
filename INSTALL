@@ -1,4 +1,4 @@
-Building
+BUILDING
 To build just extract the tarball cd into the extracted folder and run 'make', there is no configure script, the app can be run from the build folder like so ./xdecorations or you can run 'sudo make install' which will install it globally, default is to install in /usr, but if you want to install elsewhere you will need to manually change the Makefile, DESTDIR is honoured for packaging.
 
 If you use one of the source based distros like LFS, Slackware etc you probably have all the development files you need but if your distro splits the dev files out from the main packages you will need to install them, this varies from distro to distro.
@@ -11,6 +11,17 @@ You may or may not need all of these dev packages, for instance xubuntu didn't n
 Fedora users may need to install some -devel packages like so ( watch the case, that is a capital 'X' ):
 sudo yum install libXpm-devel
 sudo yum install libXt-devel
+
+
+EXAMPLES
+Presuming you are in the XDecorations folder and have run make.
+
+Run xdecorations with the example config file.
+./xdecorations -configfile ./xdecoraons.rc
+
+Run xdecorations with the example config file with a pumpkin.
+./xdecorations -configfile ./xdecoraons.rc -figurenumber 1
+
 
 Bugs suggestions etc to:
 

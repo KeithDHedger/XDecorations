@@ -40,7 +40,7 @@ if not,write to the Free Software
 #define MAXNUMBEROFFIGURES 10
 #define VERSION "0.1.1"
 
-	enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
+enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
 
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
@@ -541,47 +541,15 @@ void showUnShow(const char* arg1,const char* arg2,bool *value)
 		}
 }
 
-
-/*
-void doHelp(void)
+void sanityCheck(void)
 {
-	printf("XDecorations (c)2014 K. D. Hedger - Version %s\n",VERSION);
-	printf("Released under the gpl-3.0 license\n\n");
-	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
-
-	printf("-holiday					Set prefix for theme\n");
-	printf("-delay						Set main delay\n");
-	printf("-configfile					Set new config file ( only the first of instance of this will be used )\n\n");
-
-	printf("-showflyer/-no-showflyer			Show flying objects\n");
-	printf("-showtree/-no-showtree				Show tree\n");
-	printf("-showlamps/-no-showlamps			Show lamps\n");
-	printf("-showfigure/-no-showfigure			Show figure\n");
-	printf("-showstar/-no-showstar				Show star\n");
-	printf("-showtinsel/-no-showtinsel			Show tinsel\n");
-	printf("-showtreelamps/-no-showtreelamps		Show tree lamps\n");
-	printf("\n\n");
-	printf("-lampy						Lamp Y position\n");
-	printf("-lampdelay					Lamp delay\n");
-	printf("-lampset					Lamp set\n");
-	printf("-flyermaxy					Lowest point on screen for flying objects\n");
-	printf("-spread						Random delay for flying objects\n");
-	printf("-flydelay					Flying objects delay\n");
-	printf("-flystep					Amount to move flying objects\n");
-	printf("-treelampdelay					Tree lamps delay\n");
-	printf("-treelampset					Lampset to use on tree\n");
-	printf("-treenumber					The tree to use\n");
-	printf("-treex						Absolute X position of tree\n");
-	printf("-treey						Absolute Y position of tree\n");
-	printf("-stardelay					Delay for star\n");
-	printf("-figurex					Absolute X position of figure\n");
-	printf("-figuredelay					Delay for figure\n");
-	printf("-figurenumber					Number of figure to use\n");
-
-	exit(0);
+	if(lampSet>lampSetsCount)
+		lampSet=lampSetsCount;
+	if(treeNumber>2)
+		treeNumber=2;
+	if(figureNumber>figureCount)
+		figureNumber=figureCount;
 }
-
-*/
 
 void doHelp(void)
 {
@@ -691,7 +659,10 @@ int main(int argc,char* argv[])
 						}
 
 					if(strcmp(argstr,"-holiday")==0)//Xmas
-						prefix=argv[++argnum];
+						{
+							free(prefix);
+							prefix=strdup(argv[++argnum]);
+						}
 
 					if(strcmp(argstr,"-delay")==0)//mainDelay=20000
 						mainDelay=atol(argv[++argnum]);
@@ -774,6 +745,8 @@ int main(int argc,char* argv[])
 	initTree();
 	initFigure();
 	initFlyers();
+
+	sanityCheck();
 
 	gc=XCreateGC(display,rootWin,0,NULL);
 	XSetFillStyle(display,gc,FillSolid);
