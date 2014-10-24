@@ -171,6 +171,34 @@ args	xdecorations_rc[]=
 	{NULL,0,NULL}
 };
 
+void saveVarsToFile(const char* filepath,args* dataptr)
+{
+	FILE*	fd=NULL;
+	int		cnt=0;
+
+	fd=fopen(filepath,"w");
+	if(fd!=NULL)
+		{
+			while(dataptr[cnt].name!=NULL)
+				{
+					switch(dataptr[cnt].type)
+						{
+							case TYPEINT:
+								fprintf(fd,"%s	%i\n",dataptr[cnt].name,*(int*)dataptr[cnt].data);
+								break;
+							case TYPESTRING:
+								fprintf(fd,"%s	%s\n",dataptr[cnt].name,*(char**)(dataptr[cnt].data));
+								break;
+							case TYPEBOOL:
+								fprintf(fd,"%s	%i\n",dataptr[cnt].name,(int)*(bool*)dataptr[cnt].data);
+								break;
+						}
+					cnt++;
+				}
+			fclose(fd);
+		}
+}
+
 void loadVarsFromFile(char* filepath,args* dataptr)
 {
 	FILE*	fd=NULL;
@@ -464,9 +492,7 @@ void updateFigure(void)
 
 void updateFlyers(void)
 {
-	int	j=0;
-
-	for(j=0; j<flyerCount; j++)
+	for(int j=0; j<flyerCount; j++)
 		{
 			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
 				flyersActive[j]=1;
@@ -487,7 +513,7 @@ void updateFlyers(void)
 
 void eraseRects(void)
 {
-	int	rc=0;
+	int	rc;
 	int	j;
 
 	if((showTree==true) && (treeNeedsUpdate==true))
@@ -535,12 +561,15 @@ void doHelp(void)
 	printf("Released under the gpl-3.0 license\n\n");
 	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
 
-	printf("-holiday\n");
+	printf("-holiday STRING\n");
 	printf("\tSet prefix for theme\n");
-	printf("-delay\n");
+	printf("-delay INTEGER\n");
 	printf("\tSet main delay\n");
-	printf("-configfile\n");
-	printf("\tSet new config file ( only the first of instance of this will be used )\n\n");
+	printf("-configfile FILEPATH\n");
+	printf("\tSet new config file ( only the first of instance of this will be used )\n");
+	printf("-writeconfig FILEPATH\n");
+	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options\n");
+	printf("\tMust be last command on line\n\n");
 
 	printf("-showflyer/-no-showflyer\n");
 	printf("\tShow flying objects\n");
@@ -557,37 +586,37 @@ void doHelp(void)
 	printf("-showtreelamps/-no-showtreelamps\n");
 	printf("\tShow tree lamps\n");
 	printf("\n");
-	printf("-lampy\n");
+	printf("-lampy INTEGER\n");
 	printf("\tLamp Y position\n");
-	printf("-lampdelay\n");
+	printf("-lampdelay INTEGER\n");
 	printf("\tLamp delay\n");
-	printf("-lampset\n");
+	printf("-lampset INTEGER\n");
 	printf("\tLamp set\n");
-	printf("-flyermaxy\n");
+	printf("-flyermaxy INTEGER\n");
 	printf("\tLowest point on screen for flying objects\n");
-	printf("-spread\n");
+	printf("-spread INTEGER\n");
 	printf("\tRandom delay for flying objects\n");
-	printf("-flydelay\n");
+	printf("-flydelay INTEGER\n");
 	printf("\tFlying objects delay\n");
-	printf("-flystep\n");
+	printf("-flystep INTEGER\n");
 	printf("\tAmount to move flying objects\n");
-	printf("-treelampdelay\n");
+	printf("-treelampdelay INTEGER\n");
 	printf("\tTree lamps delay\n");
-	printf("-treelampset\n");
+	printf("-treelampset INTEGER\n");
 	printf("\tLampset to use on tree\n");
-	printf("-treenumber\n");
+	printf("-treenumber INTEGER\n");
 	printf("\tThe tree to use\n");
-	printf("-treex\n");
+	printf("-treex INTEGER\n");
 	printf("\tAbsolute X position of tree\n");
-	printf("-treey\n");
+	printf("-treey INTEGER\n");
 	printf("\tAbsolute Y position of tree\n");
-	printf("-stardelay\n");
+	printf("-stardelay INTEGER\n");
 	printf("\tDelay for star\n");
-	printf("-figurex\n");
+	printf("-figurex INTEGER\n");
 	printf("\tAbsolute X position of figure\n");
-	printf("-figuredelay\n");
+	printf("-figuredelay INTEGER\n");
 	printf("\tDelay for figure\n");
-	printf("-figurenumber\n");
+	printf("-figurenumber INTEGER\n");
 	printf("\tNumber of figure to use\n\n");
 
 	exit(0);
@@ -695,6 +724,12 @@ int main(int argc,char* argv[])
 
 					if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
 						figureNumber=atol(argv[++argnum]);
+
+					if(strcmp(argstr,"-writeconfig")==0)//figureNumber=1
+						{
+							saveVarsToFile(argv[++argnum],xdecorations_rc);
+							return(0);
+						}
 
 //print help
 					if(strcmp(argstr,"-help")==0)

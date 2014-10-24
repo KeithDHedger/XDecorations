@@ -1,4 +1,10 @@
 0.1.2
+Now no limits on number of lamps.
+Now no limits on number of figures.
+Now no limits on number of tree lamps.
+Now no limits on number of trees.
+Updated -help.
+Added -writeconfig to command line to write out a new config file including currently loaded config file,defaults and commandline options.
 Removed unneeded sanity check.
 Now only loads the needed xpm files.
 
