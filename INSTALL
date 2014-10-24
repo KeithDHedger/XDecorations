@@ -17,13 +17,13 @@ USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.
 
 Run XDecorations with the example config file.
-./xdecorations -configfile ./xdecoraons.rc
+./xdecorations -configfile ./xdecorations.rc
 
 Run XDecorations with the example config file with a pumpkin.
-./xdecorations -configfile ./xdecoraons.rc -figurenumber 1
+./xdecorations -configfile ./xdecorations.rc -figurenumber 1
 
 Run XDecorations with the example config file with Xmas theme.
-./xdecorations -configfile ./xdorations.rc -holiday Xmas -showtinsel
+./xdecorations -configfile ./xdecorations.rc -holiday Xmas -showtinsel
 
 Run installed XDecorations with default config file in ~/.config/xdecorations.rc ( If it exists )
 xdecorations
