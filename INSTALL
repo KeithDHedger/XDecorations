@@ -13,15 +13,22 @@ sudo yum install libXpm-devel
 sudo yum install libXt-devel
 
 
-EXAMPLES
+USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.
 
-Run xdecorations with the example config file.
+Run XDecorations with the example config file.
 ./xdecorations -configfile ./xdecoraons.rc
 
-Run xdecorations with the example config file with a pumpkin.
+Run XDecorations with the example config file with a pumpkin.
 ./xdecorations -configfile ./xdecoraons.rc -figurenumber 1
 
+Run XDecorations with the example config file with Xmas theme.
+./xdecorations -configfile ./xdorations.rc -holiday Xmas -showtinsel
+
+Run installed XDecorations with default config file in ~/.config/xdecorations.rc ( If it exists )
+xdecorations
+
+If no command line otions are used and no config file exists at ~/.config/xdecorations.rc the default is to just show a string of Xmas lights at the top of the screen.
 
 Bugs suggestions etc to:
 
