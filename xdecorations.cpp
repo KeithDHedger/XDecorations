@@ -117,7 +117,7 @@ bool		showStar=false;
 int			starOnOff=0;
 
 //tree lamps
-Pixmap		treeLampsPixmap[4];
+Pixmap		treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
 //Pixmap		treeLampsMaskPixmap[8];
 bool		showTreeLamps=false;
 
@@ -326,14 +326,16 @@ void initTree(void)
 
 
 	rc=0;
-	for(j=0; j<8; j++)
+	for(j=0;j<MAXNUMBEROFTREELIGHTS;j++)
 		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.xpm",DATADIR,prefix,j+1);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j],&treeLampsMaskPixmap[j],&attrib);
-
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.xpm",DATADIR,prefix,treeLampSet,j+1);
+			printf("%s\n",pathname);
+			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK],&attrib);
 		}
 	if(rc!=0)
 		showTreeLamps=false;
+
+
 
 	rc=0;
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.xpm",DATADIR,prefix);
@@ -420,8 +422,8 @@ void drawTreeLamps(void)
 
 	if(showTreeLamps==true)
 		{
-			rc=XSetClipMask(display,gc,treeLampsMaskPixmap[treeOnOff+lampset]);
-			rc=XCopyArea(display,treeLampsPixmap[treeOnOff+lampset],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
+			rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showStar==true)
