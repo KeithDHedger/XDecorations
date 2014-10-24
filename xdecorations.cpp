@@ -427,11 +427,8 @@ void drawTreeLamps(void)
 
 	if(showTreeLamps==true)
 		{
-			//if(treeOnOff<treeLampCount)
-			//	{
-					rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
-					rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
-			//	}
+			rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
+			rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showStar==true)
