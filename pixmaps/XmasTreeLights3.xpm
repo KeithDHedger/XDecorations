@@ -1,6 +1,6 @@
 /* XPM */
-static char * LightsPurple0_xpm[] = {
-"200 275 36 1",
+static char * XmasTreeLights3_xpm[] = {
+"200 266 36 1",
 " 	c None",
 ".	c #CC17E6",
 "+	c #CC18E6",
@@ -301,14 +301,5 @@ static char * LightsPurple0_xpm[] = {
 "                                                                                      :<[}|                                                                                                             ",
 "                                                                                      123456                                                                                                            ",
 "                                                                                        7                                                                                                               ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
-"                                                                                                                                                                                                        ",
 "                                                                                                                                                                                                        ",
 "                                                                                                                                                                                                        "};
