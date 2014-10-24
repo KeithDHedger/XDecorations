@@ -1,4 +1,5 @@
 0.1.1
+Added INSTALL file.
 Added out of bounds check for figure number/tree number/lamp number.
 Added -configfile option to command line to use a different config file.
 Added -figurenumber to command line and config file.

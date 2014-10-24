@@ -35,12 +35,12 @@ if not,write to the Free Software
 
 #define MAXPATHNAMELEN 2048
 #define MAXNUMBEROFFLYERS 10
-#define MAXNUMBEROFTREES 10
-#define MAXNUMBEROFLAMPS 10
-#define MAXNUMBEROFFIGURES 10
-#define VERSION "0.1.1"
 
-enum {FIGUREONPIXMAP=0,FIGUREONMASK,FIGUREOFFPIXMAP,FIGUREOFFMASK};
+#define VERSION "0.1.2"
+
+enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
+
+#define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
@@ -54,14 +54,6 @@ GC			gc;
 int			done=0;
 long		mainDelay=20000;
 
-Pixmap		figurePixmap[MAXNUMBEROFFIGURES][4];
-
-Pixmap		lampsPixmap[MAXNUMBEROFLAMPS][2];
-Pixmap		lampsMaskPixmap[MAXNUMBEROFLAMPS][2];
-
-Pixmap		treePixmap[MAXNUMBEROFTREES];
-Pixmap		treeMaskPixmap[MAXNUMBEROFTREES];
-
 Pixmap		starPixmap[2];
 Pixmap		starMaskPixmap[2];
 
@@ -73,8 +65,6 @@ Pixmap		tinselMaskPixmap;
 
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS];
 Pixmap		flyersMaskPixmap[MAXNUMBEROFFLYERS];
-
-int			onOff=0;
 
 uint		runCounter=0;
 
@@ -90,27 +80,31 @@ int			flyersActive[MAXNUMBEROFFLYERS];
 int			flyerSpread=500;
 int			flyerCount=0;
 
+//figure
+Pixmap		figurePixmap[4];
 int			figureSpeed=100;
 int			figureX=100;
 int			figureY=100;
-int			figureW[MAXNUMBEROFFIGURES];
-int			figureH[MAXNUMBEROFFIGURES];
-int			figureCount=0;
+int			figureW;
+int			figureH;
 bool		showFigure=false;
 int			figureOnOff=0;
 int			figureNumber=1;
 
+//lamps
+Pixmap		lampsPixmap[4];
 int			lampSpeed=100;
 int			lampX=0;
 int			lampY=16;
-int			lampWidth[MAXNUMBEROFLAMPS];
-int			lampHeight[MAXNUMBEROFLAMPS];
-int			lampCount[MAXNUMBEROFLAMPS];
+int			lampWidth;
+int			lampHeight;
+int			lampCount;
 bool		showLamps=true;
-
-int			lampSetsCount=0;
 int			lampSet=1;
+int			lampsOnOff=0;
 
+//trees
+Pixmap		treePixmap[2];
 int			treeWidth;
 int			treeHeight;
 int			treeNumber=1;
@@ -119,13 +113,17 @@ int			starSpeed=100;
 int			treeX;
 int			treeY;
 int			treeLampSet=1;
-bool		showTinsel=false;
-bool		showStar=false;
-bool		showTree=false;
-bool		showTreeLamps=false;
-
 int			treeOnOff=0;
+bool		showTree=false;
+
+//tinsel`
+bool		showTinsel=false;
+
+//star
+bool		showStar=false;
 int			starOnOff=0;
+
+bool		showTreeLamps=false;
 
 char*		prefix;
 
@@ -273,25 +271,18 @@ void initFigure(void)
 	XpmAttributes	attrib;
 
 	attrib.valuemask=0;
-	figureCount=0;
 
-	for(int j=0; j<MAXNUMBEROFFIGURES; j++)
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOn%i.xpm",DATADIR,prefix,figureNumber);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK],&attrib);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOff%i.xpm",DATADIR,prefix,figureNumber);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[OFFPIXMAP],&figurePixmap[OFFMASK],&attrib);
+
+	if(rc==0)
 		{
-			rc=0;
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOn%i.xpm",DATADIR,prefix,j);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[figureCount][FIGUREONPIXMAP],&figurePixmap[figureCount][FIGUREONMASK],&attrib);
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOff%i.xpm",DATADIR,prefix,j);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[figureCount][FIGUREOFFPIXMAP],&figurePixmap[figureCount][FIGUREOFFMASK],&attrib);
-
-			if(rc==0)
-				{
-					figureW[figureCount]=attrib.width;
-					figureH[figureCount]=attrib.height;
-					figureCount++;
-				}
+			figureW=attrib.width;
+			figureH=attrib.height;
 		}
-
-	if(figureCount==0)
+	else
 		showFigure=false;
 }
 
@@ -304,24 +295,18 @@ void initLamps(void)
 
 	attrib.valuemask=0;
 	rc=0;
-	lampSetsCount=0;
 
-	for(int j=0; j<MAXNUMBEROFLAMPS; j++)
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.xpm",DATADIR,prefix,lampSet);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[ONPIXMAP],&lampsPixmap[ONMASK],&attrib);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOff%i.xpm",DATADIR,prefix,lampSet);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[OFFPIXMAP],&lampsPixmap[OFFMASK],&attrib);
+	if(rc==0)
 		{
-			rc=0;
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.xpm",DATADIR,prefix,j+1);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[lampSetsCount][0],&lampsMaskPixmap[lampSetsCount][0],&attrib);
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOff%i.xpm",DATADIR,prefix,j+1);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[lampSetsCount][1],&lampsMaskPixmap[lampSetsCount][1],&attrib);
-			if(rc==0)
-				{
-					lampWidth[lampSetsCount]=attrib.width;
-					lampHeight[lampSetsCount]=attrib.height;
-					lampCount[lampSetsCount]=(displayWidth/lampWidth[lampSetsCount])+1;
-					lampSetsCount++;
-				}
+			lampWidth=attrib.width;
+			lampHeight=attrib.height;
+			lampCount=(displayWidth/lampWidth)+1;
 		}
-	if(lampSetsCount==0)
+	else
 		showLamps=false;
 }
 
@@ -333,15 +318,18 @@ void initTree(void)
 
 	attrib.valuemask=0;
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree1.xpm",DATADIR,prefix);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[0],&treeMaskPixmap[0],&attrib);
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree2.xpm",DATADIR,prefix);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[1],&treeMaskPixmap[1],&attrib);
-	if(rc!=0)
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree%i.xpm",DATADIR,prefix,treeNumber);
+	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[ONPIXMAP],&treePixmap[ONMASK],&attrib);
+//	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree%i.xpm",DATADIR,prefix,treeNumber);
+//	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[1],&treePixmap[1],&attrib);
+	if(rc==0)
+		{
+			treeWidth=attrib.width;
+			treeHeight=attrib.height;
+		}
+	else
 		showTree=false;
 
-	treeWidth=attrib.width;
-	treeHeight=attrib.height;
 
 	rc=0;
 	for(j=0; j<8; j++)
@@ -393,9 +381,9 @@ void drawFigure(void)
 	if(showFigure==false)
 		return;
 
-	rc=XSetClipMask(display,gc,figurePixmap[figureNumber-1][FIGUREONMASK+(2*figureOnOff)]);
+	rc=XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
 	rc=XSetClipOrigin(display,gc,figureX,figureY);
-	rc=XCopyArea(display,figurePixmap[figureNumber-1][FIGUREONPIXMAP+(2*figureOnOff)],rootWin,gc,0,0,figureW[figureNumber-1],figureH[figureNumber-1],figureX,figureY);
+	rc=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
 }
 
 void drawLamps(void)
@@ -408,19 +396,19 @@ void drawLamps(void)
 		return;
 
 	CurrentlampX=lampX;
-	rc=XSetClipMask(display,gc,lampsMaskPixmap[lampSet-1][onOff]);
+	rc=XSetClipMask(display,gc,lampsPixmap[_SELECTPIXMAP(ONMASK,lampsOnOff)]);
 
-	for (loop=0; loop<lampCount[lampSet-1]; loop++)
+	for (loop=0; loop<lampCount; loop++)
 		{
 			rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-			rc+=XCopyArea(display,lampsPixmap[lampSet-1][onOff],rootWin,gc,0,0,lampWidth[lampSet-1],lampHeight[lampSet-1],CurrentlampX,lampY);
-			CurrentlampX+=lampWidth[lampSet-1];
+			rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],rootWin,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+			CurrentlampX+=lampWidth;
 		}
 }
 
 void updateLamps(void)
 {
-	onOff=(onOff+1) & 1;
+	lampsOnOff=(lampsOnOff+1) & 1;
 }
 
 void drawTreeLamps(void)
@@ -432,9 +420,9 @@ void drawTreeLamps(void)
 		return;
 
 	lampset=(treeLampSet-1)*4;
-	rc=XSetClipMask(display,gc,treeMaskPixmap[treeNumber-1]);
+	rc=XSetClipMask(display,gc,treePixmap[ONMASK]);
 	rc=XSetClipOrigin(display,gc,treeX,treeY);
-	rc=XCopyArea(display,treePixmap[treeNumber-1],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+	rc=XCopyArea(display,treePixmap[ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 
 	if(showTreeLamps==true)
 		{
@@ -509,8 +497,7 @@ void eraseRects(void)
 
 	if((showFigure==true) && (figureNeedsUpdate==true))
 		{
-//			rc=XClearArea(display,rootWin,100,100,figureW[0],figureH[0],False);
-			rc=XClearArea(display,rootWin,figureX,figureY,figureW[0],figureH[0],False);
+			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
 			updateFigure();
 		}
 
@@ -543,12 +530,12 @@ void showUnShow(const char* arg1,const char* arg2,bool *value)
 
 void sanityCheck(void)
 {
-	if(lampSet>lampSetsCount)
-		lampSet=lampSetsCount;
+//	if(lampSet>lampSetsCount)
+//		lampSet=lampSetsCount;
 	if(treeNumber>2)
 		treeNumber=2;
-	if(figureNumber>figureCount)
-		figureNumber=figureCount;
+//	if(figureNumber>figureCount)
+//		figureNumber=figureCount;
 }
 
 void doHelp(void)

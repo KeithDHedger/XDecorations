@@ -38,7 +38,7 @@ treelamps 1
 #Defaults to 0.
 star 1
 
-#The tree to use, currently 1 or 2
+#The tree to use
 #Defaults to 1
 treenumber 1
 
