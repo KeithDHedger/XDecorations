@@ -35,7 +35,7 @@ if not,write to the Free Software
 
 #define MAXPATHNAMELEN 2048
 #define MAXNUMBEROFFLYERS 10
-#define MAXNUMBEROFTREELIGHTS 4
+#define MAXNUMBEROFTREELIGHTS 10
 
 #define VERSION "0.1.2"
 
@@ -120,6 +120,7 @@ int			starOnOff=0;
 Pixmap		treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
 //Pixmap		treeLampsMaskPixmap[8];
 bool		showTreeLamps=false;
+int			treeLampCount=0;
 
 char*		prefix;
 
@@ -311,6 +312,7 @@ void initTree(void)
 	int				rc=0;
 	int				j=0;
 	XpmAttributes	attrib;
+	bool			gotsomelamps=false;
 
 	attrib.valuemask=0;
 
@@ -325,17 +327,20 @@ void initTree(void)
 		showTree=false;
 
 
-	rc=0;
+	treeLampCount=0;
 	for(j=0;j<MAXNUMBEROFTREELIGHTS;j++)
 		{
+			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.xpm",DATADIR,prefix,treeLampSet,j+1);
-			printf("%s\n",pathname);
-			rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK],&attrib);
+			rc=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK],&attrib);
+			if(rc==0)
+				{
+					treeLampCount++;
+					gotsomelamps=true;
+				}
 		}
-	if(rc!=0)
+	if(gotsomelamps==false)
 		showTreeLamps=false;
-
-
 
 	rc=0;
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.xpm",DATADIR,prefix);
@@ -422,8 +427,11 @@ void drawTreeLamps(void)
 
 	if(showTreeLamps==true)
 		{
-			rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
-			rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			//if(treeOnOff<treeLampCount)
+			//	{
+					rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
+					rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			//	}
 		}
 
 	if(showStar==true)
@@ -443,7 +451,7 @@ void updateTreeLamps(void)
 {
 	treeOnOff++;
 
-	if(treeOnOff==4)
+	if(treeOnOff==treeLampCount)
 		treeOnOff=0;
 }
 
