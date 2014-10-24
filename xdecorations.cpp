@@ -35,6 +35,7 @@ if not,write to the Free Software
 
 #define MAXPATHNAMELEN 2048
 #define MAXNUMBEROFFLYERS 10
+#define MAXNUMBEROFTREELIGHTS 4
 
 #define VERSION "0.1.2"
 
@@ -53,12 +54,6 @@ GC			gc;
 
 int			done=0;
 long		mainDelay=20000;
-
-
-Pixmap		treeLampsPixmap[8];
-Pixmap		treeLampsMaskPixmap[8];
-
-
 
 uint		runCounter=0;
 
@@ -121,6 +116,9 @@ Pixmap		starPixmap[4];
 bool		showStar=false;
 int			starOnOff=0;
 
+//tree lamps
+Pixmap		treeLampsPixmap[4];
+//Pixmap		treeLampsMaskPixmap[8];
 bool		showTreeLamps=false;
 
 char*		prefix;
