@@ -510,8 +510,9 @@ void updateFlyers(void)
 					if(flyersX[j]>displayWidth)
 						{
 							flyersActive[j]=0;
-							flyersX[j]=0-flyersWidth[j];
+							flyersX[j]=0-flyersWidth[j]*2;
 							flyersY[j]=(rand() % flyersMaxY);
+							XMoveWindow(display,flyerWindow[j],flyersX[j],flyersY[j]);
 						}
 				}
 		}
@@ -536,8 +537,6 @@ void eraseRects(void)
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
-			//for(j=0; j<flyerCount; j++)
-			//	rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
 			updateFlyers();
 		}
 
@@ -685,10 +684,10 @@ int main(int argc,char* argv[])
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 
-	while(redoconfig==true)
-		{
+//	while(redoconfig==true)
+//		{
 			loadVarsFromFile(configFilePath,xdecorations_rc);
-			redoconfig=false;
+		//	redoconfig=false;
 //command line options.
 			for (argnum=1; argnum<argc; argnum++)
 				{
@@ -704,14 +703,15 @@ int main(int argc,char* argv[])
 
 					if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 						{
-							if(doneconfig==false)
-								{
-									doneconfig=true;
+							//if(doneconfig==false)
+							//	{
+									//doneconfig=true;
 									free(configFilePath);
 									asprintf(&configFilePath,"%s",argv[++argnum]);
-									redoconfig=true;
-									continue;
-								}
+									loadVarsFromFile(configFilePath,xdecorations_rc);
+									//redoconfig=true;
+									//continue;
+							//	}
 						}
 
 					if(strcmp(argstr,"-holiday")==0)//Xmas
@@ -783,7 +783,7 @@ int main(int argc,char* argv[])
 					if(strcmp(argstr,"-help")==0)
 						doHelp();
 				}
-		}
+	//	}
 	srand((int)time((long* )NULL));
 
 	signal(SIGKILL,(sighandler_t)&signalHandler);
@@ -853,7 +853,10 @@ int main(int argc,char* argv[])
 			if(showFlyers==true)
 				{
 					if((runCounter % flyersSpeed)==0)
+							{
 						flyerNeedsUpdate=true;
+					//	printf("%i\n",runCounter);
+						}
 				}
 
 			eraseRects();
