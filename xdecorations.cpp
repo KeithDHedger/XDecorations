@@ -54,7 +54,6 @@ struct Hints
 	unsigned long   status;
 };
 
-
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
 
@@ -367,7 +366,6 @@ void initTree(void)
 	else
 		showTree=false;
 
-
 	treeLampCount=0;
 	for(j=0; j<MAXNUMBEROFTREELIGHTS; j++)
 		{
@@ -406,27 +404,9 @@ void drawFlyers(void)
 		{
 			if(flyersActive[j]==1)
 				{
-					XCopyArea(display,flyersPixmap[j][0],flyerWindow[j],gc,0,0,flyersWidth[j],flyersHeight[j],0,0);
 					XMoveWindow(display,flyerWindow[j],flyersX[j],flyersY[j]);
 				}
 		}
-#if 0
-	int rc;
-	int	j;
-
-	if(showFlyers==false)
-		return;
-
-	for(j=0; j<flyerCount; j++)
-		{
-			if(flyersActive[j]==1)
-				{
-					rc=XSetClipMask(display,gc,flyersPixmap[j][ONMASK]);
-					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
-					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
-				}
-		}
-#endif
 }
 
 void drawFigure(void)
@@ -694,6 +674,7 @@ void doMakeFlyerWindow(void)
 		}
 }
 
+
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -835,7 +816,14 @@ int main(int argc,char* argv[])
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 	figureNeedsUpdate=false;
 
+//init flyers to windows
 	doMakeFlyerWindow();
+
+	while(XPending(display))
+		XNextEvent(display,&ev);
+
+	for(int j=0; j<flyerCount; j++)
+		XCopyArea(display,flyersPixmap[j][0],flyerWindow[j],gc,0,0,flyersWidth[j],flyersHeight[j],0,0);
 
 	while (!done)
 		{
