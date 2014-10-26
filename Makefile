@@ -23,3 +23,6 @@ clean:
 
 installconfig:
 	cp $(PROGRAM).rc ~/.config
+
+makeball:
+	gcc -o ball double.c  -L/usr/lib64 -lXext -lX11 -lm -lXpm

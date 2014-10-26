@@ -26,6 +26,9 @@ if not,write to the Free Software
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 #include <X11/xpm.h>
+#include <X11/Xatom.h>
+
+#include <X11/extensions/shape.h>
 
 #include <stdio.h>
 #include <signal.h>
@@ -40,8 +43,17 @@ if not,write to the Free Software
 #define VERSION "0.1.2"
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
-
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
+
+struct Hints
+{
+	unsigned long   flags;
+	unsigned long   functions;
+	unsigned long   decorations;
+	long            inputMode;
+	unsigned long   status;
+};
+
 
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
@@ -56,6 +68,7 @@ int			done=0;
 long		mainDelay=20000;
 
 uint		runCounter=0;
+Window		flyerWindow;
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -183,15 +196,15 @@ void saveVarsToFile(const char* filepath,args* dataptr)
 				{
 					switch(dataptr[cnt].type)
 						{
-							case TYPEINT:
-								fprintf(fd,"%s	%i\n",dataptr[cnt].name,*(int*)dataptr[cnt].data);
-								break;
-							case TYPESTRING:
-								fprintf(fd,"%s	%s\n",dataptr[cnt].name,*(char**)(dataptr[cnt].data));
-								break;
-							case TYPEBOOL:
-								fprintf(fd,"%s	%i\n",dataptr[cnt].name,(int)*(bool*)dataptr[cnt].data);
-								break;
+						case TYPEINT:
+							fprintf(fd,"%s	%i\n",dataptr[cnt].name,*(int*)dataptr[cnt].data);
+							break;
+						case TYPESTRING:
+							fprintf(fd,"%s	%s\n",dataptr[cnt].name,*(char**)(dataptr[cnt].data));
+							break;
+						case TYPEBOOL:
+							fprintf(fd,"%s	%i\n",dataptr[cnt].name,(int)*(bool*)dataptr[cnt].data);
+							break;
 						}
 					cnt++;
 				}
@@ -356,7 +369,7 @@ void initTree(void)
 
 
 	treeLampCount=0;
-	for(j=0;j<MAXNUMBEROFTREELIGHTS;j++)
+	for(j=0; j<MAXNUMBEROFTREELIGHTS; j++)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.xpm",DATADIR,prefix,treeLampSet,j+1);
@@ -622,6 +635,124 @@ void doHelp(void)
 	exit(0);
 }
 
+void doMakeFlyerWindow(void)
+{
+
+	//Display* display = XOpenDisplay(NULL);
+	int rc;
+	Hints   hints;
+	Atom    property;
+	Atom xa;
+	XSetWindowAttributes attr;
+	XVisualInfo vinfo;
+	XpmAttributes	attrib;
+	int keep_running = 1;
+//	XEvent event;
+	XWindowChanges wc;
+
+	XMatchVisualInfo(display, DefaultScreen(display), 32, TrueColor, &vinfo);
+
+	attr.colormap = XCreateColormap(display, DefaultRootWindow(display), vinfo.visual, AllocNone);
+
+	attr.border_pixel = 0;
+	attr.background_pixel = 0;
+	attr.override_redirect = True;
+	attr.event_mask = ExposureMask | KeyPressMask | ButtonPressMask | StructureNotifyMask;
+
+	flyerWindow = XCreateWindow(display, DefaultRootWindow(display), 0, 0,flyersWidth[0],flyersHeight[0], 0, CopyFromParent, InputOutput,CopyFromParent, 0, &attr);
+
+//	hints.flags=2;
+//	hints.decorations=0;
+//
+//	property = XInternAtom(display,"_MOTIF_WM_HINTS",True);
+//	XChangeProperty(display,flyerWindow,property,property,32,PropModeReplace,(unsigned char *)&hints,5);
+
+	xa=XInternAtom(display,"_NET_WM_STATE", False);
+	if (xa != None)
+		{
+			Atom xa_prop[5];
+			xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY", False);
+			xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_ABOVE", False);
+			xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER", False);
+			xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR", False);
+			//xa_prop[4]=XInternAtom(display,"_NET_WM_STATE_HIDDEN", False);
+			XChangeProperty(display, flyerWindow, xa, XA_ATOM, 32,PropModeAppend, (unsigned char *) &xa_prop,4);
+		}
+
+
+	/* make the window actually appear on the screen. */
+	XMapWindow(display,flyerWindow);
+
+//	GC gc=NULL;
+
+//	gc= XCreateGC(display, flyerWindow, 0,NULL);
+
+	//XCopyArea(display,figurePixmap[0],flyerWindow,gc,0,0,figureW,figureH,0,0);
+	XShapeCombineMask (display, flyerWindow, ShapeBounding,0, 0, flyersPixmap[0][1], ShapeSet);
+//	attrib.valuemask=0;
+//flyersWidth[0],flyersHeight[0],flyersX[j],flyersY[j	
+//flyersPixmap
+//	rc=XpmReadFileToPixmap(display,win,"/media/LinuxData/Development/Projects/XDecorations/pixmaps/HalloweenFigureOn1.xpm",&figurePixmap[0],&figurePixmap[1],&attrib);
+
+
+}
+
+#if 0
+//bool XXX=false;
+void doDrawAll(void)
+{
+	XWindowAttributes wa;
+	GC g;
+	int rc=0;
+	Pixmap figbuf;
+	Pixmap lampbuf;
+	int loop;
+	int	CurrentlampX;
+
+	XGetWindowAttributes(display, rootWin, &wa);
+
+	/* create a GC for drawing in the window */
+	g = XCreateGC (display, rootWin, 0, NULL);
+
+	/* create the double buffer */
+	lampbuf= XCreatePixmap(display, rootWin,wa.width, wa.height, wa.depth);
+	figbuf= XCreatePixmap(display, rootWin,wa.width, wa.height, wa.depth);
+	XSetForeground(display, g, WhitePixelOfScreen(DefaultScreenOfDisplay(display)));
+	XFillRectangle(display,figbuf, g, 0, 0, wa.width, wa.height);
+
+	CurrentlampX=lampX;
+	rc=XSetClipMask(display,gc,lampsPixmap[_SELECTPIXMAP(ONMASK,lampsOnOff)]);
+	rc+=XSetClipOrigin(display,gc,0,0);
+	rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],lampbuf,gc,0,0,lampWidth,lampHeight,0,0);
+
+	for (loop=0; loop<lampCount; loop++)
+		{
+			rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+			rc+=XCopyArea(display,lampbuf,rootWin,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+			CurrentlampX+=lampWidth;
+		}
+
+	if(figureNeedsUpdate==true)
+		{
+
+			rc+=XSetClipOrigin(display,g,0,0);
+			rc=XSetClipMask(display,g,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
+			rc+=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],figbuf,g,0,0,figureW,figureH,0,0);
+
+			rc+=XSetClipOrigin(display,g,figureX,figureY);
+			rc+=XCopyArea(display,figbuf,rootWin,g,0,0,figureW,figureH,figureX,figureY);
+
+			updateFigure();
+		}
+
+	XFreeGC(display,g);
+	XFreePixmap(display,figbuf);
+	XFreePixmap(display,lampbuf);
+
+	figureNeedsUpdate=false;
+}
+#endif
+
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -750,27 +881,70 @@ int main(int argc,char* argv[])
 
 	screen=DefaultScreen(display);
 	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-
 	displayWidth=DisplayWidth(display,screen);
 	displayHeight=DisplayHeight(display,screen);
+
 
 	initLamps();
 	initTree();
 	initFigure();
 	initFlyers();
 
+
+//	bool flag=false;
+//	int cnt=0;
+//	int delay=1;
+//	int x,maxx;
+//	int xplus=8;
+//	int maindelay=5000;
+//
+//	x=0;
+//	maxx=1400;
+//
+//	while (true)
+//		{
+//			usleep(maindelay);
+//			while (XPending(display))
+//				XNextEvent(display,&ev);
+//			if(flag==false)
+//				{
+//					cnt++;
+//					if((cnt % delay) ==0)
+//						{
+//							x+=xplus;
+//							if(x>maxx)
+//								x=0;
+//							XMoveWindow(display, flyerWindow, x, 100);
+//						}
+//
+//				}
+//		}
+//
+
+
+
 	gc=XCreateGC(display,rootWin,0,NULL);
 	XSetFillStyle(display,gc,FillSolid);
 
+
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
+	figureNeedsUpdate=false;
+
+
+	doMakeFlyerWindow();
+
+
+
+
+
 
 	while (!done)
 		{
-			while (XPending(display))
-				XNextEvent(display,&ev);
-
 			usleep(mainDelay);
 			runCounter++;
+
+			while (XPending(display))
+				XNextEvent(display,&ev);
 
 			if(showLamps==true)
 				{
@@ -795,21 +969,25 @@ int main(int argc,char* argv[])
 
 			if(showFlyers==true)
 				{
+				//XMapWindow(display,flyerWindow);
+				XCopyArea(display,flyersPixmap[0][0],flyerWindow,gc,0,0,flyersWidth[0],flyersHeight[0],0,0);
 					if((runCounter % flyersSpeed)==0)
 						flyerNeedsUpdate=true;
 				}
 
-			eraseRects();
-			drawTreeLamps();
-			drawFigure();
-			drawFlyers();
-			drawLamps();
+//			doDrawAll();
+//			eraseRects();
+//			drawTreeLamps();
+//			drawFigure();
+//			drawFlyers();
+//			drawLamps();
 		}
 
 	XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 	return(0);
 }
+
 
 
 
