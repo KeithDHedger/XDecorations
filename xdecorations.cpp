@@ -630,20 +630,18 @@ void doHelp(void)
 
 void doMakeFlyerWindow(void)
 {
-	int rc;
-	Hints   hints;
-	Atom    property;
-	Atom xa;
-	XSetWindowAttributes attr;
-	XVisualInfo vinfo;
-	XpmAttributes	attrib;
-	XWindowChanges wc;
-	Atom xa_prop[5];
+	int						rc;
+	Hints   				hints;
+	Atom    				property;
+	Atom					xa;
+	XSetWindowAttributes	attr;
+	XVisualInfo				vinfo;
+	XpmAttributes			attrib;
+	Atom					xa_prop[5];
 
 	XMatchVisualInfo(display, DefaultScreen(display), 32, TrueColor, &vinfo);
 
 	attr.colormap = XCreateColormap(display, DefaultRootWindow(display), vinfo.visual, AllocNone);
-
 	attr.border_pixel = 0;
 	attr.background_pixel = 0;
 	attr.override_redirect = True;
@@ -654,26 +652,24 @@ void doMakeFlyerWindow(void)
 	property=XInternAtom(display,"_MOTIF_WM_HINTS",True);
 
 	xa=XInternAtom(display,"_NET_WM_STATE",False);
-	if (xa!=None)
-		{
-			xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
-			xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
-			xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
-			xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
-		}
+	xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
+	xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
+	xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
+	xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
 
 	for(int j=0;j<flyerCount;j++)
 		{
 			flyerWindow[j]=XCreateWindow(display,DefaultRootWindow(display),0,0,flyersWidth[j],flyersHeight[j],0,CopyFromParent,InputOutput,CopyFromParent,0,&attr);
 
-			XChangeProperty(display,flyerWindow[j],xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,4);
+			xa=XInternAtom(display,"_NET_WM_STATE",False);
+			if(xa!=None)
+				XChangeProperty(display,flyerWindow[j],xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,4);
 			XChangeProperty(display,flyerWindow[j],property,property,32,PropModeReplace,(unsigned char *)&hints,5);
 
 			XMapWindow(display,flyerWindow[j]);
 			XShapeCombineMask (display,flyerWindow[j],ShapeBounding,0,0,flyersPixmap[j][1],ShapeSet);
 		}
 }
-
 
 int main(int argc,char* argv[])
 {
