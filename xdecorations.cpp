@@ -404,6 +404,7 @@ void drawFlyers(void)
 		{
 			if(flyersActive[j]==1)
 				{
+					XCopyArea(display,flyersPixmap[j][0],flyerWindow[j],gc,0,0,flyersWidth[j],flyersHeight[j],0,0);
 					XMoveWindow(display,flyerWindow[j],flyersX[j],flyersY[j]);
 				}
 		}
