@@ -1,6 +1,5 @@
 0.1.2
 Fixed not reloading config file properly before using -writeconfig.
-Flying objects no longer overwrite desktop icons.
 Now no limits on number of lamps.
 Now no limits on number of figures.
 Now no limits on number of tree lamps.

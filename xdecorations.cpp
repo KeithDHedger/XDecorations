@@ -24,11 +24,7 @@ if not,write to the Free Software
 #include <X11/Intrinsic.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/Xos.h>
 #include <X11/xpm.h>
-#include <X11/Xatom.h>
-
-#include <X11/extensions/shape.h>
 
 #include <stdio.h>
 #include <signal.h>
@@ -44,15 +40,6 @@ if not,write to the Free Software
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
-
-struct Hints
-{
-	unsigned long   flags;
-	unsigned long   functions;
-	unsigned long   decorations;
-	long            inputMode;
-	unsigned long   status;
-};
 
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
@@ -130,7 +117,6 @@ int			starOnOff=0;
 
 //tree lamps
 Pixmap		treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
-//Pixmap		treeLampsMaskPixmap[8];
 bool		showTreeLamps=false;
 int			treeLampCount=0;
 
@@ -321,6 +307,7 @@ void initFigure(void)
 		}
 	else
 		showFigure=false;
+
 }
 
 void initLamps(void)
@@ -367,7 +354,7 @@ void initTree(void)
 		showTree=false;
 
 	treeLampCount=0;
-	for(j=0; j<MAXNUMBEROFTREELIGHTS; j++)
+	for(j=0; j<MAXNUMBEROFTREELIGHTS;j++)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.xpm",DATADIR,prefix,treeLampSet,j+1);
@@ -376,6 +363,7 @@ void initTree(void)
 				{
 					treeLampCount++;
 					gotsomelamps=true;
+					printf("%s\n",pathname);
 				}
 		}
 	if(gotsomelamps==false)
@@ -397,15 +385,19 @@ void initTree(void)
 
 void drawFlyers(void)
 {
+	int rc;
+	int	j;
+
 	if(showFlyers==false)
 		return;
 
-	for(int j=0; j<flyerCount; j++)
+	for(j=0; j<flyerCount; j++)
 		{
 			if(flyersActive[j]==1)
 				{
-					XCopyArea(display,flyersPixmap[j][0],flyerWindow[j],gc,0,0,flyersWidth[j],flyersHeight[j],0,0);
-					XMoveWindow(display,flyerWindow[j],flyersX[j],flyersY[j]);
+					rc=XSetClipMask(display,gc,flyersPixmap[j][ONMASK]);
+					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
+					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
 				}
 		}
 }
@@ -499,7 +491,9 @@ void updateFigure(void)
 
 void updateFlyers(void)
 {
-	for(int j=0; j<flyerCount; j++)
+	int	j=0;
+
+	for(j=0; j<flyerCount; j++)
 		{
 			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
 				flyersActive[j]=1;
@@ -508,12 +502,11 @@ void updateFlyers(void)
 				{
 					flyersX[j]+=flyersStep;
 
-					if(flyersX[j]>displayWidth)
+					if(flyersX[j]>displayWidth+flyersWidth[j])
 						{
 							flyersActive[j]=0;
 							flyersX[j]=0-flyersWidth[j]*2;
 							flyersY[j]=(rand() % flyersMaxY);
-							XMoveWindow(display,flyerWindow[j],flyersX[j],flyersY[j]);
 						}
 				}
 		}
@@ -521,7 +514,7 @@ void updateFlyers(void)
 
 void eraseRects(void)
 {
-	int	rc;
+	int	rc=0;
 	int	j;
 
 	if((showTree==true) && (treeNeedsUpdate==true))
@@ -538,6 +531,8 @@ void eraseRects(void)
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
+			for(j=0; j<flyerCount; j++)
+				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
 			updateFlyers();
 		}
 
@@ -628,49 +623,6 @@ void doHelp(void)
 	exit(0);
 }
 
-void doMakeFlyerWindow(void)
-{
-	int						rc;
-	Hints   				hints;
-	Atom    				property;
-	Atom					xa;
-	XSetWindowAttributes	attr;
-	XVisualInfo				vinfo;
-	XpmAttributes			attrib;
-	Atom					xa_prop[5];
-
-	XMatchVisualInfo(display, DefaultScreen(display), 32, TrueColor, &vinfo);
-
-	attr.colormap = XCreateColormap(display, DefaultRootWindow(display), vinfo.visual, AllocNone);
-	attr.border_pixel = 0;
-	attr.background_pixel = 0;
-	attr.override_redirect = True;
-	attr.event_mask = ExposureMask | KeyPressMask | ButtonPressMask | StructureNotifyMask;
-
-	hints.flags=2;
-	hints.decorations=0;
-	property=XInternAtom(display,"_MOTIF_WM_HINTS",True);
-
-	xa=XInternAtom(display,"_NET_WM_STATE",False);
-	xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
-	xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
-	xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
-	xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
-
-	for(int j=0;j<flyerCount;j++)
-		{
-			flyerWindow[j]=XCreateWindow(display,DefaultRootWindow(display),0,0,flyersWidth[j],flyersHeight[j],0,CopyFromParent,InputOutput,CopyFromParent,0,&attr);
-
-			xa=XInternAtom(display,"_NET_WM_STATE",False);
-			if(xa!=None)
-				XChangeProperty(display,flyerWindow[j],xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,4);
-			XChangeProperty(display,flyerWindow[j],property,property,32,PropModeReplace,(unsigned char *)&hints,5);
-
-			XMapWindow(display,flyerWindow[j]);
-			XShapeCombineMask (display,flyerWindow[j],ShapeBounding,0,0,flyersPixmap[j][1],ShapeSet);
-		}
-}
-
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -679,16 +631,11 @@ int main(int argc,char* argv[])
 	Window	root;
 	int		screen;
 	Window	parentWindow;
-	bool	redoconfig=true;
-	bool	doneconfig=false;
 
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 
-//	while(redoconfig==true)
-//		{
 			loadVarsFromFile(configFilePath,xdecorations_rc);
-		//	redoconfig=false;
 //command line options.
 			for (argnum=1; argnum<argc; argnum++)
 				{
@@ -704,15 +651,9 @@ int main(int argc,char* argv[])
 
 					if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 						{
-							//if(doneconfig==false)
-							//	{
-									//doneconfig=true;
 									free(configFilePath);
 									asprintf(&configFilePath,"%s",argv[++argnum]);
 									loadVarsFromFile(configFilePath,xdecorations_rc);
-									//redoconfig=true;
-									//continue;
-							//	}
 						}
 
 					if(strcmp(argstr,"-holiday")==0)//Xmas
@@ -784,7 +725,7 @@ int main(int argc,char* argv[])
 					if(strcmp(argstr,"-help")==0)
 						doHelp();
 				}
-	//	}
+
 	srand((int)time((long* )NULL));
 
 	signal(SIGKILL,(sighandler_t)&signalHandler);
@@ -799,6 +740,7 @@ int main(int argc,char* argv[])
 
 	screen=DefaultScreen(display);
 	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+
 	displayWidth=DisplayWidth(display,screen);
 	displayHeight=DisplayHeight(display,screen);
 
@@ -811,24 +753,14 @@ int main(int argc,char* argv[])
 	XSetFillStyle(display,gc,FillSolid);
 
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
-	figureNeedsUpdate=false;
-
-//init flyers to windows
-	doMakeFlyerWindow();
-
-	while(XPending(display))
-		XNextEvent(display,&ev);
-
-	for(int j=0; j<flyerCount; j++)
-		XCopyArea(display,flyersPixmap[j][0],flyerWindow[j],gc,0,0,flyersWidth[j],flyersHeight[j],0,0);
 
 	while (!done)
 		{
+			while (XPending(display))
+				XNextEvent(display,&ev);
+
 			usleep(mainDelay);
 			runCounter++;
-
-			while(XPending(display))
-				XNextEvent(display,&ev);
 
 			if(showLamps==true)
 				{
@@ -854,16 +786,13 @@ int main(int argc,char* argv[])
 			if(showFlyers==true)
 				{
 					if((runCounter % flyersSpeed)==0)
-							{
 						flyerNeedsUpdate=true;
-					//	printf("%i\n",runCounter);
-						}
 				}
 
 			eraseRects();
-			drawFlyers();
 			drawTreeLamps();
 			drawFigure();
+			drawFlyers();
 			drawLamps();
 		}
 
@@ -871,7 +800,6 @@ int main(int argc,char* argv[])
 	XCloseDisplay(display);
 	return(0);
 }
-
 
 
 
