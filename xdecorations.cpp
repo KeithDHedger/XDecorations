@@ -567,7 +567,7 @@ void doHelp(void)
 	printf("-delay INTEGER\n");
 	printf("\tSet main delay\n");
 	printf("-configfile FILEPATH\n");
-	printf("\tSet new config file ( only the first of instance of this will be used )\n");
+	printf("\tSet new config file ( using only one instance of this makes any sense )\n");
 	printf("-writeconfig FILEPATH\n");
 	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options\n");
 	printf("\tMust be last command on line\n\n");
