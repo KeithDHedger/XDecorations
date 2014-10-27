@@ -38,7 +38,7 @@ if not,write to the Free Software
 
 #define VERSION "0.1.2"
 
-enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
+	enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 char		pathname[MAXPATHNAMELEN];
@@ -354,7 +354,7 @@ void initTree(void)
 		showTree=false;
 
 	treeLampCount=0;
-	for(j=0; j<MAXNUMBEROFTREELIGHTS;j++)
+	for(j=0; j<MAXNUMBEROFTREELIGHTS; j++)
 		{
 			rc=0;
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.xpm",DATADIR,prefix,treeLampSet,j+1);
@@ -363,7 +363,6 @@ void initTree(void)
 				{
 					treeLampCount++;
 					gotsomelamps=true;
-					printf("%s\n",pathname);
 				}
 		}
 	if(gotsomelamps==false)
@@ -635,96 +634,96 @@ int main(int argc,char* argv[])
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 
-			loadVarsFromFile(configFilePath,xdecorations_rc);
+	loadVarsFromFile(configFilePath,xdecorations_rc);
 //command line options.
-			for (argnum=1; argnum<argc; argnum++)
+	for (argnum=1; argnum<argc; argnum++)
+		{
+			argstr=argv[argnum];
+
+			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
+			showUnShow(argstr,"showtree",&showTree);//showTree=false
+			showUnShow(argstr,"showlamps",&showLamps);//showLamps=true
+			showUnShow(argstr,"showfigure",&showFigure);//showFigure=false
+			showUnShow(argstr,"showstar",&showStar);//showStar=false
+			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
+			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
+
+			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
-					argstr=argv[argnum];
-
-					showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
-					showUnShow(argstr,"showtree",&showTree);//showTree=false
-					showUnShow(argstr,"showlamps",&showLamps);//showLamps=true
-					showUnShow(argstr,"showfigure",&showFigure);//showFigure=false
-					showUnShow(argstr,"showstar",&showStar);//showStar=false
-					showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
-					showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
-
-					if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
-						{
-									free(configFilePath);
-									asprintf(&configFilePath,"%s",argv[++argnum]);
-									loadVarsFromFile(configFilePath,xdecorations_rc);
-						}
-
-					if(strcmp(argstr,"-holiday")==0)//Xmas
-						{
-							free(prefix);
-							prefix=strdup(argv[++argnum]);
-						}
-
-					if(strcmp(argstr,"-delay")==0)//mainDelay=20000
-						mainDelay=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-lampy")==0)//lampY=16
-						lampY=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
-						lampSpeed=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-lampset")==0)//lampSet=0
-						lampSet=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
-						flyersMaxY=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-spread")==0)//flyerSpread=500
-						flyerSpread=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-flydelay")==0)//flyersSpeed=1
-						flyersSpeed=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-flystep")==0)//flyersStep=8
-						flyersStep=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
-						treelampSpeed=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
-						treeLampSet=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-treenumber")==0)//treeNumber=1
-						treeNumber=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-treex")==0)//treeX=100
-						treeX=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-treey")==0)//treeY=100
-						treeY=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-stardelay")==0)//starSpeed
-						starSpeed=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-figurex")==0)//figureX=100
-						figureX=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-figurey")==0)//figureY=100
-						figureY=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
-						figureSpeed=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
-						figureNumber=atol(argv[++argnum]);
-
-					if(strcmp(argstr,"-writeconfig")==0)//figureNumber=1
-						{
-							saveVarsToFile(argv[++argnum],xdecorations_rc);
-							return(0);
-						}
-//print help
-					if(strcmp(argstr,"-help")==0)
-						doHelp();
+					free(configFilePath);
+					asprintf(&configFilePath,"%s",argv[++argnum]);
+					loadVarsFromFile(configFilePath,xdecorations_rc);
 				}
+
+			if(strcmp(argstr,"-holiday")==0)//Xmas
+				{
+					free(prefix);
+					prefix=strdup(argv[++argnum]);
+				}
+
+			if(strcmp(argstr,"-delay")==0)//mainDelay=20000
+				mainDelay=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-lampy")==0)//lampY=16
+				lampY=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
+				lampSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-lampset")==0)//lampSet=0
+				lampSet=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
+				flyersMaxY=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-spread")==0)//flyerSpread=500
+				flyerSpread=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-flydelay")==0)//flyersSpeed=1
+				flyersSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-flystep")==0)//flyersStep=8
+				flyersStep=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
+				treelampSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
+				treeLampSet=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-treenumber")==0)//treeNumber=1
+				treeNumber=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-treex")==0)//treeX=100
+				treeX=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-treey")==0)//treeY=100
+				treeY=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-stardelay")==0)//starSpeed
+				starSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-figurex")==0)//figureX=100
+				figureX=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-figurey")==0)//figureY=100
+				figureY=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
+				figureSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
+				figureNumber=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-writeconfig")==0)//figureNumber=1
+				{
+					saveVarsToFile(argv[++argnum],xdecorations_rc);
+					return(0);
+				}
+//print help
+			if(strcmp(argstr,"-help")==0)
+				doHelp();
+		}
 
 	srand((int)time((long* )NULL));
 
@@ -800,6 +799,7 @@ int main(int argc,char* argv[])
 	XCloseDisplay(display);
 	return(0);
 }
+
 
 
 

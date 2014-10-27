@@ -4,7 +4,7 @@ To build just extract the tarball cd into the extracted folder and run 'make', t
 If you use one of the source based distros like LFS, Slackware etc you probably have all the development files you need but if your distro splits the dev files out from the main packages you will need to install them, this varies from distro to distro.
 
 If you are using debian you may have to install some -dev packages like so:
-sudo apt-get install build-essentials
+sudo apt-get install build-essential
 sudo apt-get install libxpm-dev libxt-dev libxext-dev
 You may or may not need all of these dev packages, for instance xubuntu didn't need the libxext-dev package but oddly Lubuntu did.
 
