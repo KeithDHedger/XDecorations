@@ -49,11 +49,16 @@ Window		rootWin;
 int			displayWidth;
 int			displayHeight;
 GC			gc;
+Visual*		visual=NULL;
+int			depth=0;
+Imlib_Image	image;
+int			screen;
 
 int			done=0;
 long		mainDelay=20000;
 
 uint		runCounter=0;
+bool		useWindow=false;
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -145,6 +150,7 @@ args	xdecorations_rc[]=
 	{"lamps",TYPEBOOL,&showLamps},
 	{"star",TYPEBOOL,&showStar},
 	{"treelamps",TYPEBOOL,&showTreeLamps},
+	{"usewindow",TYPEBOOL,&useWindow},
 //strings
 	{"holiday",TYPESTRING,&prefix},
 //ints
@@ -555,6 +561,36 @@ void showUnShow(const char* arg1,const char* arg2,bool *value)
 		}
 }
 
+int get_argb_visual(Visual** vis, int *depth)
+{
+	/* code from gtk project, gdk_screen_get_rgba_visual */
+	XVisualInfo visual_template;
+	XVisualInfo *visual_list=NULL;
+	int nxvisuals = 0, i;
+	visual_template.screen = screen;
+	visual_list = XGetVisualInfo (display, 0,&visual_template, &nxvisuals);
+
+	for (i = 0; i < nxvisuals; i++)
+		{
+
+			if (visual_list[i].depth == 32 &&
+			        (visual_list[i].red_mask   == 0xff0000 &&
+			         visual_list[i].green_mask == 0x00ff00 &&
+			         visual_list[i].blue_mask  == 0x0000ff))
+				{
+					*vis = visual_list[i].visual;
+					*depth = visual_list[i].depth;
+					printf("Found ARGB Visual\n");
+					XFree(visual_list);
+					return 0;
+				}
+		}
+	// no argb visual available
+	printf("No ARGB Visual found\n");
+	XFree(visual_list);
+	return `;
+}
+
 void doHelp(void)
 {
 	printf("XDecorations (c)2014 K. D. Hedger - Version %s\n",VERSION);
@@ -570,6 +606,8 @@ void doHelp(void)
 	printf("-writeconfig FILEPATH\n");
 	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options\n");
 	printf("\tMust be last command on line\n\n");
+	printf("-usewindow STRING\n");
+	printf("\tUse a transparent window instead of the root window\n");
 
 	printf("-showflyer/-no-showflyer\n");
 	printf("\tShow flying objects\n");
@@ -628,8 +666,8 @@ int main(int argc,char* argv[])
 	const	char* argstr;
 	XEvent	ev;
 	Window	root;
-	int		screen;
 	Window	parentWindow;
+	int		rc=0;
 
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
@@ -720,6 +758,10 @@ int main(int argc,char* argv[])
 					saveVarsToFile(argv[++argnum],xdecorations_rc);
 					return(0);
 				}
+
+			if(strcmp(argstr,"-usewindow")==0)//figureNumber=1
+				useWindow=true;
+
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
@@ -738,10 +780,25 @@ int main(int argc,char* argv[])
 		exit(1);
 
 	screen=DefaultScreen(display);
-	rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-
 	displayWidth=DisplayWidth(display,screen);
 	displayHeight=DisplayHeight(display,screen);
+
+	if(useWindow==false)
+		rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+	else
+		{
+			rc=get_argb_visual(&visual,&depth);
+	
+			XSetWindowAttributes attr;
+			attr.colormap=XCreateColormap(display,DefaultRootWindow(display),visual,AllocNone);
+			attr.border_pixel=0;
+			attr.background_pixel=0;
+
+			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,600,600,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
+			XSelectInput(display,rootWin,StructureNotifyMask);
+			gc=XCreateGC(display,rootWin,0,0);
+		}
+
 
 	initLamps();
 	initTree();
