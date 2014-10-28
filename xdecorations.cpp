@@ -267,22 +267,21 @@ int randInt(int maxVal)
 
 void initFlyers(void)
 {
-	int				rc=0;
-	int				j=0;
-	XpmAttributes	attrib;
 
-	attrib.valuemask=0;
+	flyerCount=0;
 
-	rc=0;
-	for(j=0; j<MAXNUMBEROFFLYERS; j++)
+	for(int j=0; j<MAXNUMBEROFFLYERS; j++)
 		{
-			rc=0;
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFly%i.xpm",DATADIR,prefix,j+1);
-			rc=XpmReadFileToPixmap(display,rootWin,pathname,&flyersPixmap[flyerCount][ONPIXMAP],&flyersPixmap[flyerCount][ONMASK],&attrib);
-			if(rc==0)
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFly%i.png",DATADIR,prefix,j+1);
+			image=imlib_load_image(pathname);
+			if(image!=NULL)
 				{
-					flyersWidth[flyerCount]=attrib.width;
-					flyersHeight[flyerCount]=attrib.height;
+					imlib_context_set_image(image);
+					imlib_context_set_drawable(rootWin);
+					imlib_image_set_has_alpha(1);
+					imlib_render_pixmaps_for_whole_image(&flyersPixmap[flyerCount][ONPIXMAP],&flyersPixmap[flyerCount][ONMASK]);
+					flyersWidth[flyerCount]=imlib_image_get_width();
+					flyersHeight[flyerCount]=imlib_image_get_height();
 					flyersY[flyerCount]=(rand() % flyersMaxY);
 					flyersX[flyerCount]=0-flyersWidth[j];
 					if((rand() % flyerSpread)==0)
@@ -592,7 +591,6 @@ void eraseRects(void)
 			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
 			updateTreeLamps();
 		}
-#if 0
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
@@ -600,7 +598,7 @@ void eraseRects(void)
 				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
 			updateFlyers();
 		}
-#endif
+
 	treeNeedsUpdate=false;
 	figureNeedsUpdate=false;
 	flyerNeedsUpdate=false;
@@ -858,20 +856,23 @@ int main(int argc,char* argv[])
 			attr.border_pixel=0;
 			attr.background_pixel=0;
 
-			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,600,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
+			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,displayHeight,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
 			XSelectInput(display,rootWin,StructureNotifyMask);
 			gc=XCreateGC(display,rootWin,0,0);
 			XMapWindow(display,rootWin);
 			XSync(display, False);
 			rg=XCreateRegion();
 			XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
-			printf("%i\n",depth);
+			XWindowAttributes xwa;
+			XGetWindowAttributes(display, DefaultRootWindow(display), &xwa);
+			XMoveResizeWindow(display, rootWin, 0, 0, xwa.width, xwa.height);
+
 		}
 
 	initLamps();
 	initTree();
 	initFigure();
-//	initFlyers();
+	initFlyers();
 
 	XSetFillStyle(display,gc,FillSolid);
 
@@ -924,7 +925,7 @@ int main(int argc,char* argv[])
 			eraseRects();
 			drawTreeLamps();
 			drawFigure();
-//			drawFlyers();
+			drawFlyers();
 			drawLamps();
 		}
 
