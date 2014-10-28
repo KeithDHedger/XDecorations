@@ -1,6 +1,6 @@
 PROGRAM = xdecorations
 SRC =  $(PROGRAM).cpp toon_root.cpp
-LIBS = -L/usr/lib64 -lXext -lX11 -lm -lXpm
+LIBS = -L/usr/lib64 -lXext -lX11 -lm -lXpm -lImlib2
 PREFIX = /usr
 DESTDIR = ${DESTDIR:-""}
 LOCALDATADIR = "`/bin/pwd`/pixmaps"

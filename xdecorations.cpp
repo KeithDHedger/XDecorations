@@ -25,6 +25,8 @@ if not,write to the Free Software
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/xpm.h>
+#include <Imlib2.h>
+#include <X11/extensions/shape.h>
 
 #include <stdio.h>
 #include <signal.h>
@@ -53,6 +55,7 @@ Visual*		visual=NULL;
 int			depth=0;
 Imlib_Image	image;
 int			screen;
+Region		rg;
 
 int			done=0;
 long		mainDelay=20000;
@@ -296,77 +299,110 @@ void initFlyers(void)
 
 void initFigure(void)
 {
-	int				rc=0;
-	XpmAttributes	attrib;
+	imlib_context_set_dither(0);
+	imlib_context_set_display(display);
+	imlib_context_set_visual(visual);
 
-	attrib.valuemask=0;
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOn%i.png",DATADIR,prefix,figureNumber);
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOn%i.xpm",DATADIR,prefix,figureNumber);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK],&attrib);
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOff%i.xpm",DATADIR,prefix,figureNumber);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&figurePixmap[OFFPIXMAP],&figurePixmap[OFFMASK],&attrib);
-
-	if(rc==0)
-		{
-			figureW=attrib.width;
-			figureH=attrib.height;
-		}
-	else
+	image=imlib_load_image(pathname);
+	if(image==NULL)
 		showFigure=false;
+	else
+		{
+			imlib_context_set_image(image);
+			imlib_context_set_drawable(rootWin);
+			imlib_image_set_has_alpha(1);
+			imlib_render_pixmaps_for_whole_image(&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK]);
 
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOff%i.png",DATADIR,prefix,figureNumber);
+			image=imlib_load_image(pathname);
+			if(image==NULL)
+				showFigure=false;
+			else
+				{
+					imlib_context_set_image(image);
+					imlib_context_set_drawable(rootWin);
+					imlib_image_set_has_alpha(1);
+					imlib_render_pixmaps_for_whole_image(&figurePixmap[OFFPIXMAP],&figurePixmap[OFFMASK]);
+
+					figureW=imlib_image_get_width();
+					figureH=imlib_image_get_height();
+				}
+		}
 }
 
 void initLamps(void)
 {
-	int				rc=0;
-	XpmAttributes	attrib;
-	char*			lampseton;
-	char*			lampsetoff;
+	imlib_context_set_dither(0);
+	imlib_context_set_display(display);
+	imlib_context_set_visual(visual);
 
-	attrib.valuemask=0;
-	rc=0;
-
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.xpm",DATADIR,prefix,lampSet);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[ONPIXMAP],&lampsPixmap[ONMASK],&attrib);
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOff%i.xpm",DATADIR,prefix,lampSet);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&lampsPixmap[OFFPIXMAP],&lampsPixmap[OFFMASK],&attrib);
-	if(rc==0)
-		{
-			lampWidth=attrib.width;
-			lampHeight=attrib.height;
-			lampCount=(displayWidth/lampWidth)+1;
-		}
-	else
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.png",DATADIR,prefix,lampSet);
+	image=imlib_load_image(pathname);
+	if(image==NULL)
 		showLamps=false;
+	else
+		{
+			imlib_context_set_image(image);
+			imlib_context_set_drawable(rootWin);
+			imlib_image_set_has_alpha(1);
+//imlib_render_image_on_drawable_at_size(0, 0, 200, 200);
+			imlib_render_pixmaps_for_whole_image(&lampsPixmap[ONPIXMAP],&lampsPixmap[ONMASK]);
+
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOff%i.png",DATADIR,prefix,lampSet);
+			image=imlib_load_image(pathname);
+			if(image==NULL)
+				showLamps=false;
+			else
+				{
+					imlib_context_set_image(image);
+					imlib_context_set_drawable(rootWin);
+					imlib_image_set_has_alpha(1);
+//imlib_render_image_on_drawable_at_size(0, 0, 200, 200);
+					imlib_render_pixmaps_for_whole_image(&lampsPixmap[OFFPIXMAP],&lampsPixmap[OFFMASK]);
+
+					lampWidth=imlib_image_get_width();
+					lampHeight=imlib_image_get_height();
+					lampCount=(displayWidth/lampWidth)+1;
+				}
+		}
 }
 
 void initTree(void)
 {
-	int				rc=0;
-	int				j=0;
-	XpmAttributes	attrib;
-	bool			gotsomelamps=false;
+	bool	gotsomelamps=false;
 
-	attrib.valuemask=0;
+	imlib_context_set_dither(0);
+	imlib_context_set_display(display);
+	imlib_context_set_visual(visual);
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree%i.xpm",DATADIR,prefix,treeNumber);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&treePixmap[ONPIXMAP],&treePixmap[ONMASK],&attrib);
-	if(rc==0)
-		{
-			treeWidth=attrib.width;
-			treeHeight=attrib.height;
-		}
-	else
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTree%i.png",DATADIR,prefix,treeNumber);
+
+	image=imlib_load_image(pathname);
+	if(image==NULL)
 		showTree=false;
+	else
+		{
+			imlib_context_set_image(image);
+			imlib_context_set_drawable(rootWin);
+			imlib_image_set_has_alpha(1);
+			imlib_render_pixmaps_for_whole_image(&treePixmap[ONPIXMAP],&treePixmap[ONMASK]);
+			treeWidth=imlib_image_get_width();
+			treeHeight=imlib_image_get_height();
+		}
 
 	treeLampCount=0;
-	for(j=0; j<MAXNUMBEROFTREELIGHTS; j++)
+	for(int j=0; j<MAXNUMBEROFTREELIGHTS; j++)
 		{
-			rc=0;
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.xpm",DATADIR,prefix,treeLampSet,j+1);
-			rc=XpmReadFileToPixmap(display,rootWin,pathname,&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK],&attrib);
-			if(rc==0)
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sTreeLights%i.%i.png",DATADIR,prefix,treeLampSet,j+1);
+			image=imlib_load_image(pathname);
+			if(image!=NULL)
 				{
+					imlib_context_set_image(image);
+					imlib_context_set_drawable(rootWin);
+					imlib_image_set_has_alpha(1);
+					imlib_render_pixmaps_for_whole_image(&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK]);
 					treeLampCount++;
 					gotsomelamps=true;
 				}
@@ -374,18 +410,41 @@ void initTree(void)
 	if(gotsomelamps==false)
 		showTreeLamps=false;
 
-	rc=0;
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.xpm",DATADIR,prefix);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[ONPIXMAP],&starPixmap[ONMASK],&attrib);
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar1.xpm",DATADIR,prefix);
-	rc+=XpmReadFileToPixmap(display,rootWin,pathname,&starPixmap[OFFPIXMAP],&starPixmap[OFFMASK],&attrib);
-	if(rc!=0)
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar0.png",DATADIR,prefix);
+	image=imlib_load_image(pathname);
+	if(image==NULL)
 		showStar=false;
+	else
+		{
+			imlib_context_set_image(image);
+			imlib_context_set_drawable(rootWin);
+			imlib_image_set_has_alpha(1);
+			imlib_render_pixmaps_for_whole_image(&starPixmap[ONPIXMAP],&starPixmap[ONMASK]);
 
-	rc=0;
-	rc+=XpmReadFileToPixmap(display,rootWin,DATADIR "/Tinsel.xpm",&tinselPixmap[ONPIXMAP],&tinselPixmap[ONMASK],&attrib);
-	if(rc!=0)
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sStar1.png",DATADIR,prefix);
+			image=imlib_load_image(pathname);
+			if(image==NULL)
+				showStar=false;
+			else
+				{
+					imlib_context_set_image(image);
+					imlib_context_set_drawable(rootWin);
+					imlib_image_set_has_alpha(1);
+					imlib_render_pixmaps_for_whole_image(&starPixmap[OFFPIXMAP],&starPixmap[OFFMASK]);
+				}
+		}
+
+	snprintf(pathname,MAXPATHNAMELEN,"%s/Tinsel.png",DATADIR,prefix);
+	image=imlib_load_image(pathname);
+	if(image==NULL)
 		showTinsel=false;
+	else
+		{
+			imlib_context_set_image(image);
+			imlib_context_set_drawable(rootWin);
+			imlib_image_set_has_alpha(1);
+			imlib_render_pixmaps_for_whole_image(&tinselPixmap[ONPIXMAP],&tinselPixmap[ONMASK]);
+		}
 }
 
 void drawFlyers(void)
@@ -522,17 +581,18 @@ void eraseRects(void)
 	int	rc=0;
 	int	j;
 
-	if((showTree==true) && (treeNeedsUpdate==true))
-		{
-			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
-			updateTreeLamps();
-		}
-
 	if((showFigure==true) && (figureNeedsUpdate==true))
 		{
 			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
 			updateFigure();
 		}
+
+	if((showTree==true) && (treeNeedsUpdate==true))
+		{
+			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+			updateTreeLamps();
+		}
+#if 0
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
@@ -540,7 +600,7 @@ void eraseRects(void)
 				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
 			updateFlyers();
 		}
-
+#endif
 	treeNeedsUpdate=false;
 	figureNeedsUpdate=false;
 	flyerNeedsUpdate=false;
@@ -588,7 +648,7 @@ int get_argb_visual(Visual** vis, int *depth)
 	// no argb visual available
 	printf("No ARGB Visual found\n");
 	XFree(visual_list);
-	return `;
+	return 1;
 }
 
 void doHelp(void)
@@ -759,7 +819,7 @@ int main(int argc,char* argv[])
 					return(0);
 				}
 
-			if(strcmp(argstr,"-usewindow")==0)//figureNumber=1
+			if(strcmp(argstr,"-usewindow")==0)//use transparent window instead of root window
 				useWindow=true;
 
 //print help
@@ -784,28 +844,35 @@ int main(int argc,char* argv[])
 	displayHeight=DisplayHeight(display,screen);
 
 	if(useWindow==false)
-		rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+		{
+			rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+			visual=DefaultVisual(display,screen);
+			gc=XCreateGC(display,rootWin,0,NULL);
+		}	
 	else
 		{
 			rc=get_argb_visual(&visual,&depth);
-	
+
 			XSetWindowAttributes attr;
 			attr.colormap=XCreateColormap(display,DefaultRootWindow(display),visual,AllocNone);
 			attr.border_pixel=0;
 			attr.background_pixel=0;
 
-			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,600,600,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
+			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,600,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
 			XSelectInput(display,rootWin,StructureNotifyMask);
 			gc=XCreateGC(display,rootWin,0,0);
+			XMapWindow(display,rootWin);
+			XSync(display, False);
+			rg=XCreateRegion();
+			XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
+			printf("%i\n",depth);
 		}
-
 
 	initLamps();
 	initTree();
 	initFigure();
-	initFlyers();
+//	initFlyers();
 
-	gc=XCreateGC(display,rootWin,0,NULL);
 	XSetFillStyle(display,gc,FillSolid);
 
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
@@ -814,6 +881,15 @@ int main(int argc,char* argv[])
 		{
 			while (XPending(display))
 				XNextEvent(display,&ev);
+	
+			switch(ev.type)
+				{
+					case ClientMessage:
+						if (ev.xclient.message_type == XInternAtom(display,"WM_PROTOCOLS",1) && (Atom)ev.xclient.data.l[0] == XInternAtom(display,"WM_DELETE_WINDOW",1))
+						done=1;
+						continue;
+						break;
+				}
 
 			usleep(mainDelay);
 			runCounter++;
@@ -848,11 +924,12 @@ int main(int argc,char* argv[])
 			eraseRects();
 			drawTreeLamps();
 			drawFigure();
-			drawFlyers();
+//			drawFlyers();
 			drawLamps();
 		}
 
-	XClearWindow(display,rootWin);
+	if(useWindow==false)
+		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 	return(0);
 }
