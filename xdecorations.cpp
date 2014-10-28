@@ -27,6 +27,7 @@ if not,write to the Free Software
 #include <X11/xpm.h>
 #include <Imlib2.h>
 #include <X11/extensions/shape.h>
+#include <X11/Xatom.h>
 
 #include <stdio.h>
 #include <signal.h>
@@ -858,15 +859,38 @@ int main(int argc,char* argv[])
 
 			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,displayHeight,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
 			XSelectInput(display,rootWin,StructureNotifyMask);
+
+	Atom    				property;
+	Atom					xa;
+	Atom					xa_prop[10];
+	xa=XInternAtom(display,"_NET_WM_STATE",False);
+	xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
+	xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
+	xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
+	xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
+	xa_prop[4]=XInternAtom(display,"_NET_WM_STATE_FULLSCREEN",False);
+
+	xa=XInternAtom(display,"_NET_WM_STATE",False);
+	if(xa!=None)
+		XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,5);
+
+//	hints.flags=2;
+//	hints.decorations=0;
+//	property=XInternAtom(display,"_MOTIF_WM_HINTS",True);
+//			XChangeProperty(display,flyerWindow[j],property,property,32,PropModeReplace,(unsigned char *)&hints,5);
+
+
+
+
 			gc=XCreateGC(display,rootWin,0,0);
 			XMapWindow(display,rootWin);
 			XSync(display, False);
 			rg=XCreateRegion();
 			XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
 			XWindowAttributes xwa;
-			XGetWindowAttributes(display, DefaultRootWindow(display), &xwa);
-			XMoveResizeWindow(display, rootWin, 0, 0, xwa.width, xwa.height);
-
+			XGetWindowAttributes(display,DefaultRootWindow(display), &xwa);
+			XMoveResizeWindow(display,rootWin, 0, -900, xwa.width, xwa.height);
+printf("wid=%i h=%i\n",displayWidth,displayHeight);
 		}
 
 	initLamps();
