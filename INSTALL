@@ -12,6 +12,14 @@ Fedora users may need to install some -devel packages like so ( watch the case, 
 sudo yum install libXpm-devel
 sudo yum install libXt-devel
 
+WORKAROUNDS
+
+If you are using certain distros that hide or otherwise muck about with the root window you can trye these:
+
+LUbuntu
+run:
+pcmanfm --desktop-off before running xdecorations.
+
 
 USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.
