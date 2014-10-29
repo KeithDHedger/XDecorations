@@ -26,6 +26,9 @@ The window manager doesn't seem to be placing the windows on all desktops -- TO 
 Xubuntu:
 killall xfdesktop.
 
+UBuntu/Gnome3/Unity etc:
+You will almost certainly have to use the -usewindow option ( this is now the default ).
+
 USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.
 
@@ -45,6 +48,9 @@ Run installed XDecorations with default config file in ~/.config/xdecorations.rc
 xdecorations
 
 If no command line otions are used and no config file exists at ~/.config/xdecorations.rc the default is to just show a string of Xmas lights at the top of the screen.
+
+CAVEATS:
+You MUST have a composite manager running to use the windowing option ( default ), semi transparent images can ONLY be used when in window mode, when writing to the root window ( -no-usewindow ) the alpha blend of the images will be ignored.
 
 Bugs suggestions etc to:
 

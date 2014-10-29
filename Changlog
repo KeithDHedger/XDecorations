@@ -1,9 +1,10 @@
 0.1.3
+Default is now to use a transparent window instead of writing to the root window.
 Fixed tinsel bug.
-Addec -no-usewindow option to overide config file.
+Addec -no-usewindow option to overide config file/default setting.
 Added true transparency, needs to be run in window with composite manager.
 Changed image format from XPM to PNG.
-Added -usewindow option, t use big transparent window instead of writing to root window.
+Added -usewindow option, to use big transparent window instead of writing to root window.
 Added imlib2 dependency.
 
 0.1.2

@@ -62,7 +62,7 @@ int			done=0;
 long		mainDelay=20000;
 
 uint		runCounter=0;
-bool		useWindow=false;
+bool		useWindow=true;
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -94,7 +94,7 @@ int			figureNumber=1;
 Pixmap		lampsPixmap[4];
 int			lampSpeed=100;
 int			lampX=0;
-int			lampY=16;
+int			lampY=0;
 int			lampWidth;
 int			lampHeight;
 int			lampCount;
