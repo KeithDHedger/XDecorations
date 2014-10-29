@@ -13,7 +13,7 @@ Fedora users may need to install some -devel packages like so ( watch the case, 
 sudo yum install libXpm-devel
 sudo yum install libXt-devel imlib2-devel
 
-WORKAROUNDS
+WORKAROUNDS - These are probably not needed with the -usewindow option ( Default ).
 
 If nothing is displayed or the graphics are fubar when writing to the root window first try adding the -usewindow option.
 If you are using certain distros that hide or otherwise muck about with the root window you can try these:
