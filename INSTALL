@@ -21,6 +21,7 @@ If you are using certain distros that hide or otherwise muck about with the root
 LUbuntu
 run:
 pcmanfm --desktop-off before running xdecorations.
+The window manager doesn't seem to be placing the windows on all desktops -- TO BE FIXED.
 
 Xubuntu:
 killall xfdesktop.

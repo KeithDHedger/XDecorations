@@ -737,7 +737,7 @@ int main(int argc,char* argv[])
 	int		rc=0;
 	Hints	hints;
 	Atom	xa;
-	Atom	xa_prop[5];
+	Atom	xa_prop[10];
 
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
@@ -874,15 +874,16 @@ int main(int argc,char* argv[])
 					xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
 					xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
 					xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
-					xa_prop[5]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
+					xa_prop[4]=XInternAtom(display,"_NET_WM_ACTION_CHANGE_DESKTOP",False);
+					xa_prop[9]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
 
 					xa=XInternAtom(display,"_NET_WM_STATE",False);
 					if(xa!=None)
-						XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,4);
+						XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,5);
 
 					hints.flags=2;
 					hints.decorations=0;
-					XChangeProperty(display,rootWin,xa_prop[5],xa_prop[5],32,PropModeReplace,(unsigned char *)&hints,5);
+					XChangeProperty(display,rootWin,xa_prop[9],xa_prop[9],32,PropModeReplace,(unsigned char *)&hints,5);
 
 					gc=XCreateGC(display,rootWin,0,0);
 					rg=XCreateRegion();
