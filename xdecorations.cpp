@@ -40,9 +40,9 @@ if not,write to the Free Software
 #define MAXNUMBEROFTREELIGHTS 10
 
 #define VERSION "0.1.3"
-
-	enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
+
+enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 
 char		pathname[MAXPATHNAMELEN];
 char*		configFilePath;
@@ -649,13 +649,11 @@ int get_argb_visual(Visual** vis, int *depth)
 				{
 					*vis = visual_list[i].visual;
 					*depth = visual_list[i].depth;
-					printf("Found ARGB Visual\n");
 					XFree(visual_list);
 					return 0;
 				}
 		}
 	// no argb visual available
-	printf("No ARGB Visual found\n");
 	XFree(visual_list);
 	return 1;
 }
@@ -675,7 +673,7 @@ void doHelp(void)
 	printf("-writeconfig FILEPATH\n");
 	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options\n");
 	printf("\tMust be last command on line\n\n");
-	printf("-usewindow STRING\n");
+	printf("-usewindow/-no-usewindow STRING\n");
 	printf("\tUse a transparent window instead of the root window\n");
 
 	printf("-showflyer/-no-showflyer\n");
@@ -757,6 +755,7 @@ int main(int argc,char* argv[])
 			showUnShow(argstr,"showstar",&showStar);//showStar=false
 			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
 			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
+			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
@@ -831,8 +830,8 @@ int main(int argc,char* argv[])
 					return(0);
 				}
 
-			if(strcmp(argstr,"-usewindow")==0)//use transparent window instead of root window
-				useWindow=true;
+//			if(strcmp(argstr,"-usewindow")==0)//use transparent window instead of root window
+//				useWindow=true;
 
 //print help
 			if(strcmp(argstr,"-help")==0)
@@ -864,36 +863,46 @@ int main(int argc,char* argv[])
 	else
 		{
 			rc=get_argb_visual(&visual,&depth);
+			if(rc==0)
+				{
+					XSetWindowAttributes attr;
+					attr.colormap=XCreateColormap(display,DefaultRootWindow(display),visual,AllocNone);
+					attr.border_pixel=0;
+					attr.background_pixel=0;
 
-			XSetWindowAttributes attr;
-			attr.colormap=XCreateColormap(display,DefaultRootWindow(display),visual,AllocNone);
-			attr.border_pixel=0;
-			attr.background_pixel=0;
+					rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,displayHeight,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
+					XSelectInput(display,rootWin,StructureNotifyMask);
 
-			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,displayHeight,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
-			XSelectInput(display,rootWin,StructureNotifyMask);
+					xa=XInternAtom(display,"_NET_WM_STATE",False);
+					xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
+					xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
+					xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
+					xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
+					xa_prop[5]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
 
-			xa=XInternAtom(display,"_NET_WM_STATE",False);
-			xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
-			xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
-			xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
-			xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
-			xa_prop[5]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
+					xa=XInternAtom(display,"_NET_WM_STATE",False);
+					if(xa!=None)
+						XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,4);
 
-			xa=XInternAtom(display,"_NET_WM_STATE",False);
-			if(xa!=None)
-				XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,4);
+					hints.flags=2;
+					hints.decorations=0;
+					XChangeProperty(display,rootWin,xa_prop[5],xa_prop[5],32,PropModeReplace,(unsigned char *)&hints,5);
 
-			hints.flags=2;
-			hints.decorations=0;
-			XChangeProperty(display,rootWin,xa_prop[5],xa_prop[5],32,PropModeReplace,(unsigned char *)&hints,5);
-
-			gc=XCreateGC(display,rootWin,0,0);
-			rg=XCreateRegion();
-			XMoveWindow(display,rootWin,0,0);
-			XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
-			XMapWindow(display,rootWin);
-			XSync(display, False);
+					gc=XCreateGC(display,rootWin,0,0);
+					rg=XCreateRegion();
+					XMapWindow(display,rootWin);
+					XSync(display, False);
+					
+					XMoveWindow(display,rootWin,0,0);
+					XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
+				}
+			else
+				{
+					rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+					visual=DefaultVisual(display,screen);
+					gc=XCreateGC(display,rootWin,0,NULL);
+					printf("Can't get ARGB, do you have a composite manager running\n");
+				}
 		}
 
 	initLamps();
@@ -918,8 +927,6 @@ int main(int argc,char* argv[])
 						continue;
 						
 						break;
-					default:
-						XMoveWindow(display,rootWin,0,0);
 				}
 
 			usleep(mainDelay);
