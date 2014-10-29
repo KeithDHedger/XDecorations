@@ -444,7 +444,7 @@ void initTree(void)
 				}
 		}
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/Tinsel.png",DATADIR,prefix);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%sTinsel.png",DATADIR,prefix);
 	image=imlib_load_image(pathname);
 	if(image==NULL)
 		showTinsel=false;

@@ -11,7 +11,7 @@ You may or may not need all of these dev packages, for instance xubuntu didn't n
 
 Fedora users may need to install some -devel packages like so ( watch the case, that is a capital 'X' ):
 sudo yum install libXpm-devel
-sudo yum install libXt-devel 
+sudo yum install libXt-devel imlib2-devel
 
 WORKAROUNDS
 

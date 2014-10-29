@@ -1,4 +1,5 @@
 0.1.3
+Fixed tinsel bug.
 Addec -no-usewindow option to overide config file.
 Added true transparency, needs to be run in window with composite manager.
 Changed image format from XPM to PNG.
