@@ -39,7 +39,7 @@ if not,write to the Free Software
 #define MAXNUMBEROFFLYERS 10
 #define MAXNUMBEROFTREELIGHTS 10
 
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 
 	enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
