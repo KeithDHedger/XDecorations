@@ -829,10 +829,6 @@ int main(int argc,char* argv[])
 					saveVarsToFile(argv[++argnum],xdecorations_rc);
 					return(0);
 				}
-
-//			if(strcmp(argstr,"-usewindow")==0)//use transparent window instead of root window
-//				useWindow=true;
-
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
