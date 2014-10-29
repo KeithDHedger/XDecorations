@@ -22,7 +22,10 @@ delay 10000
 #
 #Default config file is ~/.config/xdecorations.rc
 #
-#
+#Write direct to the root window(0) or to a transparent window(1).
+usewindow 1
+#Default is to use transparent windows
+
 ##### Tree and tree decorations. #####
 #Show tree, 1=show, 0=don't show.
 #Defaults to 0.

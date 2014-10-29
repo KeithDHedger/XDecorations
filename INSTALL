@@ -5,27 +5,34 @@ If you use one of the source based distros like LFS, Slackware etc you probably 
 
 If you are using debian you may have to install some -dev packages like so:
 sudo apt-get install build-essential
-sudo apt-get install libxpm-dev libxt-dev libxext-dev
+sudo apt-get install libxpm-dev libxt-dev libxext-dev libimlib2-dev
+
 You may or may not need all of these dev packages, for instance xubuntu didn't need the libxext-dev package but oddly Lubuntu did.
 
 Fedora users may need to install some -devel packages like so ( watch the case, that is a capital 'X' ):
 sudo yum install libXpm-devel
-sudo yum install libXt-devel
+sudo yum install libXt-devel 
 
 WORKAROUNDS
 
-If you are using certain distros that hide or otherwise muck about with the root window you can trye these:
+If nothing is displayed or the graphics are fubar when writing to the root window first try adding the -usewindow option.
+If you are using certain distros that hide or otherwise muck about with the root window you can try these:
 
 LUbuntu
 run:
 pcmanfm --desktop-off before running xdecorations.
 
+Xubuntu:
+killall xfdesktop.
 
 USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.
 
 Run XDecorations with the example config file.
 ./xdecorations -configfile ./xdecorations.rc
+
+Run XDecorations with the example config file but in the root window.
+./xdecorations -configfile ./xdecorations.rc -no-usewindow
 
 Run XDecorations with the example config file with a pumpkin.
 ./xdecorations -configfile ./xdecorations.rc -figurenumber 1
