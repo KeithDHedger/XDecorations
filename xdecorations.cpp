@@ -86,7 +86,6 @@ int			figureX=100;
 int			figureY=100;
 int			figureW;
 int			figureH;
-bool		showFigure=false;
 int			figureOnOff=0;
 int			figureNumber=1;
 
@@ -98,7 +97,6 @@ int			lampY=0;
 int			lampWidth;
 int			lampHeight;
 int			lampCount;
-bool		showLamps=true;
 int			lampSet=1;
 int			lampsOnOff=0;
 
@@ -160,8 +158,6 @@ args	xdecorations_rc[]=
 	{"flyer",TYPEBOOL,&showFlyers},
 	{"tree",TYPEBOOL,&showTree},
 	{"tinsel",TYPEBOOL,&showTinsel},
-	{"figure",TYPEBOOL,&showFigure},
-	{"lamps",TYPEBOOL,&showLamps},
 	{"star",TYPEBOOL,&showStar},
 	{"treelamps",TYPEBOOL,&showTreeLamps},
 	{"usewindow",TYPEBOOL,&useWindow},
@@ -185,7 +181,7 @@ args	xdecorations_rc[]=
 	{"figurex",TYPEINT,&figureX},
 	{"figurey",TYPEINT,&figureY},
 	{"figuredelay",TYPEINT,&figureSpeed},
-	{"figurenumber",TYPEINT,&figureNumber},
+	{"figure",TYPEINT,&figureNumber},
 	{NULL,0,NULL}
 };
 
@@ -317,7 +313,7 @@ void initFigure(void)
 
 	image=imlib_load_image(pathname);
 	if(image==NULL)
-		showFigure=false;
+		figureNumber=0;
 	else
 		{
 			imlib_context_set_image(image);
@@ -328,7 +324,7 @@ void initFigure(void)
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFigureOff%i.png",DATADIR,prefix,figureNumber);
 			image=imlib_load_image(pathname);
 			if(image==NULL)
-				showFigure=false;
+				figureNumber=0;
 			else
 				{
 					imlib_context_set_image(image);
@@ -351,7 +347,7 @@ void initLamps(void)
 	snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOn%i.png",DATADIR,prefix,lampSet);
 	image=imlib_load_image(pathname);
 	if(image==NULL)
-		showLamps=false;
+		lampSet=0;
 	else
 		{
 			imlib_context_set_image(image);
@@ -363,7 +359,7 @@ void initLamps(void)
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%sLampsOff%i.png",DATADIR,prefix,lampSet);
 			image=imlib_load_image(pathname);
 			if(image==NULL)
-				showLamps=false;
+				lampSet=0;
 			else
 				{
 					imlib_context_set_image(image);
@@ -480,7 +476,7 @@ void drawFigure(void)
 {
 	int rc;
 
-	if(showFigure==false)
+	if(figureNumber==0)
 		return;
 
 	rc=XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
@@ -494,7 +490,7 @@ void drawLamps(void)
 	int loop;
 	int	CurrentlampX;
 
-	if(showLamps==false)
+	if(lampSet==0)
 		return;
 
 	CurrentlampX=lampX;
@@ -591,7 +587,7 @@ void eraseRects(void)
 	int	rc=0;
 	int	j;
 
-	if((showFigure==true) && (figureNeedsUpdate==true))
+	if((figureNumber!=0) && (figureNeedsUpdate==true))
 		{
 			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
 			updateFigure();
@@ -750,8 +746,6 @@ int main(int argc,char* argv[])
 
 			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
 			showUnShow(argstr,"showtree",&showTree);//showTree=false
-			showUnShow(argstr,"showlamps",&showLamps);//showLamps=true
-			showUnShow(argstr,"showfigure",&showFigure);//showFigure=false
 			showUnShow(argstr,"showstar",&showStar);//showStar=false
 			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
 			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
@@ -779,7 +773,7 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
 				lampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-lampset")==0)//lampSet=0
+			if(strcmp(argstr,"-lampset")==0)//lampSet=1
 				lampSet=atol(argv[++argnum]);
 
 			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
@@ -814,6 +808,9 @@ int main(int argc,char* argv[])
 
 			if(strcmp(argstr,"-figurex")==0)//figureX=100
 				figureX=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-figure")==0)//figure=1
+				figureNumber=atol(argv[++argnum]);
 
 			if(strcmp(argstr,"-figurey")==0)//figureY=100
 				figureY=atol(argv[++argnum]);
@@ -929,7 +926,7 @@ int main(int argc,char* argv[])
 			usleep(mainDelay);
 			runCounter++;
 
-			if(showLamps==true)
+			if(lampSet!=0)
 				{
 					if((runCounter % lampSpeed)==0)
 						updateLamps();
@@ -944,7 +941,7 @@ int main(int argc,char* argv[])
 						updateStar();
 				}
 
-			if(showFigure==true)
+			if(figureNumber!=0)
 				{
 					if((runCounter % figureSpeed)==0)
 						figureNeedsUpdate=true;

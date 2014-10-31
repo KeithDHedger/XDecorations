@@ -31,6 +31,8 @@ You will almost certainly have to use the -usewindow option ( this is now the de
 
 Linux Mint KDE 
 The window manager doesn't seem to be placing the windows on all desktops -- TO BE FIXED.
+With KDE use kstart --alldesktops ./xdecorations
+
 
 USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.
