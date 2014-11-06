@@ -38,6 +38,8 @@ if not,write to the Free Software
 #define MAXPATHNAMELEN 2048
 #define MAXNUMBEROFFLYERS 10
 #define MAXNUMBEROFTREELIGHTS 10
+#define MAXFLOAT 10
+#define MAXFALLINGOBJECTS 100
 
 #define VERSION "0.1.3"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
@@ -64,6 +66,40 @@ long		mainDelay=20000;
 uint		runCounter=0;
 bool		useWindow=true;
 
+struct		objects
+{
+	Pixmap	pixmap;
+	Pixmap	mask;
+	int		h;
+	int		w;
+};
+
+struct		movement
+{
+	objects	*object;
+	int		x;
+	int		y;
+	int		deltaX;
+	int		deltaY;
+	int		stepX;
+	int		stepY;
+};
+	
+//falling
+objects		floating[MAXFLOAT];
+movement	moving[MAXFALLINGOBJECTS];
+//Pixmap		fallingPixmap[MAXNUMBEROFFALLING][2];
+//int			fallingWidth[MAXNUMBEROFFALLING];
+//int			fallingHeight[MAXNUMBEROFFALLING];
+//int			fallingX[MAXNUMBEROFFALLING];
+//int			fallingY[MAXNUMBEROFFALLING];
+//int			fallingSpeed=10;
+//int			fallingDeltaX=2;
+//int			fallingDeltaY=2;
+int			fallingCount=0;
+int			numberOfFalling=25;
+bool		showFalling=false;
+
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
 int			flyersSpeed=1;
@@ -77,7 +113,6 @@ int			flyersMaxY=400;
 int			flyersActive[MAXNUMBEROFFLYERS];
 int			flyerSpread=500;
 int			flyerCount=0;
-Window		flyerWindow[MAXNUMBEROFFLYERS];
 
 //figure
 Pixmap		figurePixmap[4];
@@ -371,6 +406,46 @@ void initLamps(void)
 					lampWidth=imlib_image_get_width();
 					lampHeight=imlib_image_get_height();
 					lampCount=(displayWidth/lampWidth)+1;
+				}
+		}
+}
+
+void initFalling(void)
+{
+	int	floatnumber;
+
+	fallingCount=0;
+
+	for(int j=0;j<MAXFLOAT;j++)
+		{
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFloat%i.png",DATADIR,prefix,j+1);
+			image=imlib_load_image(pathname);
+			if(image!=NULL)
+				{
+					imlib_context_set_image(image);
+					imlib_context_set_drawable(rootWin);
+					imlib_image_set_has_alpha(1);
+					imlib_render_pixmaps_for_whole_image(&floating[fallingCount].pixmap,&floating[fallingCount].mask);
+					floating[fallingCount].w=imlib_image_get_width();
+					floating[fallingCount].h=imlib_image_get_height();
+					fallingCount++;
+				}
+		}
+
+	if(fallingCount==0)
+		showFalling=false;
+	else
+		{
+			for(int j=0;j<numberOfFalling;j++)
+				{
+					floatnumber=(rand() % fallingCount);
+					moving[j].object=&floating[floatnumber];
+					moving[j].x=(rand() % displayWidth);
+					moving[j].y=0-moving[j].object->h;
+					moving[j].deltaX=0;
+					moving[j].deltaY=0;
+					moving[j].stepX=0;
+					moving[j].stepY=1;
 				}
 		}
 }
