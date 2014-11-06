@@ -98,7 +98,7 @@ movement	moving[MAXFALLINGOBJECTS];
 //int			fallingDeltaY=2;
 int			fallingCount=0;
 int			numberOfFalling=25;
-bool		showFalling=false;
+bool		showFalling=true;
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -448,6 +448,7 @@ void initFalling(void)
 					moving[j].stepY=1;
 				}
 		}
+	printf("%i\n",fallingCount);
 }
 
 void initTree(void)
@@ -978,6 +979,7 @@ int main(int argc,char* argv[])
 	initTree();
 	initFigure();
 	initFlyers();
+	initFalling();
 
 	XSetFillStyle(display,gc,FillSolid);
 
