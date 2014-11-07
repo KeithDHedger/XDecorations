@@ -83,6 +83,7 @@ struct		movement
 	int		deltaY;
 	int		stepX;
 	int		stepY;
+	bool	use;
 };
 	
 //falling
@@ -97,8 +98,17 @@ movement	moving[MAXFALLINGOBJECTS];
 //int			fallingDeltaX=2;
 //int			fallingDeltaY=2;
 int			fallingCount=0;
-int			numberOfFalling=25;
+int			numberOfFalling=100;
 bool		showFalling=true;
+int			fallSpeed=1;
+int			fallYSpeed=4;
+int			fallXpeed=20;
+int			fallingStep=1;
+int			xSwirl=40;
+int			ySwirl=40;
+int			leafSpread=400;
+int			wind=4;
+int			blusterSpeed=20;
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -167,6 +177,7 @@ char*		prefix;
 bool		treeNeedsUpdate=false;
 bool		flyerNeedsUpdate=false;
 bool		figureNeedsUpdate=false;
+bool		fallingNeedsUpdate=false;
 
 struct args
 {
@@ -307,6 +318,25 @@ int randInt(int maxVal)
 	return rand() % maxVal;
 }
 
+bool randomEvent(int max)
+{
+	if((random() % max)==0)
+		return(true);
+
+	return(false);
+}
+
+int	randomDirection(void)
+{
+	int	r;
+
+	if(randomEvent(2)==true)
+		r=1;
+	else
+		r=-1;
+	return(r);
+}
+
 void initFlyers(void)
 {
 
@@ -442,13 +472,13 @@ void initFalling(void)
 					moving[j].object=&floating[floatnumber];
 					moving[j].x=(rand() % displayWidth);
 					moving[j].y=0-moving[j].object->h;
-					moving[j].deltaX=0;
-					moving[j].deltaY=0;
-					moving[j].stepX=0;
-					moving[j].stepY=1;
+					moving[j].deltaX=1;
+					moving[j].deltaY=1;
+					moving[j].stepX=1;
+					moving[j].stepY=randInt(fallYSpeed)+1;
+					moving[j].use=false;
 				}
 		}
-	printf("%i\n",fallingCount);
 }
 
 void initTree(void)
@@ -580,6 +610,103 @@ void drawLamps(void)
 		}
 }
 
+void drawFalling(void)
+{
+	int rc;
+	for(int j=0;j<numberOfFalling;j++)
+		{
+			rc=XSetClipMask(display,gc,moving[j].object->mask);
+			rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
+			rc=XCopyArea(display,moving[j].object->pixmap,rootWin,gc,0,0,moving[j].object->w,moving[j].object->h,moving[j].x,moving[j].y);
+	}
+}
+#define MAXXSTEP 2             /* drift speed max */
+#define WHIRLFACTOR 3
+int SmoothWhirl = 1;
+int WhirlAdapt;
+int WhirlFactor = WHIRLFACTOR;
+int	blusterDuration=3000;
+int blusterEvent=2000;
+int blusterCountdown=0;
+int	blusterDirection=0;
+
+void updateFalling(void)
+{
+blusterSpeed=40;
+	for(int j=0;j<numberOfFalling;j++)
+		{
+			if(moving[j].use==true)
+				{
+					//if (SmoothWhirl)
+					//	{
+							WhirlAdapt=randInt(WhirlFactor); 
+							//if(randInt(1000)<500)
+								if(randomEvent(2)==true)
+									WhirlAdapt=-WhirlAdapt;
+							//''snow->xStep = snow->xStep + WhirlAdapt;
+							moving[j].stepX=moving[j].stepX+WhirlAdapt;
+							//if (snow->xStep > MaxXStep) snow->xStep = MaxXStep;
+							if(moving[j].stepX>MAXXSTEP)
+								moving[j].stepX=MAXXSTEP;
+							if(moving[j].stepX<-MAXXSTEP)
+								moving[j].stepX=-MAXXSTEP;
+					//	}
+
+//					if(randomEvent(ySwirl)==true)
+//						{
+//							
+//						moving[j].stepY=(moving[j].stepY+(randomDirection()));
+//						}
+//						moving[j].deltaY=randomDirection();
+//					else
+//						moving[j].deltaY=1;
+//
+//					if(randomEvent(xSwirl)==true)
+//						moving[j].deltaX=randomDirection();
+
+					moving[j].y=moving[j].y+moving[j].stepY;
+					//moving[j].x=moving[j].x+(moving[j].deltaX*moving[j].stepX);
+					//moving[j].x=moving[j].x+(moving[j].stepX/fallXpeed);
+					//moving[j].x=moving[j].x+moving[j].stepX+wind;
+					
+					if(blusterCountdown==0)
+						{
+							moving[j].x=moving[j].x+moving[j].stepX+wind;
+							if(randomEvent(blusterEvent))
+								{
+									blusterCountdown=blusterDuration;
+									blusterDirection=randomDirection();
+								}
+						}
+					else
+						{
+							moving[j].x=moving[j].x+((blusterSpeed+randInt(blusterSpeed/10))*blusterDirection);
+							blusterCountdown--;
+							if(blusterCountdown<0)
+								blusterCountdown=0;
+						}			
+					
+
+					if(moving[j].y>displayHeight+moving[j].object->h)
+						{
+							moving[j].use=false;
+							moving[j].y=0-moving[j].object->h;
+						}
+					
+					if(moving[j].x>displayWidth+moving[j].object->w)
+						moving[j].x=0-moving[j].object->w;
+					
+					if(moving[j].x<0-moving[j].object->w)
+						moving[j].x=displayWidth;
+				}
+			else
+				{
+					if(randomEvent(leafSpread)==true)
+						moving[j].use=true;
+				}
+		}
+}
+
 void updateLamps(void)
 {
 	lampsOnOff=(lampsOnOff+1) & 1;
@@ -682,9 +809,21 @@ void eraseRects(void)
 			updateFlyers();
 		}
 
+	if((showFalling==true) && (fallingNeedsUpdate==true))
+		{
+			for(int j=0;j<numberOfFalling;j++)
+				{
+					rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
+					rc=XSetClipMask(display,gc,0);
+					rc=XClearArea(display,rootWin,moving[j].x,moving[j].y,moving[j].object->w,moving[j].object->h,False);
+				}
+			updateFalling();
+		}
+
 	treeNeedsUpdate=false;
 	figureNeedsUpdate=false;
 	flyerNeedsUpdate=false;
+	fallingNeedsUpdate=false;
 }
 
 void showUnShow(const char* arg1,const char* arg2,bool *value)
@@ -810,6 +949,14 @@ int main(int argc,char* argv[])
 	Hints	hints;
 	Atom	xa;
 	Atom	xa_prop[10];
+	struct timespec now;
+
+	clock_gettime(CLOCK_MONOTONIC,&now);
+	srandom(now.tv_nsec);
+
+//for(int j=0;j<10;j++)
+//	printf("%in",randomDirection());
+//exit(0);
 
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
@@ -1030,11 +1177,18 @@ int main(int argc,char* argv[])
 						flyerNeedsUpdate=true;
 				}
 
+			if(showFalling==true)
+				{
+					if((runCounter % fallSpeed)==0)
+						fallingNeedsUpdate=true;
+				}
+
 			eraseRects();
 			drawTreeLamps();
 			drawFigure();
 			drawFlyers();
 			drawLamps();
+			drawFalling();
 		}
 
 	if(useWindow==false)
