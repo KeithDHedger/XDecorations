@@ -28,6 +28,7 @@ if not,write to the Free Software
 #include <Imlib2.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xatom.h>
+#include <X11/extensions/Xdbe.h>
 
 #include <stdio.h>
 #include <signal.h>
@@ -39,26 +40,30 @@ if not,write to the Free Software
 #define MAXNUMBEROFFLYERS 10
 #define MAXNUMBEROFTREELIGHTS 10
 #define MAXFLOAT 10
-#define MAXFALLINGOBJECTS 500
+#define MAXFALLINGOBJECTS 5000
 
 #define VERSION "0.1.3"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 
-char		pathname[MAXPATHNAMELEN];
-char*		configFilePath;
+char			pathname[MAXPATHNAMELEN];
+char*			configFilePath;
 
-Display*	display;
-Window		rootWin;
-int			displayWidth;
-int			displayHeight;
-GC			gc;
-Visual*		visual=NULL;
-int			depth=0;
-Imlib_Image	image;
-int			screen;
-Region		rg;
+Display*		display;
+Window			rootWin;
+int				displayWidth;
+int				displayHeight;
+GC				gc;
+Visual*			visual=NULL;
+int				depth=0;
+Imlib_Image		image;
+int				screen;
+Region			rg;
+XdbeBackBuffer	buffer;
+XdbeSwapInfo	swapInfo;
+Drawable		drawOnThis;
+bool			useBuffer=false;
 
 int			done=0;
 long		mainDelay=20000;
@@ -87,15 +92,13 @@ struct		movement
 };
 	
 //falling
-#define MAXXSTEP 2
-#define MAXSWIRL 3
+#define MAXSWIRL 2
 
 objects		floating[MAXFLOAT];
 movement	moving[MAXFALLINGOBJECTS];
 int			fallingNumber=1;
 int			fallingDelay=10;
 int			swirlingDirection;
-int			swirling=MAXSWIRL;
 int			gustDuration=3000;
 int			gustEvent=2000;
 int			gustSpeed=40;
@@ -105,16 +108,12 @@ int			numberOfFalling=100;
 bool		showFalling=true;
 int			fallingSpread=400;
 int			fallSpeed=4;
+int			maxXStep=4;
 
 int			gustDirection=0;
 int			gustCountdown=0;
 
 int			fallingCount=0;
-int			fallXpeed=20;
-int			fallingStep=1;
-int			xSwirl=40;
-int			ySwirl=40;
-
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -579,7 +578,7 @@ void drawFlyers(void)
 				{
 					rc=XSetClipMask(display,gc,flyersPixmap[j][ONMASK]);
 					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
-					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],rootWin,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
+					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],buffer,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
 				}
 		}
 }
@@ -627,7 +626,7 @@ void drawFalling(void)
 		{
 			rc=XSetClipMask(display,gc,moving[j].object->mask);
 			rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
-			rc=XCopyArea(display,moving[j].object->pixmap,rootWin,gc,0,0,moving[j].object->w,moving[j].object->h,moving[j].x,moving[j].y);
+			rc=XCopyArea(display,moving[j].object->pixmap,drawOnThis,gc,0,0,moving[j].object->w,moving[j].object->h,moving[j].x,moving[j].y);
 	}
 }
 
@@ -637,14 +636,14 @@ void updateFalling(void)
 		{
 			if(moving[j].use==true)
 				{
-					swirlingDirection=randInt(swirling); 
+					swirlingDirection=randInt(MAXSWIRL); 
 					if(randomEvent(2)==true)
 						swirlingDirection=-swirlingDirection;
 					moving[j].stepX=moving[j].stepX+swirlingDirection;
-					if(moving[j].stepX>MAXXSTEP)
-						moving[j].stepX=MAXXSTEP;
-					if(moving[j].stepX<-MAXXSTEP)
-						moving[j].stepX=-MAXXSTEP;
+					if(moving[j].stepX>maxXStep)
+						moving[j].stepX=maxXStep;
+					if(moving[j].stepX<-maxXStep)
+						moving[j].stepX=-maxXStep;
 
 					moving[j].y=moving[j].y+moving[j].stepY;
 					
@@ -794,12 +793,15 @@ void eraseRects(void)
 
 	if((showFalling==true) && (fallingNeedsUpdate==true))
 		{
+//		if (!XdbeSwapBuffers(display, &swapInfo, 1))
+//			printf("xxxxxxxxxn");
+if(useBuffer==false)
+{
 			for(int j=0;j<numberOfFalling;j++)
 				{
-					rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
-					rc=XSetClipMask(display,gc,0);
-					rc=XClearArea(display,rootWin,moving[j].x,moving[j].y,moving[j].object->w,moving[j].object->h,False);
+					rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w,moving[j].object->h,False);
 				}
+}
 			updateFalling();
 		}
 
@@ -829,17 +831,31 @@ int get_argb_visual(Visual** vis, int *depth)
 	/* code from gtk project, gdk_screen_get_rgba_visual */
 	XVisualInfo visual_template;
 	XVisualInfo *visual_list=NULL;
+	//XdbeScreenVisualInfo *visual_list=NULL;
 	int nxvisuals = 0, i;
 	visual_template.screen = screen;
-	visual_list = XGetVisualInfo (display, 0,&visual_template, &nxvisuals);
+	visual_list = XGetVisualInfo (display,0,&visual_template, &nxvisuals);
+//   int numScreens = 1;
+//Drawable screens[] = { DefaultRootWindow(display) };
+//visual_list = XdbeGetVisualInfo(display, screens, &numScreens);
+
+    int numScreens = 1;
+    Drawable screens[] = { DefaultRootWindow(display) };
+    XdbeScreenVisualInfo *info = XdbeGetVisualInfo(display, screens, &numScreens);
+    if (!info || numScreens < 1 || info->count < 1) {
+        fprintf(stderr, "No visuals support Xdbe\n");
+        return 110;
+    }
+
+
+
 
 	for (i = 0; i < nxvisuals; i++)
 		{
-
 			if (visual_list[i].depth == 32 &&
 			        (visual_list[i].red_mask   == 0xff0000 &&
 			         visual_list[i].green_mask == 0x00ff00 &&
-			         visual_list[i].blue_mask  == 0x0000ff))
+			         visual_list[i].blue_mask  == 0x0000ff ))
 				{
 					*vis = visual_list[i].visual;
 					*depth = visual_list[i].depth;
@@ -848,6 +864,7 @@ int get_argb_visual(Visual** vis, int *depth)
 				}
 		}
 	// no argb visual available
+	printf("no rgb\n");
 	XFree(visual_list);
 	return 1;
 }
@@ -938,6 +955,8 @@ void doHelp(void)
 	printf("\tRandom deleay between new falling objects appearing\n");
 	printf("-fallingspeed INTEGER\n");
 	printf("\tFalling objects Y step\n");
+	printf("-maxxstep INTEGER\n");
+	printf("\tFalling objects max X step\n");
 	
 	exit(0);
 }
@@ -1081,6 +1100,9 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-fallingspeed")==0)//leaf spread=400
 				fallSpeed=atol(argv[++argnum]);
 
+			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
+				maxXStep=atol(argv[++argnum]);
+
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
@@ -1137,13 +1159,32 @@ int main(int argc,char* argv[])
 					hints.decorations=0;
 					XChangeProperty(display,rootWin,xa_prop[9],xa_prop[9],32,PropModeReplace,(unsigned char *)&hints,5);
 
-					gc=XCreateGC(display,rootWin,0,0);
+				//	gc=XCreateGC(display,rootWin,0,0);
 					rg=XCreateRegion();
 					XMapWindow(display,rootWin);
 					XSync(display, False);
 					
 					XMoveWindow(display,rootWin,0,0);
 					XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
+
+					buffer=XdbeAllocateBackBufferName(display,rootWin, XdbeBackground);
+					swapInfo.swap_window = rootWin;
+					swapInfo.swap_action = XdbeBackground;
+					if(XdbeSwapBuffers(display,&swapInfo,1))
+					//if(true)
+						{
+							printf("got double buffer\n");
+							useBuffer=true;
+							drawOnThis=buffer;
+						}
+					else
+						{
+							printf("no double buffering\n");
+							useBuffer=false;
+							drawOnThis=rootWin;
+						}
+
+					gc=XCreateGC(display,drawOnThis,0,0);
 				}
 			else
 				{
@@ -1215,14 +1256,24 @@ int main(int argc,char* argv[])
 						fallingNeedsUpdate=true;
 				}
 
+//if(fallingNeedsUpdate==true)
+//{
+//		XdbeSwapBuffers(display,&swapInfo, 1);
+//			printf("xxxxxxxxx\n");
+
 			eraseRects();
 			drawTreeLamps();
 			drawFigure();
 			drawFlyers();
 			drawLamps();
 			drawFalling();
-		}
+//		if (!XdbeSwapBuffers(display, &swapInfo, 1))
+//			printf("xxxxxxxxx\n");
 
+//}
+			if(useBuffer==true)
+				XdbeSwapBuffers(display,&swapInfo, 1);
+		}
 	if(useWindow==false)
 		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
