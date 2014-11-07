@@ -39,7 +39,7 @@ if not,write to the Free Software
 #define MAXNUMBEROFFLYERS 10
 #define MAXNUMBEROFTREELIGHTS 10
 #define MAXFLOAT 10
-#define MAXFALLINGOBJECTS 100
+#define MAXFALLINGOBJECTS 500
 
 #define VERSION "0.1.3"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
@@ -87,28 +87,34 @@ struct		movement
 };
 	
 //falling
+#define MAXXSTEP 2
+#define MAXSWIRL 3
+
 objects		floating[MAXFLOAT];
 movement	moving[MAXFALLINGOBJECTS];
-//Pixmap		fallingPixmap[MAXNUMBEROFFALLING][2];
-//int			fallingWidth[MAXNUMBEROFFALLING];
-//int			fallingHeight[MAXNUMBEROFFALLING];
-//int			fallingX[MAXNUMBEROFFALLING];
-//int			fallingY[MAXNUMBEROFFALLING];
-//int			fallingSpeed=10;
-//int			fallingDeltaX=2;
-//int			fallingDeltaY=2;
-int			fallingCount=0;
+int			fallingNumber=1;
+int			fallingDelay=10;
+int			swirlingDirection;
+int			swirling=MAXSWIRL;
+int			gustDuration=3000;
+int			gustEvent=2000;
+int			gustSpeed=40;
+bool		useGusts=true;
+int			windSpeed=4;
 int			numberOfFalling=100;
 bool		showFalling=true;
-int			fallSpeed=1;
-int			fallYSpeed=4;
+int			fallingSpread=400;
+int			fallSpeed=4;
+
+int			gustDirection=0;
+int			gustCountdown=0;
+
+int			fallingCount=0;
 int			fallXpeed=20;
 int			fallingStep=1;
 int			xSwirl=40;
 int			ySwirl=40;
-int			leafSpread=400;
-int			wind=4;
-int			blusterSpeed=20;
+
 
 //flyers
 Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
@@ -448,7 +454,7 @@ void initFalling(void)
 
 	for(int j=0;j<MAXFLOAT;j++)
 		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFloat%i.png",DATADIR,prefix,j+1);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFloat%i.%i.png",DATADIR,prefix,fallingNumber,j+1);
 			image=imlib_load_image(pathname);
 			if(image!=NULL)
 				{
@@ -475,7 +481,7 @@ void initFalling(void)
 					moving[j].deltaX=1;
 					moving[j].deltaY=1;
 					moving[j].stepX=1;
-					moving[j].stepY=randInt(fallYSpeed)+1;
+					moving[j].stepY=randInt(fallSpeed)+1;
 					moving[j].use=false;
 				}
 		}
@@ -613,6 +619,10 @@ void drawLamps(void)
 void drawFalling(void)
 {
 	int rc;
+
+	if(showFalling==false)
+		return;
+
 	for(int j=0;j<numberOfFalling;j++)
 		{
 			rc=XSetClipMask(display,gc,moving[j].object->mask);
@@ -620,72 +630,45 @@ void drawFalling(void)
 			rc=XCopyArea(display,moving[j].object->pixmap,rootWin,gc,0,0,moving[j].object->w,moving[j].object->h,moving[j].x,moving[j].y);
 	}
 }
-#define MAXXSTEP 2             /* drift speed max */
-#define WHIRLFACTOR 3
-int SmoothWhirl = 1;
-int WhirlAdapt;
-int WhirlFactor = WHIRLFACTOR;
-int	blusterDuration=3000;
-int blusterEvent=2000;
-int blusterCountdown=0;
-int	blusterDirection=0;
 
 void updateFalling(void)
 {
-blusterSpeed=40;
 	for(int j=0;j<numberOfFalling;j++)
 		{
 			if(moving[j].use==true)
 				{
-					//if (SmoothWhirl)
-					//	{
-							WhirlAdapt=randInt(WhirlFactor); 
-							//if(randInt(1000)<500)
-								if(randomEvent(2)==true)
-									WhirlAdapt=-WhirlAdapt;
-							//''snow->xStep = snow->xStep + WhirlAdapt;
-							moving[j].stepX=moving[j].stepX+WhirlAdapt;
-							//if (snow->xStep > MaxXStep) snow->xStep = MaxXStep;
-							if(moving[j].stepX>MAXXSTEP)
-								moving[j].stepX=MAXXSTEP;
-							if(moving[j].stepX<-MAXXSTEP)
-								moving[j].stepX=-MAXXSTEP;
-					//	}
-
-//					if(randomEvent(ySwirl)==true)
-//						{
-//							
-//						moving[j].stepY=(moving[j].stepY+(randomDirection()));
-//						}
-//						moving[j].deltaY=randomDirection();
-//					else
-//						moving[j].deltaY=1;
-//
-//					if(randomEvent(xSwirl)==true)
-//						moving[j].deltaX=randomDirection();
+					swirlingDirection=randInt(swirling); 
+					if(randomEvent(2)==true)
+						swirlingDirection=-swirlingDirection;
+					moving[j].stepX=moving[j].stepX+swirlingDirection;
+					if(moving[j].stepX>MAXXSTEP)
+						moving[j].stepX=MAXXSTEP;
+					if(moving[j].stepX<-MAXXSTEP)
+						moving[j].stepX=-MAXXSTEP;
 
 					moving[j].y=moving[j].y+moving[j].stepY;
-					//moving[j].x=moving[j].x+(moving[j].deltaX*moving[j].stepX);
-					//moving[j].x=moving[j].x+(moving[j].stepX/fallXpeed);
-					//moving[j].x=moving[j].x+moving[j].stepX+wind;
 					
-					if(blusterCountdown==0)
-						{
-							moving[j].x=moving[j].x+moving[j].stepX+wind;
-							if(randomEvent(blusterEvent))
-								{
-									blusterCountdown=blusterDuration;
-									blusterDirection=randomDirection();
-								}
-						}
+					if(useGusts==false)
+						moving[j].x=moving[j].x+moving[j].stepX+windSpeed;
 					else
 						{
-							moving[j].x=moving[j].x+((blusterSpeed+randInt(blusterSpeed/10))*blusterDirection);
-							blusterCountdown--;
-							if(blusterCountdown<0)
-								blusterCountdown=0;
-						}			
-					
+							if(gustCountdown==0)
+								{
+									moving[j].x=moving[j].x+moving[j].stepX+windSpeed;
+									if(randomEvent(gustEvent))
+										{
+											gustCountdown=gustDuration;
+											gustDirection=randomDirection();
+										}
+								}
+							else
+								{
+									moving[j].x=moving[j].x+((gustSpeed+randInt(gustSpeed/10))*gustDirection);
+									gustCountdown--;
+									if(gustCountdown<0)
+										gustCountdown=0;
+								}			
+						}
 
 					if(moving[j].y>displayHeight+moving[j].object->h)
 						{
@@ -701,7 +684,7 @@ blusterSpeed=40;
 				}
 			else
 				{
-					if(randomEvent(leafSpread)==true)
+					if(randomEvent(fallingSpread)==true)
 						moving[j].use=true;
 				}
 		}
@@ -889,12 +872,6 @@ void doHelp(void)
 
 	printf("-showflyer/-no-showflyer\n");
 	printf("\tShow flying objects\n");
-	printf("-showtree/-no-showtree\n");
-	printf("\tShow tree\n");
-	printf("-showlamps/-no-showlamps\n");
-	printf("\tShow lamps\n");
-	printf("-showfigure/-no-showfigure\n");
-	printf("\tShow figure\n");
 	printf("-showstar/-no-showstar\n");
 	printf("\tShow star\n");
 	printf("-showtinsel/-no-showtinsel\n");
@@ -902,12 +879,14 @@ void doHelp(void)
 	printf("-showtreelamps/-no-showtreelamps\n");
 	printf("\tShow tree lamps\n");
 	printf("\n");
+
+	printf("-lampset INTEGER\n");
+	printf("\tThe number of the lamp set to use ( 0=no lamps )\n");
 	printf("-lampy INTEGER\n");
 	printf("\tLamp Y position\n");
 	printf("-lampdelay INTEGER\n");
 	printf("\tLamp delay\n");
-	printf("-lampset INTEGER\n");
-	printf("\tLamp set\n");
+
 	printf("-flyermaxy INTEGER\n");
 	printf("\tLowest point on screen for flying objects\n");
 	printf("-spread INTEGER\n");
@@ -916,25 +895,50 @@ void doHelp(void)
 	printf("\tFlying objects delay\n");
 	printf("-flystep INTEGER\n");
 	printf("\tAmount to move flying objects\n");
-	printf("-treelampdelay INTEGER\n");
-	printf("\tTree lamps delay\n");
-	printf("-treelampset INTEGER\n");
-	printf("\tLampset to use on tree\n");
-	printf("-treenumber INTEGER\n");
-	printf("\tThe tree to use\n");
+
+	printf("-tree INTEGER\n");
+	printf("\tThe number of the tree to use ( 0=no tree )\n");
 	printf("-treex INTEGER\n");
 	printf("\tAbsolute X position of tree\n");
 	printf("-treey INTEGER\n");
 	printf("\tAbsolute Y position of tree\n");
+
+	printf("-treelampdelay INTEGER\n");
+	printf("\tTree lamps delay\n");
+	printf("-treelampset INTEGER\n");
+	printf("\tLampset to use on tree\n");
+
 	printf("-stardelay INTEGER\n");
 	printf("\tDelay for star\n");
+
 	printf("-figurex INTEGER\n");
 	printf("\tAbsolute X position of figure\n");
 	printf("-figuredelay INTEGER\n");
 	printf("\tDelay for figure\n");
-	printf("-figurenumber INTEGER\n");
-	printf("\tNumber of figure to use\n\n");
-
+	printf("-figure INTEGER\n");
+	printf("\tThe number of figure to use ( 0=no figure )\n\n");
+//falling
+	printf("-falling x INTEGER\n");
+	printf("\tThe number of the falling objects to use ( 0=no falling objects )\n\n");
+	printf("-falldelay INTEGER\n");
+	printf("\tDelay for falling objects\n");
+	printf("-gustlen INTEGER\n");
+	printf("\tDuration of gusts of wind\n");
+	printf("-gustdelay INTEGER\n");
+	printf("\tDelay between gusts of wind\n");
+	printf("-gustspeed INTEGER\n");
+	printf("\tSpeed of gusts of wind\n");
+	printf("-usegusts/-no-usegusts\n");
+	printf("\tUse/don't use gusts of wind\n");
+	printf("-wind INTEGER\n");
+	printf("\tWind speed/direction ( +INTEGER wind>>> -INTEGER wind<<< 0 no wind )\n");
+	printf("-maxfalling INTEGER\n");
+	printf("\tMaximum number of falling objects INTEGER<%i\n",MAXFALLINGOBJECTS);
+	printf("-fallingspread INTEGER\n");
+	printf("\tRandom deleay between new falling objects appearing\n");
+	printf("-fallingspeed INTEGER\n");
+	printf("\tFalling objects Y step\n");
+	
 	exit(0);
 }
 
@@ -968,11 +972,11 @@ int main(int argc,char* argv[])
 			argstr=argv[argnum];
 
 			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
-			showUnShow(argstr,"showtree",&showTree);//showTree=false
 			showUnShow(argstr,"showstar",&showStar);//showStar=false
 			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
 			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
+			showUnShow(argstr,"usegusts",&useGusts);//use/don't use gusts of wind
 
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
@@ -1017,7 +1021,7 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
 				treeLampSet=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treenumber")==0)//treeNumber=1
+			if(strcmp(argstr,"-tree")==0)//treeNumber=1
 				treeNumber=atol(argv[++argnum]);
 
 			if(strcmp(argstr,"-treex")==0)//treeX=100
@@ -1049,6 +1053,34 @@ int main(int argc,char* argv[])
 					saveVarsToFile(argv[++argnum],xdecorations_rc);
 					return(0);
 				}
+
+			if(strcmp(argstr,"-falling")==0)//falling set=1
+				fallingNumber=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-falldelay")==0)//falling speed=10
+				fallingDelay=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-gustlen")==0)//gustDuration=10
+				gustDuration=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-gustdelay")==0)//gustEvent=2000
+				gustEvent=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-gustspeed")==0)//gustSpeed=40
+				gustSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-wind")==0)//windspeed=4
+				windSpeed=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-maxfalling")==0)//numberOfFalling=100
+				numberOfFalling=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-fallingspread")==0)//leaf spread=400
+				fallingSpread=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-fallingspeed")==0)//leaf spread=400
+				fallSpeed=atol(argv[++argnum]);
+
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
@@ -1179,7 +1211,7 @@ int main(int argc,char* argv[])
 
 			if(showFalling==true)
 				{
-					if((runCounter % fallSpeed)==0)
+					if((runCounter % fallingDelay)==0)
 						fallingNeedsUpdate=true;
 				}
 
