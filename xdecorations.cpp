@@ -64,6 +64,7 @@ XdbeBackBuffer	buffer;
 XdbeSwapInfo	swapInfo;
 Drawable		drawOnThis;
 bool			useBuffer=false;
+bool			useDBOveride=true;
 
 int			done=0;
 long		mainDelay=20000;
@@ -212,6 +213,8 @@ args	xdecorations_rc[]=
 	{"star",TYPEBOOL,&showStar},
 	{"treelamps",TYPEBOOL,&showTreeLamps},
 	{"usewindow",TYPEBOOL,&useWindow},
+	{"usedoublebuffer",TYPEBOOL,&useDBOveride},
+	{"usegusts",TYPEBOOL,&useGusts},
 //strings
 	{"holiday",TYPESTRING,&prefix},
 //ints
@@ -225,7 +228,7 @@ args	xdecorations_rc[]=
 	{"lampy",TYPEINT,&lampY},
 	{"treelampdelay",TYPEINT,&treelampSpeed},
 	{"treelampset",TYPEINT,&treeLampSet},
-	{"treenumber",TYPEINT,&treeNumber},
+	{"tree",TYPEINT,&treeNumber},
 	{"treex",TYPEINT,&treeX},
 	{"treey",TYPEINT,&treeY},
 	{"stardelay",TYPEINT,&starSpeed},
@@ -233,6 +236,18 @@ args	xdecorations_rc[]=
 	{"figurey",TYPEINT,&figureY},
 	{"figuredelay",TYPEINT,&figureSpeed},
 	{"figure",TYPEINT,&figureNumber},
+//falling
+	{"falling",TYPEINT,&fallingNumber},
+	{"falldelay",TYPEINT,&fallingDelay},
+	{"gustlen",TYPEINT,&gustDuration},
+	{"gustdelay",TYPEINT,&gustEvent},
+	{"gustspeed",TYPEINT,&gustSpeed},
+	{"wind",TYPEINT,&windSpeed},
+	{"maxfalling",TYPEINT,&numberOfFalling},
+	{"fallingspread",TYPEINT,&fallingSpread},
+	{"fallingspeed",TYPEINT,&fallSpeed},
+	{"maxxstep",TYPEINT,&maxXStep},
+
 	{NULL,0,NULL}
 };
 
@@ -354,7 +369,7 @@ void initFlyers(void)
 			if(image!=NULL)
 				{
 					imlib_context_set_image(image);
-					imlib_context_set_drawable(rootWin);
+					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&flyersPixmap[flyerCount][ONPIXMAP],&flyersPixmap[flyerCount][ONMASK]);
 					flyersWidth[flyerCount]=imlib_image_get_width();
@@ -387,7 +402,7 @@ void initFigure(void)
 	else
 		{
 			imlib_context_set_image(image);
-			imlib_context_set_drawable(rootWin);
+			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK]);
 
@@ -398,7 +413,7 @@ void initFigure(void)
 			else
 				{
 					imlib_context_set_image(image);
-					imlib_context_set_drawable(rootWin);
+					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&figurePixmap[OFFPIXMAP],&figurePixmap[OFFMASK]);
 
@@ -421,7 +436,7 @@ void initLamps(void)
 	else
 		{
 			imlib_context_set_image(image);
-			imlib_context_set_drawable(rootWin);
+			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 //imlib_render_image_on_drawable_at_size(0, 0, 200, 200);
 			imlib_render_pixmaps_for_whole_image(&lampsPixmap[ONPIXMAP],&lampsPixmap[ONMASK]);
@@ -433,7 +448,7 @@ void initLamps(void)
 			else
 				{
 					imlib_context_set_image(image);
-					imlib_context_set_drawable(rootWin);
+					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 //imlib_render_image_on_drawable_at_size(0, 0, 200, 200);
 					imlib_render_pixmaps_for_whole_image(&lampsPixmap[OFFPIXMAP],&lampsPixmap[OFFMASK]);
@@ -458,7 +473,7 @@ void initFalling(void)
 			if(image!=NULL)
 				{
 					imlib_context_set_image(image);
-					imlib_context_set_drawable(rootWin);
+					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&floating[fallingCount].pixmap,&floating[fallingCount].mask);
 					floating[fallingCount].w=imlib_image_get_width();
@@ -502,7 +517,7 @@ void initTree(void)
 	else
 		{
 			imlib_context_set_image(image);
-			imlib_context_set_drawable(rootWin);
+			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&treePixmap[ONPIXMAP],&treePixmap[ONMASK]);
 			treeWidth=imlib_image_get_width();
@@ -517,7 +532,7 @@ void initTree(void)
 			if(image!=NULL)
 				{
 					imlib_context_set_image(image);
-					imlib_context_set_drawable(rootWin);
+					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK]);
 					treeLampCount++;
@@ -534,7 +549,7 @@ void initTree(void)
 	else
 		{
 			imlib_context_set_image(image);
-			imlib_context_set_drawable(rootWin);
+			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&starPixmap[ONPIXMAP],&starPixmap[ONMASK]);
 
@@ -545,7 +560,7 @@ void initTree(void)
 			else
 				{
 					imlib_context_set_image(image);
-					imlib_context_set_drawable(rootWin);
+					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&starPixmap[OFFPIXMAP],&starPixmap[OFFMASK]);
 				}
@@ -558,7 +573,7 @@ void initTree(void)
 	else
 		{
 			imlib_context_set_image(image);
-			imlib_context_set_drawable(rootWin);
+			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&tinselPixmap[ONPIXMAP],&tinselPixmap[ONMASK]);
 		}
@@ -578,7 +593,7 @@ void drawFlyers(void)
 				{
 					rc=XSetClipMask(display,gc,flyersPixmap[j][ONMASK]);
 					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
-					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],buffer,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
+					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],drawOnThis,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
 				}
 		}
 }
@@ -592,7 +607,7 @@ void drawFigure(void)
 
 	rc=XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
 	rc=XSetClipOrigin(display,gc,figureX,figureY);
-	rc=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],rootWin,gc,0,0,figureW,figureH,figureX,figureY);
+	rc=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],drawOnThis,gc,0,0,figureW,figureH,figureX,figureY);
 }
 
 void drawLamps(void)
@@ -610,7 +625,7 @@ void drawLamps(void)
 	for (loop=0; loop<lampCount; loop++)
 		{
 			rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-			rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],rootWin,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+			rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
 			CurrentlampX+=lampWidth;
 		}
 }
@@ -705,24 +720,24 @@ void drawTreeLamps(void)
 	lampset=(treeLampSet-1)*4;
 	rc=XSetClipMask(display,gc,treePixmap[ONMASK]);
 	rc=XSetClipOrigin(display,gc,treeX,treeY);
-	rc=XCopyArea(display,treePixmap[ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+	rc=XCopyArea(display,treePixmap[ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 
 	if(showTreeLamps==true)
 		{
 			rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
-			rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showStar==true)
 		{
 			rc=XSetClipMask(display,gc,starPixmap[_SELECTPIXMAP(ONMASK,starOnOff)]);
-			rc=XCopyArea(display,starPixmap[_SELECTPIXMAP(ONPIXMAP,starOnOff)],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			rc=XCopyArea(display,starPixmap[_SELECTPIXMAP(ONPIXMAP,starOnOff)],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showTinsel==true)
 		{
 			rc=XSetClipMask(display,gc,tinselPixmap[ONMASK]);
-			rc=XCopyArea(display,tinselPixmap[ONPIXMAP],rootWin,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			rc=XCopyArea(display,tinselPixmap[ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 }
 
@@ -774,34 +789,35 @@ void eraseRects(void)
 
 	if((figureNumber!=0) && (figureNeedsUpdate==true))
 		{
-			rc=XClearArea(display,rootWin,figureX,figureY,figureW,figureH,False);
+			if(useBuffer==false)
+				rc=XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
 			updateFigure();
 		}
 
 	if((showTree==true) && (treeNeedsUpdate==true))
 		{
-			rc=XClearArea(display,rootWin,treeX,treeY,treeWidth,treeHeight,False);
+			if(useBuffer==false)
+				rc=XClearArea(display,drawOnThis,treeX,treeY,treeWidth,treeHeight,False);
 			updateTreeLamps();
 		}
 
 	if((showFlyers==true) && (flyerNeedsUpdate==true))
 		{
-			for(j=0; j<flyerCount; j++)
-				rc=XClearArea(display,rootWin,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+			if(useBuffer==false)
+				{
+					for(j=0; j<flyerCount; j++)
+						rc=XClearArea(display,drawOnThis,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+				}
 			updateFlyers();
 		}
 
 	if((showFalling==true) && (fallingNeedsUpdate==true))
 		{
-//		if (!XdbeSwapBuffers(display, &swapInfo, 1))
-//			printf("xxxxxxxxxn");
-if(useBuffer==false)
-{
-			for(int j=0;j<numberOfFalling;j++)
+			if(useBuffer==false)
 				{
-					rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w,moving[j].object->h,False);
+					for(int j=0;j<numberOfFalling;j++)
+						rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w,moving[j].object->h,False);
 				}
-}
 			updateFalling();
 		}
 
@@ -831,24 +847,9 @@ int get_argb_visual(Visual** vis, int *depth)
 	/* code from gtk project, gdk_screen_get_rgba_visual */
 	XVisualInfo visual_template;
 	XVisualInfo *visual_list=NULL;
-	//XdbeScreenVisualInfo *visual_list=NULL;
 	int nxvisuals = 0, i;
 	visual_template.screen = screen;
 	visual_list = XGetVisualInfo (display,0,&visual_template, &nxvisuals);
-//   int numScreens = 1;
-//Drawable screens[] = { DefaultRootWindow(display) };
-//visual_list = XdbeGetVisualInfo(display, screens, &numScreens);
-
-    int numScreens = 1;
-    Drawable screens[] = { DefaultRootWindow(display) };
-    XdbeScreenVisualInfo *info = XdbeGetVisualInfo(display, screens, &numScreens);
-    if (!info || numScreens < 1 || info->count < 1) {
-        fprintf(stderr, "No visuals support Xdbe\n");
-        return 110;
-    }
-
-
-
 
 	for (i = 0; i < nxvisuals; i++)
 		{
@@ -884,8 +885,10 @@ void doHelp(void)
 	printf("-writeconfig FILEPATH\n");
 	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options\n");
 	printf("\tMust be last command on line\n\n");
-	printf("-usewindow/-no-usewindow STRING\n");
+	printf("-usewindow/-no-usewindow\n");
 	printf("\tUse a transparent window instead of the root window\n");
+	printf("-usedoublebuffer/-no-usedoublebuffer\n");
+	printf("\tUse double buffering ( -delay is ignored updates are done by X )\n");
 
 	printf("-showflyer/-no-showflyer\n");
 	printf("\tShow flying objects\n");
@@ -983,8 +986,8 @@ int main(int argc,char* argv[])
 
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
-
 	loadVarsFromFile(configFilePath,xdecorations_rc);
+
 //command line options.
 	for (argnum=1; argnum<argc; argnum++)
 		{
@@ -996,6 +999,7 @@ int main(int argc,char* argv[])
 			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 			showUnShow(argstr,"usegusts",&useGusts);//use/don't use gusts of wind
+			showUnShow(argstr,"usedoublebuffer",&useDBOveride);//use/don'tdouble buffering
 
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
@@ -1072,7 +1076,7 @@ int main(int argc,char* argv[])
 					saveVarsToFile(argv[++argnum],xdecorations_rc);
 					return(0);
 				}
-
+//falling
 			if(strcmp(argstr,"-falling")==0)//falling set=1
 				fallingNumber=atol(argv[++argnum]);
 
@@ -1128,7 +1132,8 @@ int main(int argc,char* argv[])
 		{
 			rootWin=ToonGetRootWindow(display,screen,&parentWindow);
 			visual=DefaultVisual(display,screen);
-			gc=XCreateGC(display,rootWin,0,NULL);
+			useBuffer=false;
+			drawOnThis=rootWin;
 		}	
 	else
 		{
@@ -1159,7 +1164,6 @@ int main(int argc,char* argv[])
 					hints.decorations=0;
 					XChangeProperty(display,rootWin,xa_prop[9],xa_prop[9],32,PropModeReplace,(unsigned char *)&hints,5);
 
-				//	gc=XCreateGC(display,rootWin,0,0);
 					rg=XCreateRegion();
 					XMapWindow(display,rootWin);
 					XSync(display, False);
@@ -1167,11 +1171,11 @@ int main(int argc,char* argv[])
 					XMoveWindow(display,rootWin,0,0);
 					XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
 
-					buffer=XdbeAllocateBackBufferName(display,rootWin, XdbeBackground);
+					buffer=XdbeAllocateBackBufferName(display,rootWin,XdbeBackground);
 					swapInfo.swap_window = rootWin;
 					swapInfo.swap_action = XdbeBackground;
-					if(XdbeSwapBuffers(display,&swapInfo,1))
-					//if(true)
+					if((XdbeSwapBuffers(display,&swapInfo,1)) && (useDBOveride==true))
+					//if(false && (useDBOveride==true))
 						{
 							printf("got double buffer\n");
 							useBuffer=true;
@@ -1183,17 +1187,18 @@ int main(int argc,char* argv[])
 							useBuffer=false;
 							drawOnThis=rootWin;
 						}
-
-					gc=XCreateGC(display,drawOnThis,0,0);
 				}
 			else
 				{
 					rootWin=ToonGetRootWindow(display,screen,&parentWindow);
 					visual=DefaultVisual(display,screen);
-					gc=XCreateGC(display,rootWin,0,NULL);
 					printf("Can't get ARGB, do you have a composite manager running\n");
+					drawOnThis=rootWin;
+					useBuffer=false;
 				}
 		}
+
+	gc=XCreateGC(display,drawOnThis,0,NULL);
 
 	initLamps();
 	initTree();
@@ -1202,14 +1207,13 @@ int main(int argc,char* argv[])
 	initFalling();
 
 	XSetFillStyle(display,gc,FillSolid);
-
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
 	while (!done)
 		{
 			while (XPending(display))
 				XNextEvent(display,&ev);
-	
+
 			switch(ev.type)
 				{
 					case ClientMessage:
@@ -1256,23 +1260,15 @@ int main(int argc,char* argv[])
 						fallingNeedsUpdate=true;
 				}
 
-//if(fallingNeedsUpdate==true)
-//{
-//		XdbeSwapBuffers(display,&swapInfo, 1);
-//			printf("xxxxxxxxx\n");
-
 			eraseRects();
 			drawTreeLamps();
 			drawFigure();
 			drawFlyers();
 			drawLamps();
 			drawFalling();
-//		if (!XdbeSwapBuffers(display, &swapInfo, 1))
-//			printf("xxxxxxxxx\n");
 
-//}
 			if(useBuffer==true)
-				XdbeSwapBuffers(display,&swapInfo, 1);
+				XdbeSwapBuffers(display,&swapInfo,1);
 		}
 	if(useWindow==false)
 		XClearWindow(display,rootWin);
