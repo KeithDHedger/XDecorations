@@ -100,7 +100,7 @@ struct			movement
 objects			floating[MAXFLOAT];
 movement		moving[MAXFALLINGOBJECTS];
 int				fallingNumber=1;
-int				fallingDelay=10;
+int				fallingDelay=1;
 int				swirlingDirection;
 int				gustDuration=3000;
 int				gustEvent=10000;
@@ -108,11 +108,11 @@ int				gustSpeed=40;
 int				realGustSpeed;
 
 bool			useGusts=true;
-int				windSpeed=4;
+int				windSpeed=0;
 int				numberOfFalling=100;
 bool			showFalling=true;
-int				fallingSpread=400;
-int				fallSpeed=4;
+int				fallingSpread=1000;
+int				fallSpeed=1;
 int				maxXStep=4;
 
 int				gustDirection=0;
@@ -217,7 +217,7 @@ args	xdecorations_rc[]=
 	{"star",TYPEBOOL,&showStar},
 	{"treelamps",TYPEBOOL,&showTreeLamps},
 	{"usewindow",TYPEBOOL,&useWindow},
-	{"usedoublebuffer",TYPEBOOL,&useDBOveride},
+	{"usebuffer",TYPEBOOL,&useDBOveride},
 	{"usegusts",TYPEBOOL,&useGusts},
 //strings
 	{"theme",TYPESTRING,&prefix},
@@ -930,7 +930,7 @@ void doHelp(void)
 	printf("\tMust be last command on line\n\n");
 	printf("-usewindow/-no-usewindow\n");
 	printf("\tUse a transparent window instead of the root window\n");
-	printf("-usedoublebuffer/-no-usedoublebuffer\n");
+	printf("-usebuffer/-no-usebuffer\n");
 	printf("\tUse double buffering ( -delay is ignored updates are done by X )\n");
 
 	printf("-showflyer/-no-showflyer\n");
@@ -1000,7 +1000,7 @@ void doHelp(void)
 	printf("-fallingspread INTEGER\n");
 	printf("\tRandom deleay between new falling objects appearing\n");
 	printf("-fallingspeed INTEGER\n");
-	printf("\tFalling objects Y step\n");
+	printf("\tDistance falling objects move in Y direction in one go\n");
 	printf("-maxxstep INTEGER\n");
 	printf("\tFalling objects max X step\n");
 	
@@ -1023,10 +1023,6 @@ int main(int argc,char* argv[])
 	clock_gettime(CLOCK_MONOTONIC,&now);
 	srandom(now.tv_nsec);
 
-//for(int j=0;j<10;j++)
-//	printf("%in",randomDirection());
-//exit(0);
-
 	prefix=strdup("Xmas");
 	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 	loadVarsFromFile(configFilePath,xdecorations_rc);
@@ -1042,7 +1038,7 @@ int main(int argc,char* argv[])
 			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 			showUnShow(argstr,"usegusts",&useGusts);//use/don't use gusts of wind
-			showUnShow(argstr,"usedoublebuffer",&useDBOveride);//use/don'tdouble buffering
+			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
 
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
