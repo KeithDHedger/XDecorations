@@ -65,14 +65,16 @@ XdbeSwapInfo	swapInfo;
 Drawable		drawOnThis;
 bool			useBuffer=false;
 bool			useDBOveride=true;
+int				gustStartupDelay;
+bool			gustFlip=true;
 
-int			done=0;
-long		mainDelay=20000;
+int				done=0;
+long			mainDelay=20000;
 
-uint		runCounter=0;
-bool		useWindow=true;
+uint			runCounter=0;
+bool			useWindow=true;
 
-struct		objects
+struct			objects
 {
 	Pixmap	pixmap;
 	Pixmap	mask;
@@ -80,7 +82,7 @@ struct		objects
 	int		w;
 };
 
-struct		movement
+struct			movement
 {
 	objects	*object;
 	int		x;
@@ -95,95 +97,97 @@ struct		movement
 //falling
 #define MAXSWIRL 2
 
-objects		floating[MAXFLOAT];
-movement	moving[MAXFALLINGOBJECTS];
-int			fallingNumber=1;
-int			fallingDelay=10;
-int			swirlingDirection;
-int			gustDuration=3000;
-int			gustEvent=2000;
-int			gustSpeed=40;
-bool		useGusts=true;
-int			windSpeed=4;
-int			numberOfFalling=100;
-bool		showFalling=true;
-int			fallingSpread=400;
-int			fallSpeed=4;
-int			maxXStep=4;
+objects			floating[MAXFLOAT];
+movement		moving[MAXFALLINGOBJECTS];
+int				fallingNumber=1;
+int				fallingDelay=10;
+int				swirlingDirection;
+int				gustDuration=3000;
+int				gustEvent=10000;
+int				gustSpeed=40;
+int				realGustSpeed;
 
-int			gustDirection=0;
-int			gustCountdown=0;
+bool			useGusts=true;
+int				windSpeed=4;
+int				numberOfFalling=100;
+bool			showFalling=true;
+int				fallingSpread=400;
+int				fallSpeed=4;
+int				maxXStep=4;
 
-int			fallingCount=0;
+int				gustDirection=0;
+int				gustCountdown=0;
+
+int				fallingCount=0;
 
 //flyers
-Pixmap		flyersPixmap[MAXNUMBEROFFLYERS][2];
-int			flyersSpeed=1;
-int			flyersStep=8;
-int			flyersWidth[MAXNUMBEROFFLYERS];
-int			flyersHeight[MAXNUMBEROFFLYERS];
-int			flyersX[MAXNUMBEROFFLYERS];
-int			flyersY[MAXNUMBEROFFLYERS];
-bool		showFlyers=false;
-int			flyersMaxY=400;
-int			flyersActive[MAXNUMBEROFFLYERS];
-int			flyerSpread=500;
-int			flyerCount=0;
+Pixmap			flyersPixmap[MAXNUMBEROFFLYERS][2];
+int				flyersSpeed=1;
+int				flyersStep=8;
+int				flyersWidth[MAXNUMBEROFFLYERS];
+int				flyersHeight[MAXNUMBEROFFLYERS];
+int				flyersX[MAXNUMBEROFFLYERS];
+int				flyersY[MAXNUMBEROFFLYERS];
+bool			showFlyers=false;
+int				flyersMaxY=400;
+int				flyersActive[MAXNUMBEROFFLYERS];
+int				flyerSpread=500;
+int				flyerCount=0;
 
 //figure
-Pixmap		figurePixmap[4];
-int			figureSpeed=100;
-int			figureX=100;
-int			figureY=100;
-int			figureW;
-int			figureH;
-int			figureOnOff=0;
-int			figureNumber=1;
+Pixmap			figurePixmap[4];
+int				figureSpeed=100;
+int				figureX=100;
+int				figureY=100;
+int				figureW;
+int				figureH;
+int				figureOnOff=0;
+int				figureNumber=1;
 
 //lamps
-Pixmap		lampsPixmap[4];
-int			lampSpeed=100;
-int			lampX=0;
-int			lampY=0;
-int			lampWidth;
-int			lampHeight;
-int			lampCount;
-int			lampSet=1;
-int			lampsOnOff=0;
+Pixmap			lampsPixmap[4];
+int				lampSpeed=100;
+int				lampX=0;
+int				lampY=0;
+int				lampWidth;
+int				lampHeight;
+int				lampCount;
+int				lampSet=1;
+int				lampsOnOff=0;
 
 //trees
-Pixmap		treePixmap[2];
-int			treeWidth;
-int			treeHeight;
-int			treeNumber=1;
-int			treelampSpeed=100;
-int			starSpeed=100;
-int			treeX;
-int			treeY;
-int			treeLampSet=1;
-int			treeOnOff=0;
-bool		showTree=false;
+Pixmap			treePixmap[2];
+int				treeWidth;
+int				treeHeight;
+int				treeNumber=1;
+int				treelampSpeed=100;
+int				starSpeed=100;
+int				treeX;
+int				treeY;
+int				treeLampSet=1;
+int				treeOnOff=0;
+bool			showTree=false;
 
 //tinsel`
-Pixmap		tinselPixmap[2];
-bool		showTinsel=false;
+Pixmap			tinselPixmap[2];
+bool			showTinsel=false;
 
 //star
-Pixmap		starPixmap[4];
-bool		showStar=false;
-int			starOnOff=0;
+Pixmap			starPixmap[4];
+bool			showStar=false;
+int				starOnOff=0;
 
 //tree lamps
-Pixmap		treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
-bool		showTreeLamps=false;
-int			treeLampCount=0;
+Pixmap			treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
+bool			showTreeLamps=false;
+int				treeLampCount=0;
 
-char*		prefix;
+char*			prefix;
 
-bool		treeNeedsUpdate=false;
-bool		flyerNeedsUpdate=false;
-bool		figureNeedsUpdate=false;
-bool		fallingNeedsUpdate=false;
+bool			treeNeedsUpdate=false;
+bool			flyerNeedsUpdate=false;
+bool			figureNeedsUpdate=false;
+bool			fallingNeedsUpdate=false;
 
 struct args
 {
@@ -216,7 +220,7 @@ args	xdecorations_rc[]=
 	{"usedoublebuffer",TYPEBOOL,&useDBOveride},
 	{"usegusts",TYPEBOOL,&useGusts},
 //strings
-	{"holiday",TYPESTRING,&prefix},
+	{"theme",TYPESTRING,&prefix},
 //ints
 	{"delay",TYPEINT,&mainDelay},
 	{"flyermaxy",TYPEINT,&flyersMaxY},
@@ -647,6 +651,18 @@ void drawFalling(void)
 
 void updateFalling(void)
 {
+	if(gustCountdown==0)
+		{
+			if(randomEvent(gustEvent)==true)
+				{
+					gustCountdown=gustDuration;
+					gustDirection=randomDirection();
+					realGustSpeed=1;
+					gustStartupDelay=gustDuration/10;
+					gustFlip=true;
+				}
+		}
+
 	for(int j=0;j<numberOfFalling;j++)
 		{
 			if(moving[j].use==true)
@@ -669,18 +685,45 @@ void updateFalling(void)
 							if(gustCountdown==0)
 								{
 									moving[j].x=moving[j].x+moving[j].stepX+windSpeed;
-									if(randomEvent(gustEvent))
-										{
-											gustCountdown=gustDuration;
-											gustDirection=randomDirection();
-										}
 								}
 							else
 								{
-									moving[j].x=moving[j].x+((gustSpeed+randInt(gustSpeed/10))*gustDirection);
+									if(realGustSpeed<gustSpeed)
+										moving[j].x=moving[j].x+((realGustSpeed)*gustDirection);
+									else
+										moving[j].x=moving[j].x+((realGustSpeed+randInt(realGustSpeed/10))*gustDirection);
+									
 									gustCountdown--;
-									if(gustCountdown<0)
-										gustCountdown=0;
+									
+									if(gustFlip==true)
+										{
+											if((gustCountdown % gustStartupDelay) ==0)
+												realGustSpeed=realGustSpeed*2;
+											if(realGustSpeed>=gustSpeed)
+												realGustSpeed=gustSpeed;
+										}
+									else
+										{
+											if((gustCountdown % gustStartupDelay) ==0)
+												realGustSpeed=realGustSpeed/2;
+											if(realGustSpeed<=0)
+												{
+													realGustSpeed=0;
+													gustCountdown=0;
+												}
+										}
+
+									if(gustCountdown<=0)
+										{
+											if(gustFlip==true)
+												{
+													gustCountdown=0;
+													gustFlip=false;
+													gustCountdown=gustDuration;
+												}
+										else
+											gustCountdown=0;
+										}
 								}			
 						}
 
@@ -876,7 +919,7 @@ void doHelp(void)
 	printf("Released under the gpl-3.0 license\n\n");
 	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
 
-	printf("-holiday STRING\n");
+	printf("-theme STRING\n");
 	printf("\tSet prefix for theme\n");
 	printf("-delay INTEGER\n");
 	printf("\tSet main delay\n");
@@ -1008,7 +1051,7 @@ int main(int argc,char* argv[])
 					loadVarsFromFile(configFilePath,xdecorations_rc);
 				}
 
-			if(strcmp(argstr,"-holiday")==0)//Xmas
+			if(strcmp(argstr,"-theme")==0)//Xmas
 				{
 					free(prefix);
 					prefix=strdup(argv[++argnum]);
