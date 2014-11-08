@@ -41,8 +41,9 @@ if not,write to the Free Software
 #define MAXNUMBEROFTREELIGHTS 10
 #define MAXFLOAT 10
 #define MAXFALLINGOBJECTS 5000
+#define	MAXFALLINGANIMATION 10
 
-#define VERSION "0.1.3"
+#define VERSION "0.1.4"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
@@ -76,10 +77,11 @@ bool			useWindow=true;
 
 struct			objects
 {
-	Pixmap	pixmap;
-	Pixmap	mask;
-	int		h;
-	int		w;
+	Pixmap*	pixmap[MAXFALLINGANIMATION];
+	Pixmap*	mask[MAXFALLINGANIMATION];
+	int		h[MAXFALLINGANIMATION];
+	int		w[MAXFALLINGANIMATION];
+	int		anims;
 };
 
 struct			movement
@@ -92,6 +94,8 @@ struct			movement
 	int		stepX;
 	int		stepY;
 	bool	use;
+	int		imageNum;
+	int		countDown;
 };
 	
 //falling
@@ -114,6 +118,7 @@ bool			showFalling=true;
 int				fallingSpread=1000;
 int				fallSpeed=1;
 int				maxXStep=4;
+int				fallingAnimSpeed=8;
 
 int				gustDirection=0;
 int				gustCountdown=0;
@@ -464,6 +469,18 @@ void initLamps(void)
 		}
 }
 
+void destroyFalling(void)
+{
+	for(int j=0;j<fallingCount;j++)
+		{
+			for(int k=0;k<floating[j].anims;k++)
+				{
+					imlib_free_pixmap_and_mask(*(floating[j].pixmap[k]));
+					free(floating[j].pixmap[k]);
+				}
+		}
+}
+
 void initFalling(void)
 {
 	int	floatnumber;
@@ -472,18 +489,26 @@ void initFalling(void)
 
 	for(int j=0;j<MAXFLOAT;j++)
 		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFloat%i.%i.png",DATADIR,prefix,fallingNumber,j+1);
+			floating[fallingCount].anims=0;
+	for(int k=0;k<MAXFALLINGANIMATION;k++)
+		{
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFloat%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
 			image=imlib_load_image(pathname);
 			if(image!=NULL)
 				{
+					floating[fallingCount].pixmap[k]=(Pixmap*)malloc(sizeof(Pixmap));
+					floating[fallingCount].mask[k]=(Pixmap*)malloc(sizeof(Pixmap));
 					imlib_context_set_image(image);
 					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
-					imlib_render_pixmaps_for_whole_image(&floating[fallingCount].pixmap,&floating[fallingCount].mask);
-					floating[fallingCount].w=imlib_image_get_width();
-					floating[fallingCount].h=imlib_image_get_height();
-					fallingCount++;
+					imlib_render_pixmaps_for_whole_image(floating[fallingCount].pixmap[k],floating[fallingCount].mask[k]);
+					floating[fallingCount].w[k]=imlib_image_get_width();
+					floating[fallingCount].h[k]=imlib_image_get_height();
+					floating[fallingCount].anims++;
 				}
+		}
+			if(floating[fallingCount].anims!=0)
+					fallingCount++;
 		}
 
 	if(fallingCount==0)
@@ -495,12 +520,14 @@ void initFalling(void)
 					floatnumber=(rand() % fallingCount);
 					moving[j].object=&floating[floatnumber];
 					moving[j].x=(rand() % displayWidth);
-					moving[j].y=0-moving[j].object->h;
+					moving[j].y=0-moving[j].object->h[0];
 					moving[j].deltaX=1;
 					moving[j].deltaY=1;
 					moving[j].stepX=1;
 					moving[j].stepY=randInt(fallSpeed)+1;
 					moving[j].use=false;
+					moving[j].imageNum=0;
+					moving[j].countDown=fallingAnimSpeed;
 				}
 		}
 }
@@ -643,9 +670,17 @@ void drawFalling(void)
 
 	for(int j=0;j<numberOfFalling;j++)
 		{
-			rc=XSetClipMask(display,gc,moving[j].object->mask);
+			rc=XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
 			rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
-			rc=XCopyArea(display,moving[j].object->pixmap,drawOnThis,gc,0,0,moving[j].object->w,moving[j].object->h,moving[j].x,moving[j].y);
+			rc=XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],moving[j].x,moving[j].y);
+			moving[j].countDown--;
+			if(moving[j].countDown==0)
+				{
+					moving[j].countDown=fallingAnimSpeed;
+					moving[j].imageNum++;
+					if(moving[j].imageNum==moving[j].object->anims)
+						moving[j].imageNum=0;
+				}
 	}
 }
 
@@ -727,16 +762,16 @@ void updateFalling(void)
 								}			
 						}
 
-					if(moving[j].y>displayHeight+moving[j].object->h)
+					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
 							moving[j].use=false;
-							moving[j].y=0-moving[j].object->h;
+							moving[j].y=0-moving[j].object->h[0];
 						}
 					
-					if(moving[j].x>displayWidth+moving[j].object->w)
-						moving[j].x=0-moving[j].object->w;
+					if(moving[j].x>displayWidth+moving[j].object->w[0])
+						moving[j].x=0-moving[j].object->w[0];
 					
-					if(moving[j].x<0-moving[j].object->w)
+					if(moving[j].x<0-moving[j].object->w[0])
 						moving[j].x=displayWidth;
 				}
 			else
@@ -859,7 +894,7 @@ void eraseRects(void)
 			if(useBuffer==false)
 				{
 					for(int j=0;j<numberOfFalling;j++)
-						rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w,moving[j].object->h,False);
+						rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
 				}
 			updateFalling();
 		}
@@ -1312,6 +1347,8 @@ int main(int argc,char* argv[])
 	if(useWindow==false)
 		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
+
+	destroyFalling();
 	return(0);
 }
 
