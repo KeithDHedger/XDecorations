@@ -533,7 +533,7 @@ void initFalling(void)
 
 void initTree(void)
 {
-	bool	gotsomelamps=false;
+	bool	gotsomelamps;
 
 	imlib_context_set_dither(0);
 	imlib_context_set_display(display);
@@ -555,18 +555,23 @@ void initTree(void)
 		}
 
 	treeLampCount=0;
-	for(int j=0; j<MAXNUMBEROFTREELIGHTS; j++)
+	gotsomelamps=false;
+	if(treeLampSet!=0)
 		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/Lights.%i.%i.png",DATADIR,prefix,treeLampSet,j+1);
-			image=imlib_load_image(pathname);
-			if(image!=NULL)
+			showTreeLamps=true;
+			for(int j=0; j<MAXNUMBEROFTREELIGHTS; j++)
 				{
-					imlib_context_set_image(image);
-					imlib_context_set_drawable(drawOnThis);
-					imlib_image_set_has_alpha(1);
-					imlib_render_pixmaps_for_whole_image(&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK]);
-					treeLampCount++;
-					gotsomelamps=true;
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/Lights.%i.%i.png",DATADIR,prefix,treeLampSet,j+1);
+					image=imlib_load_image(pathname);
+					if(image!=NULL)
+						{
+							imlib_context_set_image(image);
+							imlib_context_set_drawable(drawOnThis);
+							imlib_image_set_has_alpha(1);
+							imlib_render_pixmaps_for_whole_image(&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK]);
+							treeLampCount++;
+							gotsomelamps=true;
+						}
 				}
 		}
 	if(gotsomelamps==false)
@@ -1012,8 +1017,6 @@ void doHelp(void)
 	printf("-showtinsel/-no-showtinsel\n");
 	printf("\tShow tinsel\n");
 //treelamps
-	printf("-showtreelamps/-no-showtreelamps\n");
-	printf("\tShow tree lamps\n");
 	printf("-treelampdelay INTEGER\n");
 	printf("\tTree lamps delay\n");
 	printf("-treelampset INTEGER\n");
@@ -1113,7 +1116,6 @@ int main(int argc,char* argv[])
 			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
 			showUnShow(argstr,"showstar",&showStar);//showStar=false
 			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
-			showUnShow(argstr,"showtreelamps",&showTreeLamps);//showTreeLamps=false
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 			showUnShow(argstr,"usegusts",&useGusts);//use/don't use gusts of wind
 			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
