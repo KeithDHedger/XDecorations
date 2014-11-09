@@ -1,6 +1,7 @@
 0.1.4
 Split Themes into seperate folders.
 Added animations for falling objects.
+added -noconfig to options to not load the default config file ~/.config/xdecorations.rc
 Changed -holiday to -theme.
 Added gusting wind.
 Added double buffering.
