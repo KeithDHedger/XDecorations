@@ -1,0 +1,33 @@
+#!/bin/bash -e
+
+#©keithhedger Sun 9 Nov 13:29:51 GMT 2014 kdhedger68713@gmail.com
+
+if [ X"$1" = "X" ];then
+	echo Need filename ...
+	exit
+else
+	NAME="$1"
+fi
+
+STARTSIZE=$(identify "${NAME}.1.png"|awk '{print $3}'|awk -Fx '{print $1}')
+
+data=$(yad --form --separator=" " --columns=1 --field="Size:NUM" "$STARTSIZE\!1..128\!1\!0" --field="Steps:NUM"  "8\!1..48\!1\!0")
+dataarray=( $data )
+SZE=${dataarray[0]}
+SIZE=${SZE%%.?*}
+
+STP=${dataarray[1]}
+STEPS=${STP%%.?*}
+
+EXTENT="-extent ${SIZE}x${SIZE}"
+
+cnt=2
+ROT=$((360 / $STEPS))
+
+for ((j=$ROT;j<360;j=j+$ROT))
+	do
+		convert -gravity center -rotate $j -fuzz 50% -trim "${NAME}.1.png" $EXTENT -transparent white "${NAME}.$cnt.png"
+		((cnt++))
+	done
+convert -gravity center -fuzz 50% -trim "${NAME}.1.png" $EXTENT -transparent white "${NAME}.1.png"
+

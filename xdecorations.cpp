@@ -41,7 +41,7 @@ if not,write to the Free Software
 #define MAXNUMBEROFTREELIGHTS 10
 #define MAXFLOAT 10
 #define MAXFALLINGOBJECTS 5000
-#define	MAXFALLINGANIMATION 10
+#define	MAXFALLINGANIMATION 48
 
 #define VERSION "0.1.4"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
@@ -70,7 +70,7 @@ int				gustStartupDelay;
 bool			gustFlip=true;
 
 int				done=0;
-long			mainDelay=20000;
+long			mainDelay=25000;
 
 uint			runCounter=0;
 bool			useWindow=true;
@@ -171,7 +171,7 @@ int				treeX;
 int				treeY;
 int				treeLampSet=1;
 int				treeOnOff=0;
-bool			showTree=false;
+bool			showTree=true;
 
 //tinsel`
 Pixmap			tinselPixmap[2];
@@ -492,7 +492,7 @@ void initFalling(void)
 			floating[fallingCount].anims=0;
 	for(int k=0;k<MAXFALLINGANIMATION;k++)
 		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%sFloat%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Float/%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
 			image=imlib_load_image(pathname);
 			if(image!=NULL)
 				{
@@ -954,37 +954,37 @@ void doHelp(void)
 	printf("Released under the gpl-3.0 license\n\n");
 	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
 
+//app
+	printf("APPLICATION OPTIONS\n");
 	printf("-theme STRING\n");
-	printf("\tSet prefix for theme\n");
+	printf("\tSet theme name ( default 'Xmas' )\n");
 	printf("-delay INTEGER\n");
 	printf("\tSet main delay\n");
 	printf("-configfile FILEPATH\n");
 	printf("\tSet new config file ( using only one instance of this makes any sense )\n");
 	printf("-writeconfig FILEPATH\n");
-	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options\n");
-	printf("\tMust be last command on line\n\n");
+	printf("\tWrite out a new config file including currently loaded config file,defaults and command line options then exit\n");
+	printf("\tOptions after this are ignored\n");
+	printf("-noconfig\n");
+	printf("\tDont't load the default config file ( ~/.config/xdecorations.rc )\n");
 	printf("-usewindow/-no-usewindow\n");
 	printf("\tUse a transparent window instead of the root window\n");
 	printf("-usebuffer/-no-usebuffer\n");
-	printf("\tUse double buffering ( -delay is ignored updates are done by X )\n");
-
-	printf("-showflyer/-no-showflyer\n");
-	printf("\tShow flying objects\n");
-	printf("-showstar/-no-showstar\n");
-	printf("\tShow star\n");
-	printf("-showtinsel/-no-showtinsel\n");
-	printf("\tShow tinsel\n");
-	printf("-showtreelamps/-no-showtreelamps\n");
-	printf("\tShow tree lamps\n");
-	printf("\n");
-
+	printf("\tUse double buffering\n\tUsing double buffering gives best graphical results but is slower\n");
+	printf("\tThe default is to use a transparent window with double buffering\n\n");
+//lamps
+	printf("LAMPS\n");
 	printf("-lampset INTEGER\n");
 	printf("\tThe number of the lamp set to use ( 0=no lamps )\n");
 	printf("-lampy INTEGER\n");
 	printf("\tLamp Y position\n");
 	printf("-lampdelay INTEGER\n");
-	printf("\tLamp delay\n");
+	printf("\tLamp delay\n\n");
 
+//flying
+	printf("FLYERS\n");
+	printf("-showflyer/-no-showflyer\n");
+	printf("\tShow flying objects\n");
 	printf("-flyermaxy INTEGER\n");
 	printf("\tLowest point on screen for flying objects\n");
 	printf("-spread INTEGER\n");
@@ -992,44 +992,49 @@ void doHelp(void)
 	printf("-flydelay INTEGER\n");
 	printf("\tFlying objects delay\n");
 	printf("-flystep INTEGER\n");
-	printf("\tAmount to move flying objects\n");
+	printf("\tAmount to move flying objects\n\n");
 
+
+//tree
+	printf("TREES\n");
 	printf("-tree INTEGER\n");
 	printf("\tThe number of the tree to use ( 0=no tree )\n");
+	printf("\tIf no trees are shown star/treelights/tinsel are also disabled\n");
 	printf("-treex INTEGER\n");
 	printf("\tAbsolute X position of tree\n");
 	printf("-treey INTEGER\n");
 	printf("\tAbsolute Y position of tree\n");
-
+//star
+	printf("-showstar/-no-showstar\n");
+	printf("\tShow star\n");
+	printf("-stardelay INTEGER\n");
+	printf("\tDelay for star\n");
+//tinsel
+	printf("-showtinsel/-no-showtinsel\n");
+	printf("\tShow tinsel\n");
+//treelamps
+	printf("-showtreelamps/-no-showtreelamps\n");
+	printf("\tShow tree lamps\n");
 	printf("-treelampdelay INTEGER\n");
 	printf("\tTree lamps delay\n");
 	printf("-treelampset INTEGER\n");
-	printf("\tLampset to use on tree\n");
+	printf("\tLampset to use on tree\n\n");
 
-	printf("-stardelay INTEGER\n");
-	printf("\tDelay for star\n");
-
+//figure
+	printf("FIGURE\n");
+	printf("-figure INTEGER\n");
+	printf("\tThe number of figure to use ( 0=no figure )\n");
 	printf("-figurex INTEGER\n");
 	printf("\tAbsolute X position of figure\n");
 	printf("-figuredelay INTEGER\n");
-	printf("\tDelay for figure\n");
-	printf("-figure INTEGER\n");
-	printf("\tThe number of figure to use ( 0=no figure )\n\n");
+	printf("\tDelay for figure\n\n");
+
 //falling
-	printf("-falling x INTEGER\n");
-	printf("\tThe number of the falling objects to use ( 0=no falling objects )\n\n");
+	printf("FALLING OBJECTS\n");
+	printf("-falling INTEGER\n");
+	printf("\tThe set number of the falling objects to use ( 0=no falling objects )\n");
 	printf("-falldelay INTEGER\n");
 	printf("\tDelay for falling objects\n");
-	printf("-gustlen INTEGER\n");
-	printf("\tDuration of gusts of wind\n");
-	printf("-gustdelay INTEGER\n");
-	printf("\tDelay between gusts of wind\n");
-	printf("-gustspeed INTEGER\n");
-	printf("\tSpeed of gusts of wind\n");
-	printf("-usegusts/-no-usegusts\n");
-	printf("\tUse/don't use gusts of wind\n");
-	printf("-wind INTEGER\n");
-	printf("\tWind speed/direction ( +INTEGER wind>>> -INTEGER wind<<< 0 no wind )\n");
 	printf("-maxfalling INTEGER\n");
 	printf("\tMaximum number of falling objects INTEGER<%i\n",MAXFALLINGOBJECTS);
 	printf("-fallingspread INTEGER\n");
@@ -1037,9 +1042,34 @@ void doHelp(void)
 	printf("-fallingspeed INTEGER\n");
 	printf("\tDistance falling objects move in Y direction in one go\n");
 	printf("-maxxstep INTEGER\n");
-	printf("\tFalling objects max X step\n");
-	
+	printf("\tFalling objects max X step\n\n");
+
+//wind
+	printf("WIND\n");
+	printf("-wind INTEGER\n");
+	printf("\tWind speed/direction ( +INTEGER wind>>> -INTEGER wind<<< 0 no wind )\n");
+//gusts
+	printf("-usegusts/-no-usegusts\n");
+	printf("\tUse/don't use gusts of wind\n");
+	printf("-gustlen INTEGER\n");
+	printf("\tDuration of gusts of wind\n");
+	printf("-gustdelay INTEGER\n");
+	printf("\tRandom delay between gusts of wind\n");
+	printf("-gustspeed INTEGER\n");
+	printf("\tSpeed of gusts of wind\n");
+	printf("\n");
 	exit(0);
+}
+
+void setDefaults(void)
+{
+	prefix=strdup("Xmas");
+	treeNumber=0;
+	figureNumber=0;
+	showFlyers=false;
+	fallingNumber=1;
+	fallingSpread=2000;
+	lampSpeed=20;
 }
 
 int main(int argc,char* argv[])
@@ -1058,9 +1088,23 @@ int main(int argc,char* argv[])
 	clock_gettime(CLOCK_MONOTONIC,&now);
 	srandom(now.tv_nsec);
 
-	prefix=strdup("Xmas");
-	asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
-	loadVarsFromFile(configFilePath,xdecorations_rc);
+	display=XOpenDisplay(NULL);
+	if(display==NULL)
+		exit(1);
+
+	screen=DefaultScreen(display);
+	displayWidth=DisplayWidth(display,screen);
+	displayHeight=DisplayHeight(display,screen);
+
+	setDefaults();
+
+	if((argc>1) && (strcmp(argv[1],"-noconfig")!=0))
+		{
+		printf("noconfig\n");
+			prefix=strdup("Xmas");
+			asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
+			loadVarsFromFile(configFilePath,xdecorations_rc);
+		}
 
 //command line options.
 	for (argnum=1; argnum<argc; argnum++)
@@ -1193,14 +1237,6 @@ int main(int argc,char* argv[])
 	signal(SIGQUIT,(sighandler_t)signalHandler);
 	signal(SIGINT,(sighandler_t)signalHandler);
 	signal(SIGHUP,(sighandler_t)signalHandler);
-
-	display=XOpenDisplay(NULL);
-	if(display==NULL)
-		exit(1);
-
-	screen=DefaultScreen(display);
-	displayWidth=DisplayWidth(display,screen);
-	displayHeight=DisplayHeight(display,screen);
 
 	if(useWindow==false)
 		{
