@@ -73,31 +73,27 @@ flystep 8
 #Defaults to 0.
 tree 1
 
-#Show tinsel, 1=show, 0=don't show.
-#Defaults to 0.
-tinsel 0
+#The absolute x position of the tree on the screen.
+#Defaults to 0
+treex 0
 
-#Show treelamps, 1=show, 0=don't show.
-#Defaults to 0.
-treelamps 1
+#The absolute y position of the tree on the screen.
+#Defaults to 0
+treey 400
 
 #Show star, 1=show, 0=don't show.
 #Defaults to 0.
 star 1
 
-#The tree to use
-#Defaults to 1
-treenumber 1
-
-#The absolute x position of the tree on the screen.
+#The delay between the 'star' animations, the star does not have to be a star, for instance in the Halloween theme it is actually the eyes of the tree.
 #Defaults to 100
-treex 0
+stardelay 400
 
-#The absolute y position of the tree on the screen.
-#Defaults to 100
-treey 400
+#Show tinsel, 1=show, 0=don't show.
+#Defaults to 0.
+tinsel 0
 
-#Lampset to use on the tree, at the moment 1 or 2.
+#Lampset to use on the tree, 0=disable tree lights.
 #Defaults to 1
 treelampset 1
 
@@ -105,24 +101,10 @@ treelampset 1
 #Defaults to 100
 treelampdelay 200
 
-#The delay between the 'star' animations, the star does not have to be a star, for instance in the Halloween theme it is actually the eyes of the tree.
-#Defaults to 100
-stardelay 400
-
-
-
 ##### Figure #####
-#Show figure, 1=show, 0=don't show.
-#Defaults to 0.
-figure 1
-
-#The figure to use
+#The figure to use, 0=disable figure
 #Default to 1
 figurenumber 2
-
-#The delay between the figure animation. 
-#Defaults to 100
-figuredelay 250
 
 #The absolute x position of the figure on the screen.
 #Defaults to 100
@@ -131,5 +113,80 @@ figurex 800
 #The absolute y position of the figure on the screen.
 #Defaults to 100
 figurey 100
+
+#The delay between the figure animation. 
+#Defaults to 100
+figuredelay 250
+
+##### Falling Objects #####
+
+#The set number of the falling objects to use, 0=disbale falling objects.
+#Defaults to 1
+falling 1
+
+#Delay for falling objects
+#Defaults to 1
+falldelay 2
+
+#Maximum number of falling objects <5000.
+#Defaults to 100
+maxfalling 400
+
+#Random deleay between new falling objects appearing
+#Defaults to 1000
+fallingspread 2000
+
+#Distance falling objects move in Y direction in one go
+#Defaults to 1
+fallingspeed 2
+
+#Falling objects max X step
+#Defaults to 4
+maxxstep 4
+
+##### Wind #####
+#Wind speed/direction ( +INTEGER wind>>> -INTEGER wind<<< 0 no wind )
+#Defaults to 0
+wind 0
+
+#Use/don't use gusts of wind
+#Defaults to 1
+usegusts 1
+
+#Duration of gusts of wind.
+#Defaults to 3000
+gustlen 4000
+
+#Random delay between gusts of wind
+#Defaults to 10000
+gustdelay
+
+#Speed of gusts of wind
+#Defaults to 40
+gustspeed 60
+
+#### EXTRAS #####
+#These are not used in the config file but are command line switches ONLY.
+#Dont't load the default config file ( ~/.config/xdecorations.rc ).
+#MUST be the firts option given.
+#-noconfig
+
+#Set new config file ( using only one instance of this makes any sense )
+#This will overwite any options used or any options set in the default config.
+#-configfile "/path/to/config/file"
+
+#Write out a new config file including currently loaded config file,defaults and command line options then exit
+#-writeconfig  "/path/to/config/file"
+
+
+
+
+
+
+
+
+
+
+
 
 

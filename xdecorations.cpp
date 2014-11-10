@@ -167,8 +167,8 @@ int				treeHeight;
 int				treeNumber=1;
 int				treelampSpeed=100;
 int				starSpeed=100;
-int				treeX;
-int				treeY;
+int				treeX=0;
+int				treeY=0;
 int				treeLampSet=1;
 int				treeOnOff=0;
 bool			showTree=true;
@@ -235,35 +235,34 @@ args	xdecorations_rc[]=
 
 //trees
 	{"tree",TYPEINT,&treeNumber},
-
-
-//bools
-	{"tinsel",TYPEBOOL,&showTinsel},
-	{"star",TYPEBOOL,&showStar},
-	{"treelamps",TYPEBOOL,&showTreeLamps},
-	{"usegusts",TYPEBOOL,&useGusts},
-//strings
-//ints
-	{"treelampdelay",TYPEINT,&treelampSpeed},
-	{"treelampset",TYPEINT,&treeLampSet},
 	{"treex",TYPEINT,&treeX},
 	{"treey",TYPEINT,&treeY},
+	{"star",TYPEBOOL,&showStar},
 	{"stardelay",TYPEINT,&starSpeed},
+	{"tinsel",TYPEBOOL,&showTinsel},
+	{"treelampset",TYPEINT,&treeLampSet},
+	{"treelampdelay",TYPEINT,&treelampSpeed},
+
+//figure
+	{"figure",TYPEINT,&figureNumber},
 	{"figurex",TYPEINT,&figureX},
 	{"figurey",TYPEINT,&figureY},
 	{"figuredelay",TYPEINT,&figureSpeed},
-	{"figure",TYPEINT,&figureNumber},
+
 //falling
 	{"falling",TYPEINT,&fallingNumber},
 	{"falldelay",TYPEINT,&fallingDelay},
-	{"gustlen",TYPEINT,&gustDuration},
-	{"gustdelay",TYPEINT,&gustEvent},
-	{"gustspeed",TYPEINT,&gustSpeed},
-	{"wind",TYPEINT,&windSpeed},
 	{"maxfalling",TYPEINT,&numberOfFalling},
 	{"fallingspread",TYPEINT,&fallingSpread},
 	{"fallingspeed",TYPEINT,&fallSpeed},
 	{"maxxstep",TYPEINT,&maxXStep},
+
+//wind
+	{"wind",TYPEINT,&windSpeed},
+	{"usegusts",TYPEBOOL,&useGusts},
+	{"gustlen",TYPEINT,&gustDuration},
+	{"gustdelay",TYPEINT,&gustEvent},
+	{"gustspeed",TYPEINT,&gustSpeed},
 
 	{NULL,0,NULL}
 };
@@ -1025,10 +1024,10 @@ void doHelp(void)
 	printf("-showtinsel/-no-showtinsel\n");
 	printf("\tShow tinsel\n");
 //treelamps
-	printf("-treelampdelay INTEGER\n");
-	printf("\tTree lamps delay\n");
 	printf("-treelampset INTEGER\n");
 	printf("\tLampset to use on tree\n\n");
+	printf("-treelampdelay INTEGER\n");
+	printf("\tTree lamps delay\n");
 
 //figure
 	printf("FIGURE\n");
@@ -1036,6 +1035,8 @@ void doHelp(void)
 	printf("\tThe number of figure to use ( 0=no figure )\n");
 	printf("-figurex INTEGER\n");
 	printf("\tAbsolute X position of figure\n");
+	printf("-figurey INTEGER\n");
+	printf("\tAbsolute Y position of figure\n");
 	printf("-figuredelay INTEGER\n");
 	printf("\tDelay for figure\n\n");
 
