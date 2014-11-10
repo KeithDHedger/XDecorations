@@ -33,6 +33,7 @@ if not,write to the Free Software
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "toon.h"
 
@@ -43,10 +44,11 @@ if not,write to the Free Software
 #define MAXFALLINGOBJECTS 5000
 #define	MAXFALLINGANIMATION 48
 
-#define VERSION "0.1.4"
+#define VERSION "0.1.5"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
+enum {LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000};
 
 char			pathname[MAXPATHNAMELEN];
 char*			configFilePath;
@@ -267,6 +269,38 @@ args	xdecorations_rc[]=
 	{NULL,0,NULL}
 };
 
+void setGravity(int *x,int *y,int w,int h)
+{
+	switch(*x)
+		{
+			case LEFT:
+				*x=0;
+			break;
+			case CENTRE:
+				*x=(displayWidth/2)-(w/2);
+				break;
+			case RIGHT:
+				*x=displayWidth-w;
+				break;
+			default:
+				break;
+		}
+	switch(*y)
+		{
+			case TOP:
+				*y=0;
+			break;
+			case CENTRE:
+				*y=(displayHeight/2)-(h/2);
+				break;
+			case BOTTOM:
+				*y=displayHeight-h;
+				break;
+			default:
+				break;
+		}
+}
+
 void saveVarsToFile(const char* filepath,args* dataptr)
 {
 	FILE*	fd=NULL;
@@ -431,9 +465,9 @@ void initFigure(void)
 					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&figurePixmap[OFFPIXMAP],&figurePixmap[OFFMASK]);
-
 					figureW=imlib_image_get_width();
 					figureH=imlib_image_get_height();
+					setGravity(&figureX,&figureY,figureW,figureH);
 				}
 		}
 }
@@ -532,7 +566,7 @@ void initFalling(void)
 					moving[j].stepX=1;
 					moving[j].stepY=randInt(fallSpeed)+1;
 					moving[j].use=false;
-					moving[j].imageNum=0;
+					moving[j].imageNum=randInt(moving[j].object->anims);
 					moving[j].countDown=fallingAnimSpeed;
 				}
 		}
@@ -559,6 +593,7 @@ void initTree(void)
 			imlib_render_pixmaps_for_whole_image(&treePixmap[ONPIXMAP],&treePixmap[ONMASK]);
 			treeWidth=imlib_image_get_width();
 			treeHeight=imlib_image_get_height();
+			setGravity(&treeX,&treeY,treeWidth,treeHeight);
 		}
 
 	treeLampCount=0;
@@ -646,7 +681,7 @@ void drawFigure(void)
 
 	if(figureNumber==0)
 		return;
-
+//printf("draw figure %i\n",figureX);
 	rc=XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
 	rc=XSetClipOrigin(display,gc,figureX,figureY);
 	rc=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],drawOnThis,gc,0,0,figureW,figureH,figureX,figureY);
@@ -1083,6 +1118,30 @@ void setDefaults(void)
 	lampSpeed=20;
 }
 
+int translateGravity(char* str)
+{
+	int retcode=0;
+
+	if(isalpha(str[0]))
+		{
+			if(strcasecmp(str,"left")==0)
+				retcode=LEFT;
+			if(strcasecmp(str,"centre")==0)
+				retcode=CENTRE;
+			if(strcasecmp(str,"right")==0)
+				retcode=RIGHT;
+			if(strcasecmp(str,"top")==0)
+				retcode=TOP;
+			if(strcasecmp(str,"bottom")==0)
+				retcode=BOTTOM;
+		}
+	else
+		retcode=atol(str);
+
+	return(retcode);
+
+}
+
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -1122,13 +1181,8 @@ int main(int argc,char* argv[])
 		{
 			argstr=argv[argnum];
 
-			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
-			showUnShow(argstr,"showstar",&showStar);//showStar=false
-			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
-			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
-			showUnShow(argstr,"usegusts",&useGusts);//use/don't use gusts of wind
-			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
 
+//app
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
 					free(configFilePath);
@@ -1136,6 +1190,14 @@ int main(int argc,char* argv[])
 					loadVarsFromFile(configFilePath,xdecorations_rc);
 				}
 
+			if(strcmp(argstr,"-writeconfig")==0)//figureNumber=1
+				{
+					saveVarsToFile(argv[++argnum],xdecorations_rc);
+					return(0);
+				}
+
+			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
+			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
 			if(strcmp(argstr,"-theme")==0)//Xmas
 				{
 					free(prefix);
@@ -1145,95 +1207,79 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-delay")==0)//mainDelay=20000
 				mainDelay=atol(argv[++argnum]);
 
+//lamps
+			if(strcmp(argstr,"-lampset")==0)//lampSet=1
+				lampSet=atol(argv[++argnum]);
 			if(strcmp(argstr,"-lampy")==0)//lampY=16
 				lampY=atol(argv[++argnum]);
-
 			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
 				lampSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-lampset")==0)//lampSet=1
-				lampSet=atol(argv[++argnum]);
-
+//flyers
+			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
 			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
 				flyersMaxY=atol(argv[++argnum]);
-
 			if(strcmp(argstr,"-spread")==0)//flyerSpread=500
 				flyerSpread=atol(argv[++argnum]);
-
 			if(strcmp(argstr,"-flydelay")==0)//flyersSpeed=1
 				flyersSpeed=atol(argv[++argnum]);
-
 			if(strcmp(argstr,"-flystep")==0)//flyersStep=8
 				flyersStep=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
-				treelampSpeed=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
-				treeLampSet=atol(argv[++argnum]);
-
+//tree
 			if(strcmp(argstr,"-tree")==0)//treeNumber=1
 				treeNumber=atol(argv[++argnum]);
-
 			if(strcmp(argstr,"-treex")==0)//treeX=100
-				treeX=atol(argv[++argnum]);
-
+				treeX=translateGravity(argv[++argnum]);
 			if(strcmp(argstr,"-treey")==0)//treeY=100
-				treeY=atol(argv[++argnum]);
+				treeY=translateGravity(argv[++argnum]);
 
+			showUnShow(argstr,"showstar",&showStar);//showStar=false
 			if(strcmp(argstr,"-stardelay")==0)//starSpeed
 				starSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurex")==0)//figureX=100
-				figureX=atol(argv[++argnum]);
+			showUnShow(argstr,"showtinsel",&showTinsel);//showTinsel=false
 
+			if(strcmp(argstr,"-treelampset")==0)//treeLampSet=1
+				treeLampSet=atol(argv[++argnum]);
+			if(strcmp(argstr,"-treelampdelay")==0)//treelampSpeed=100
+				treelampSpeed=atol(argv[++argnum]);
+
+//figure
 			if(strcmp(argstr,"-figure")==0)//figure=1
 				figureNumber=atol(argv[++argnum]);
-
+			if(strcmp(argstr,"-figurex")==0)//figureX=100
+				figureX=translateGravity(argv[++argnum]);
 			if(strcmp(argstr,"-figurey")==0)//figureY=100
-				figureY=atol(argv[++argnum]);
-
+					figureY=translateGravity(argv[++argnum]);
 			if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
 				figureSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-figurenumber")==0)//figureNumber=1
-				figureNumber=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-writeconfig")==0)//figureNumber=1
-				{
-					saveVarsToFile(argv[++argnum],xdecorations_rc);
-					return(0);
-				}
 //falling
 			if(strcmp(argstr,"-falling")==0)//falling set=1
 				fallingNumber=atol(argv[++argnum]);
-
 			if(strcmp(argstr,"-falldelay")==0)//falling speed=10
 				fallingDelay=atol(argv[++argnum]);
+			if(strcmp(argstr,"-maxfalling")==0)//numberOfFalling=100
+				numberOfFalling=atol(argv[++argnum]);
+			if(strcmp(argstr,"-fallingspread")==0)//leaf spread=400
+				fallingSpread=atol(argv[++argnum]);
+			if(strcmp(argstr,"-fallingspeed")==0)//leaf spread=400
+				fallSpeed=atol(argv[++argnum]);
+			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
+				maxXStep=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-gustlen")==0)//gustDuration=10
-				gustDuration=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-gustdelay")==0)//gustEvent=2000
-				gustEvent=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-gustspeed")==0)//gustSpeed=40
-				gustSpeed=atol(argv[++argnum]);
-
+//wind
 			if(strcmp(argstr,"-wind")==0)//windspeed=4
 				windSpeed=atol(argv[++argnum]);
 
-			if(strcmp(argstr,"-maxfalling")==0)//numberOfFalling=100
-				numberOfFalling=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-fallingspread")==0)//leaf spread=400
-				fallingSpread=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-fallingspeed")==0)//leaf spread=400
-				fallSpeed=atol(argv[++argnum]);
-
-			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
-				maxXStep=atol(argv[++argnum]);
+			showUnShow(argstr,"usegusts",&useGusts);//use/don't use gusts of wind
+			if(strcmp(argstr,"-gustlen")==0)//gustDuration=10
+				gustDuration=atol(argv[++argnum]);
+			if(strcmp(argstr,"-gustdelay")==0)//gustEvent=2000
+				gustEvent=atol(argv[++argnum]);
+			if(strcmp(argstr,"-gustspeed")==0)//gustSpeed=40
+				gustSpeed=atol(argv[++argnum]);
 
 //print help
 			if(strcmp(argstr,"-help")==0)
