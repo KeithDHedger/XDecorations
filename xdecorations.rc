@@ -16,13 +16,13 @@
 #An alternate config file can be loaded with the command line switch "-configfile /path/to/config/file", or disable loading of default config file with the command line switch "-noconfig" which must be the fitsr option on the command line.
 
 #Set theme for image files.
-theme Halloween
+theme Xmas
 #Default Xmas
 
 #Set main delay, this will adjust the overall speed of the program keeping the relative delays of the various animations the same.
 #If the delay is to small ( <1000, depending on the system ) you may find the graphics breaking up and the program will hog too much processor time, 8000 to 10000 is a good compromise.
 #defaults to 25000
-delay 10000
+delay 25000
 
 #Write direct to the root window(0) or to a transparent window(1).
 usewindow 1
@@ -36,7 +36,7 @@ usebuffer 1
 ##### Screen Lamps #####
 #The lamp set to use, 0=disable lamps.
 #Defaults to 1
-lampset 2
+lampset 1
 
 #The absolute y position of the lamps on the screen.
 #Defaults to 0
@@ -44,7 +44,7 @@ lampy 0
 
 #The delay between the lamp animation.
 #Defaults to 100
-lampdelay 100
+lampdelay 20
 
 ##### Flying objects #####
 #Show flyers, 1=show, 0=don't show.
@@ -57,11 +57,11 @@ flyermaxy 600
 
 #The random delay between flyers appearing on screen, larger=less frequently.
 #Defaults to 500
-spread 1000
+spread 500
 
 #Set delay for flying objects, larger delay slower the movement, should be kept quite low,
 #Defaults to 1
-flydelay 2
+flydelay 1
 
 #Set the number of pixels to move, larger number=faster, lower number=smoother, should be kept quite low,
 #Defaults to 8
@@ -75,11 +75,11 @@ tree 1
 
 #The absolute x position of the tree on the screen.
 #Defaults to 0
-treex 0
+treex 500
 
 #The absolute y position of the tree on the screen.
 #Defaults to 0
-treey 400
+treey 350
 
 #Show star, 1=show, 0=don't show.
 #Defaults to 0.
@@ -87,11 +87,11 @@ star 1
 
 #The delay between the 'star' animations, the star does not have to be a star, for instance in the Halloween theme it is actually the eyes of the tree.
 #Defaults to 100
-stardelay 400
+stardelay 10
 
 #Show tinsel, 1=show, 0=don't show.
 #Defaults to 0.
-tinsel 0
+tinsel 1
 
 #Lampset to use on the tree, 0=disable tree lights.
 #Defaults to 1
@@ -99,16 +99,16 @@ treelampset 1
 
 #The delay between the tree lamp animation. 
 #Defaults to 100
-treelampdelay 200
+treelampdelay 20
 
 ##### Figure #####
 #The figure to use, 0=disable figure
 #Default to 1
-figurenumber 2
+figurenumber 1
 
 #The absolute x position of the figure on the screen.
 #Defaults to 100
-figurex 800
+figurex 100
 
 #The absolute y position of the figure on the screen.
 #Defaults to 100
@@ -116,7 +116,7 @@ figurey 100
 
 #The delay between the figure animation. 
 #Defaults to 100
-figuredelay 250
+figuredelay 100
 
 ##### Falling Objects #####
 
@@ -126,11 +126,11 @@ falling 1
 
 #Delay for falling objects
 #Defaults to 1
-falldelay 2
+falldelay 1
 
 #Maximum number of falling objects <5000.
 #Defaults to 100
-maxfalling 400
+maxfalling 100
 
 #Random deleay between new falling objects appearing
 #Defaults to 1000
@@ -138,7 +138,7 @@ fallingspread 2000
 
 #Distance falling objects move in Y direction in one go
 #Defaults to 1
-fallingspeed 2
+fallingspeed 1
 
 #Falling objects max X step
 #Defaults to 4
@@ -155,11 +155,11 @@ usegusts 1
 
 #Duration of gusts of wind.
 #Defaults to 3000
-gustlen 4000
+gustlen 3000
 
 #Random delay between gusts of wind
 #Defaults to 10000
-gustdelay
+gustdelay 10000
 
 #Speed of gusts of wind
 #Defaults to 40
