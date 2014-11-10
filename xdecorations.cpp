@@ -764,115 +764,44 @@ int doGusts(void)
 	int ret=0;
 	if(doinggusts==false)
 		return(ret);
-//	if(gustCountdown==0)
-//		{
-//			if(randomEvent(gustEvent)==true)
-//				{
-//					gustCountdown=gustDuration;
-//					gustDirection=randomDirection();
-//					realGustSpeed=1;
-//					gustStartupDelay=gustDuration/10;
-//					gustFlip=true;
-//				}
-//		}
 
-//	if(gustCountdown==0)
-//		{
-//			ret=0;
-//		}
-//	else
-//		{
-//			if(realGustSpeed<gustSpeed)
-//				ret=realGustSpeed*gustDirection;
-//			else
-//				ret=((realGustSpeed+randInt(realGustSpeed/10))*gustDirection);
-
-			if(gustportion==1)
+	if(gustportion==1)
+		{
+			if(realGustSpeed<gustSpeed)
+				realGustSpeed=realGustSpeed+gustinc;
+			else
 				{
-					if(realGustSpeed<gustSpeed)
-						{
-							realGustSpeed=realGustSpeed+gustinc;
-						}
-					else
-						{
-							gustportion=2;
-							realGustSpeed=gustSpeed;
-						}
-					ret=realGustSpeed;
-				}
-
-			if(gustportion==2)
-				{
+					gustportion=2;
 					realGustSpeed=gustSpeed;
-					ret=realGustSpeed;
-					if(gustCountdown<=0)
-						{
-							gustportion=3;
-							gustCountdown=0;
-						}
 				}
+			ret=realGustSpeed;
+		}
 
-			if(gustportion==3)
+	if(gustportion==2)
+		{
+			realGustSpeed=gustSpeed;
+			ret=realGustSpeed;
+			if(gustCountdown<=0)
 				{
-					if(realGustSpeed>0)
-						{
-							realGustSpeed=realGustSpeed-gustinc;
-						}
-					else
-						{
-							gustportion=1;
-							gustCountdown=0;
-							realGustSpeed=0;
-							doinggusts=false;
-						}
-					ret=realGustSpeed;
+					gustportion=3;
+					gustCountdown=0;
 				}
-//			if(realGustSpeed<gustSpeed)
-//				{
-//				ret=realGustSpeed*gustDirection;
-//				printf("zzzzzzz%in",ret);
-//				}
-//			else
-//			{
-//				ret=((realGustSpeed+randInt(realGustSpeed/10))*gustDirection);
-//				//printf("yyyyyyyy%in",ret);
-//	}
-//			//gustCountdown--;
-//			if(gustFlip==true)
-//				{
-//				printf("cn=%i dur=%in",gustCountdown,gustDuration);
-//					if((gustCountdown % (gustDuration/6)) ==0)
-//						{
-//						realGustSpeed=realGustSpeed*2;
-//						printf("aaa%in",realGustSpeed);
-//						}
-//					if(realGustSpeed>=gustSpeed)
-//						realGustSpeed=gustSpeed;
-//				}
-//			else
-//				{
-//					if((gustCountdown % (gustDuration/6)) ==0)
-//						realGustSpeed=realGustSpeed/2;
-//					if(realGustSpeed<=0)
-//						{
-//							realGustSpeed=0;
-//							gustCountdown=0;
-//						}
-//				}
-//
-//			if(gustCountdown<=0)
-//				{
-//					if(gustFlip==true)
-//						{
-//							gustCountdown=0;
-//							gustFlip=false;
-//							gustCountdown=gustDuration;
-//						}
-//					else
-//						gustCountdown=gustDuration;
+		}
 
-//		}	
-//	printf("ret=%i\n",ret);
+	if(gustportion==3)
+		{
+			if(realGustSpeed>0)
+				realGustSpeed=realGustSpeed-gustinc;
+			else
+				{
+					gustportion=1;
+					gustCountdown=0;
+					realGustSpeed=0;
+					doinggusts=false;
+				}
+			ret=realGustSpeed;
+		}
+
 	return(ret);
 }
  
@@ -882,20 +811,6 @@ void updateFalling(void)
 
 	if((useGusts==true) &&(doinggusts==true))
 		addGust=doGusts();
-
-#if 0
-	if(gustCountdown==0)
-		{
-			if(randomEvent(gustEvent)==true)
-				{
-					gustCountdown=gustDuration;
-					gustDirection=randomDirection();
-					realGustSpeed=1;
-					gustStartupDelay=gustDuration/10;
-					gustFlip=true;
-				}
-		}
-#endif
 
 	for(int j=0;j<numberOfFalling;j++)
 		{
@@ -911,59 +826,8 @@ void updateFalling(void)
 						moving[j].stepX=-maxXStep;
 
 					moving[j].y=moving[j].y+moving[j].stepY;
-
 					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+addGust;
 					
-#if 0					
-					if(useGusts==false)
-						moving[j].x=moving[j].x+moving[j].stepX+windSpeed;
-					else
-						{
-							if(gustCountdown==0)
-								{
-									moving[j].x=moving[j].x+moving[j].stepX+windSpeed;
-								}
-							else
-								{
-									if(realGustSpeed<gustSpeed)
-										moving[j].x=moving[j].x+((realGustSpeed)*gustDirection);
-									else
-										moving[j].x=moving[j].x+((realGustSpeed+randInt(realGustSpeed/10))*gustDirection);
-									
-									gustCountdown--;
-									
-									if(gustFlip==true)
-										{
-											if((gustCountdown % gustStartupDelay) ==0)
-												realGustSpeed=realGustSpeed*2;
-											if(realGustSpeed>=gustSpeed)
-												realGustSpeed=gustSpeed;
-										}
-									else
-										{
-											if((gustCountdown % gustStartupDelay) ==0)
-												realGustSpeed=realGustSpeed/2;
-											if(realGustSpeed<=0)
-												{
-													realGustSpeed=0;
-													gustCountdown=0;
-												}
-										}
-
-									if(gustCountdown<=0)
-										{
-											if(gustFlip==true)
-												{
-													gustCountdown=0;
-													gustFlip=false;
-													gustCountdown=gustDuration;
-												}
-										else
-											gustCountdown=0;
-										}
-								}			
-						}
-#endif
 					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
 							moving[j].use=false;
