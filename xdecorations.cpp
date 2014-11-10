@@ -76,6 +76,7 @@ long			mainDelay=25000;
 
 uint			runCounter=0;
 bool			useWindow=true;
+int				offSetY=0;
 
 struct			objects
 {
@@ -288,13 +289,13 @@ void setGravity(int *x,int *y,int w,int h)
 	switch(*y)
 		{
 			case TOP:
-				*y=0;
+				*y=0+offSetY;
 			break;
 			case CENTRE:
-				*y=(displayHeight/2)-(h/2);
+				*y=(displayHeight/2)-(h/2)+offSetY;
 				break;
 			case BOTTOM:
-				*y=displayHeight-h;
+				*y=displayHeight-h+offSetY;
 				break;
 			default:
 				break;
@@ -681,7 +682,7 @@ void drawFigure(void)
 
 	if(figureNumber==0)
 		return;
-//printf("draw figure %i\n",figureX);
+
 	rc=XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
 	rc=XSetClipOrigin(display,gc,figureX,figureY);
 	rc=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],drawOnThis,gc,0,0,figureW,figureH,figureX,figureY);
@@ -730,8 +731,159 @@ void drawFalling(void)
 	}
 }
 
+int guststart;
+int gustend;
+int gustportion=1;
+int	gustinc;
+bool doinggusts=false;
+
+void updateGusts(void)
+{
+	if(gustCountdown==0)
+		{
+			if((randomEvent(gustEvent)==true) && (gustportion==1))
+				{
+					gustCountdown=gustDuration;
+					gustDirection=randomDirection();
+					realGustSpeed=1;
+					gustStartupDelay=gustDuration/4;
+					gustFlip=true;
+					guststart=gustCountdown/6;
+					gustend=gustCountdown/6;
+					gustportion=1;
+					gustinc=1;
+					doinggusts=true;
+				}
+		}
+	else
+		gustCountdown--;
+}
+
+int doGusts(void)
+{
+	int ret=0;
+	if(doinggusts==false)
+		return(ret);
+//	if(gustCountdown==0)
+//		{
+//			if(randomEvent(gustEvent)==true)
+//				{
+//					gustCountdown=gustDuration;
+//					gustDirection=randomDirection();
+//					realGustSpeed=1;
+//					gustStartupDelay=gustDuration/10;
+//					gustFlip=true;
+//				}
+//		}
+
+//	if(gustCountdown==0)
+//		{
+//			ret=0;
+//		}
+//	else
+//		{
+//			if(realGustSpeed<gustSpeed)
+//				ret=realGustSpeed*gustDirection;
+//			else
+//				ret=((realGustSpeed+randInt(realGustSpeed/10))*gustDirection);
+
+			if(gustportion==1)
+				{
+					if(realGustSpeed<gustSpeed)
+						{
+							realGustSpeed=realGustSpeed+gustinc;
+						}
+					else
+						{
+							gustportion=2;
+							realGustSpeed=gustSpeed;
+						}
+					ret=realGustSpeed;
+				}
+
+			if(gustportion==2)
+				{
+					realGustSpeed=gustSpeed;
+					ret=realGustSpeed;
+					if(gustCountdown<=0)
+						{
+							gustportion=3;
+							gustCountdown=0;
+						}
+				}
+
+			if(gustportion==3)
+				{
+					if(realGustSpeed>0)
+						{
+							realGustSpeed=realGustSpeed-gustinc;
+						}
+					else
+						{
+							gustportion=1;
+							gustCountdown=0;
+							realGustSpeed=0;
+							doinggusts=false;
+						}
+					ret=realGustSpeed;
+				}
+//			if(realGustSpeed<gustSpeed)
+//				{
+//				ret=realGustSpeed*gustDirection;
+//				printf("zzzzzzz%in",ret);
+//				}
+//			else
+//			{
+//				ret=((realGustSpeed+randInt(realGustSpeed/10))*gustDirection);
+//				//printf("yyyyyyyy%in",ret);
+//	}
+//			//gustCountdown--;
+//			if(gustFlip==true)
+//				{
+//				printf("cn=%i dur=%in",gustCountdown,gustDuration);
+//					if((gustCountdown % (gustDuration/6)) ==0)
+//						{
+//						realGustSpeed=realGustSpeed*2;
+//						printf("aaa%in",realGustSpeed);
+//						}
+//					if(realGustSpeed>=gustSpeed)
+//						realGustSpeed=gustSpeed;
+//				}
+//			else
+//				{
+//					if((gustCountdown % (gustDuration/6)) ==0)
+//						realGustSpeed=realGustSpeed/2;
+//					if(realGustSpeed<=0)
+//						{
+//							realGustSpeed=0;
+//							gustCountdown=0;
+//						}
+//				}
+//
+//			if(gustCountdown<=0)
+//				{
+//					if(gustFlip==true)
+//						{
+//							gustCountdown=0;
+//							gustFlip=false;
+//							gustCountdown=gustDuration;
+//						}
+//					else
+//						gustCountdown=gustDuration;
+
+//		}	
+//	printf("ret=%i\n",ret);
+	return(ret);
+}
+ 
 void updateFalling(void)
 {
+	int addGust=0;
+
+	if((useGusts==true) &&(doinggusts==true))
+		addGust=doGusts();
+
+#if 0
 	if(gustCountdown==0)
 		{
 			if(randomEvent(gustEvent)==true)
@@ -743,6 +895,7 @@ void updateFalling(void)
 					gustFlip=true;
 				}
 		}
+#endif
 
 	for(int j=0;j<numberOfFalling;j++)
 		{
@@ -758,7 +911,10 @@ void updateFalling(void)
 						moving[j].stepX=-maxXStep;
 
 					moving[j].y=moving[j].y+moving[j].stepY;
+
+					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+addGust;
 					
+#if 0					
 					if(useGusts==false)
 						moving[j].x=moving[j].x+moving[j].stepX+windSpeed;
 					else
@@ -807,7 +963,7 @@ void updateFalling(void)
 										}
 								}			
 						}
-
+#endif
 					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
 							moving[j].use=false;
@@ -1040,7 +1196,6 @@ void doHelp(void)
 	printf("-flystep INTEGER\n");
 	printf("\tAmount to move flying objects\n\n");
 
-
 //tree
 	printf("TREES\n");
 	printf("-tree INTEGER\n");
@@ -1050,6 +1205,8 @@ void doHelp(void)
 	printf("\tAbsolute X position of tree\n");
 	printf("-treey INTEGER\n");
 	printf("\tAbsolute Y position of tree\n");
+	printf("\tYou can also use the terms left/centre/right with treex to position the tree\n");
+	printf("\tYou can also use the terms top/centre/bottom with treey to position the tree\n");
 //star
 	printf("-showstar/-no-showstar\n");
 	printf("\tShow star\n");
@@ -1073,7 +1230,9 @@ void doHelp(void)
 	printf("-figurey INTEGER\n");
 	printf("\tAbsolute Y position of figure\n");
 	printf("-figuredelay INTEGER\n");
-	printf("\tDelay for figure\n\n");
+	printf("\tDelay for figure\n");
+	printf("\tYou can also use the terms left/centre/right with figurex to position the figure\n");
+	printf("\tYou can also use the terms top/centre/bottom with figurey to position the figure\n\n");
 
 //falling
 	printf("FALLING OBJECTS\n");
@@ -1170,7 +1329,6 @@ int main(int argc,char* argv[])
 
 	if((argc>1) && (strcmp(argv[1],"-noconfig")!=0))
 		{
-		printf("noconfig\n");
 			prefix=strdup("Xmas");
 			asprintf(&configFilePath,"%s/.config/xdecorations.rc",getenv("HOME"));
 			loadVarsFromFile(configFilePath,xdecorations_rc);
@@ -1206,6 +1364,9 @@ int main(int argc,char* argv[])
 
 			if(strcmp(argstr,"-delay")==0)//mainDelay=20000
 				mainDelay=atol(argv[++argnum]);
+
+			if(strcmp(argstr,"-offsety")==0)//offSetY=0
+				offSetY=atol(argv[++argnum]);
 
 //lamps
 			if(strcmp(argstr,"-lampset")==0)//lampSet=1
@@ -1424,6 +1585,12 @@ int main(int argc,char* argv[])
 				{
 					if((runCounter % fallingDelay)==0)
 						fallingNeedsUpdate=true;
+				}
+
+			if(useGusts==true)
+				{
+					//if((runCounter % gustEvent)==0)
+						updateGusts();
 				}
 
 			eraseRects();
