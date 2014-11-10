@@ -104,7 +104,7 @@ treelampdelay 20
 ##### Figure #####
 #The figure to use, 0=disable figure
 #Default to 1
-figurenumber 1
+figure 1
 
 #The absolute x position of the figure on the screen.
 #Defaults to 100

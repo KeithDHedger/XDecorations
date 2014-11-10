@@ -1076,7 +1076,7 @@ void setDefaults(void)
 {
 	prefix=strdup("Xmas");
 	treeNumber=0;
-	figureNumber=0;
+	figureNumber=1;
 	showFlyers=false;
 	fallingNumber=1;
 	fallingSpread=2000;
