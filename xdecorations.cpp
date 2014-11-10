@@ -215,29 +215,37 @@ enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
 
 args	xdecorations_rc[]=
 {
-//bools
+//app
+	{"theme",TYPESTRING,&prefix},
+	{"delay",TYPEINT,&mainDelay},
+	{"usewindow",TYPEBOOL,&useWindow},
+	{"usebuffer",TYPEBOOL,&useDBOveride},
+
+//lamps
+	{"lampset",TYPEINT,&lampSet},
+	{"lampy",TYPEINT,&lampY},
+	{"lampdelay",TYPEINT,&lampSpeed},
+
+//flyers
 	{"flyer",TYPEBOOL,&showFlyers},
-	{"tree",TYPEBOOL,&showTree},
+	{"flyermaxy",TYPEINT,&flyersMaxY},
+	{"spread",TYPEINT,&flyerSpread},
+	{"flydelay",TYPEINT,&flyersSpeed},
+	{"flystep",TYPEINT,&flyersStep},
+
+//trees
+	{"tree",TYPEINT,&treeNumber},
+
+
+//bools
 	{"tinsel",TYPEBOOL,&showTinsel},
 	{"star",TYPEBOOL,&showStar},
 	{"treelamps",TYPEBOOL,&showTreeLamps},
-	{"usewindow",TYPEBOOL,&useWindow},
-	{"usebuffer",TYPEBOOL,&useDBOveride},
 	{"usegusts",TYPEBOOL,&useGusts},
 //strings
-	{"theme",TYPESTRING,&prefix},
 //ints
-	{"delay",TYPEINT,&mainDelay},
-	{"flyermaxy",TYPEINT,&flyersMaxY},
-	{"spread",TYPEINT,&flyerSpread},
-	{"lampdelay",TYPEINT,&lampSpeed},
-	{"lampset",TYPEINT,&lampSet},
-	{"flydelay",TYPEINT,&flyersSpeed},
-	{"flystep",TYPEINT,&flyersStep},
-	{"lampy",TYPEINT,&lampY},
 	{"treelampdelay",TYPEINT,&treelampSpeed},
 	{"treelampset",TYPEINT,&treeLampSet},
-	{"tree",TYPEINT,&treeNumber},
 	{"treex",TYPEINT,&treeX},
 	{"treey",TYPEINT,&treeY},
 	{"stardelay",TYPEINT,&starSpeed},
