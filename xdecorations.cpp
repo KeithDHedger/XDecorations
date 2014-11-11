@@ -43,178 +43,177 @@ if not,write to the Free Software
 #define MAXFLOAT 10
 #define MAXFALLINGOBJECTS 5000
 #define	MAXFALLINGANIMATION 48
+#define MAXSWIRL 2
 
 #define VERSION "0.1.5"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 enum {LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000};
+enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
+enum {LAMPFLASH=0,INVERTLAMPCHASE,LAMPCHASE,LAMPRANDOM,LAMPCYCLE,NUMOPTIONS};
 
-char			pathname[MAXPATHNAMELEN];
-char*			configFilePath;
+char				pathname[MAXPATHNAMELEN];
+char*				configFilePath;
 
-Display*		display;
-Window			rootWin;
-int				displayWidth;
-int				displayHeight;
-GC				gc;
-Visual*			visual=NULL;
-int				depth=0;
-Imlib_Image		image;
-int				screen;
-Region			rg;
-XdbeBackBuffer	buffer;
-XdbeSwapInfo	swapInfo;
-Drawable		drawOnThis;
-bool			useBuffer=false;
-bool			useDBOveride=true;
+Display*			display;
+Window				rootWin;
+int					displayWidth;
+int					displayHeight;
+GC					gc;
+Visual*				visual=NULL;
+int					depth=0;
+Imlib_Image			image;
+int					screen;
+Region				rg;
+XdbeBackBuffer		buffer;
+XdbeSwapInfo		swapInfo;
+Drawable			drawOnThis;
+bool				useBuffer=false;
+bool				useDBOveride=true;
 
-int				done=0;
-long			mainDelay=25000;
+int					done=0;
+long				mainDelay=25000;
 
-uint			runCounter=0;
-bool			useWindow=true;
-int				offSetY=0;
+uint				runCounter=0;
+bool				useWindow=true;
+int					offSetY=0;
 
-struct			objects
+struct				objects
 {
-	Pixmap*	pixmap[MAXFALLINGANIMATION];
-	Pixmap*	mask[MAXFALLINGANIMATION];
-	int		h[MAXFALLINGANIMATION];
-	int		w[MAXFALLINGANIMATION];
-	int		anims;
+	Pixmap*			pixmap[MAXFALLINGANIMATION];
+	Pixmap*			mask[MAXFALLINGANIMATION];
+	int				h[MAXFALLINGANIMATION];
+	int				w[MAXFALLINGANIMATION];
+	int				anims;
 };
 
-struct			movement
+struct				movement
 {
-	objects	*object;
-	int		x;
-	int		y;
-	int		deltaX;
-	int		deltaY;
-	int		stepX;
-	int		stepY;
-	bool	use;
-	int		imageNum;
-	int		countDown;
-	int		maxW;
-	int		maxH;
+	objects			*object;
+	int				x;
+	int				y;
+	int				deltaX;
+	int				deltaY;
+	int				stepX;
+	int				stepY;
+	bool			use;
+	int				imageNum;
+	int				countDown;
+	int				maxW;
+	int				maxH;
 };
 	
 //falling
-#define MAXSWIRL 2
-
-objects			floating[MAXFLOAT];
-movement		moving[MAXFALLINGOBJECTS];
-int				fallingNumber=1;
-int				fallingDelay=1;
-int				swirlingDirection;
-int				numberOfFalling=100;
-bool			showFalling=true;
-int				fallingSpread=1000;
-int				fallSpeed=1;
-int				maxXStep=4;
-int				fallingAnimSpeed=8;
-int				fallingCount=0;
+objects				floating[MAXFLOAT];
+movement			moving[MAXFALLINGOBJECTS];
+int					fallingNumber=1;
+int					fallingDelay=1;
+int					swirlingDirection;
+int					numberOfFalling=100;
+bool				showFalling=true;
+int					fallingSpread=1000;
+int					fallSpeed=1;
+int					maxXStep=4;
+int					fallingAnimSpeed=8;
+int					fallingCount=0;
 
 //wind
-int				gustDuration=3000;
-int				gustEvent=10000;
-int				gustSpeed=40;
-int				realGustSpeed;
+int					gustDuration=3000;
+int					gustEvent=10000;
+int					gustSpeed=40;
+int					realGustSpeed;
 
-bool			useGusts=true;
-int				windSpeed=0;
+bool				useGusts=true;
+int					windSpeed=0;
 
-int				gustPortion=1;
-double			gustInc;
-bool			doingGusts=false;
-double			incr=1.01;
+int					gustPortion=1;
+double				gustInc;
+bool				doingGusts=false;
+double				incr=1.01;
 
-int				gustDirection=0;
-int				gustCountdown=0;
+int					gustDirection=0;
+int					gustCountdown=0;
 
 //flyers
-objects			flyers[MAXNUMBEROFFLYERS];
-movement		flyersMove[MAXNUMBEROFFLYERS];
-int				flyersSpeed=1;
-int				flyersStep=8;
-bool			showFlyers=false;
-int				flyersMaxY=400;
-int				flyersActive[MAXNUMBEROFFLYERS];
-int				flyerSpread=500;
-int				flyerCount=0;
-int				flyerAnimSpeed=8;
+objects				flyers[MAXNUMBEROFFLYERS];
+movement			flyersMove[MAXNUMBEROFFLYERS];
+int					flyersSpeed=1;
+int					flyersStep=8;
+bool				showFlyers=false;
+int					flyersMaxY=400;
+int					flyersActive[MAXNUMBEROFFLYERS];
+int					flyerSpread=500;
+int					flyerCount=0;
+int					flyerAnimSpeed=8;
 
 //figure
-Pixmap			figurePixmap[4];
-int				figureSpeed=100;
-int				figureX=100;
-int				figureY=100;
-int				figureW;
-int				figureH;
-int				figureOnOff=0;
-int				figureNumber=1;
-
-enum {LAMPFLASH=0,INVERTLAMPCHASE,LAMPCHASE,LAMPRANDOM,LAMPCYCLE,NUMOPTIONS};
+Pixmap				figurePixmap[4];
+int					figureSpeed=100;
+int					figureX=100;
+int					figureY=100;
+int					figureW;
+int					figureH;
+int					figureOnOff=0;
+int					figureNumber=1;
 
 //lamps
-Pixmap			lampsPixmap[4];
-int				lampSpeed=100;
-int				lampX=0;
-int				lampY=0;
-int				lampWidth;
-int				lampHeight;
-int				lampCount;
-int				lampSet=1;
-int				lampsOnOff=0;
-int				lampAnim;
-int				lastLampAnim;
-int				lampSection;
-int				lampCountdown;
-bool			*lampState;
-int				lampCycleDelay;
+Pixmap				lampsPixmap[4];
+int					lampSpeed=100;
+int					lampX=0;
+int					lampY=0;
+int					lampWidth;
+int					lampHeight;
+int					lampCount;
+int					lampSet=1;
+int					lampsOnOff=0;
+int					lampAnim;
+int					lastLampAnim;
+int					lampSection;
+int					lampCountdown;
+bool				*lampState;
+int					lampCycleDelay;
 
 //trees
-Pixmap			treePixmap[2];
-int				treeWidth;
-int				treeHeight;
-int				treeNumber=1;
-int				treelampSpeed=100;
-int				starSpeed=100;
-int				treeX=0;
-int				treeY=0;
-int				treeLampSet=1;
-int				treeOnOff=0;
-bool			showTree=true;
+Pixmap				treePixmap[2];
+int					treeWidth;
+int					treeHeight;
+int					treeNumber=1;
+int					treelampSpeed=100;
+int					starSpeed=100;
+int					treeX=0;
+int					treeY=0;
+int					treeLampSet=1;
+int					treeOnOff=0;
+bool				showTree=true;
 
 //tinsel`
-Pixmap			tinselPixmap[2];
-bool			showTinsel=false;
+Pixmap				tinselPixmap[2];
+bool				showTinsel=false;
 
 //star
-Pixmap			starPixmap[4];
-bool			showStar=false;
-int				starOnOff=0;
+Pixmap				starPixmap[4];
+bool				showStar=false;
+int					starOnOff=0;
 
 //tree lamps
-Pixmap			treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
-bool			showTreeLamps=false;
-int				treeLampCount=0;
+Pixmap				treeLampsPixmap[MAXNUMBEROFTREELIGHTS][2];
+bool				showTreeLamps=false;
+int					treeLampCount=0;
 
-char*			prefix;
+char*				prefix;
 
-bool			treeNeedsUpdate=false;
-bool			flyerNeedsUpdate=false;
-bool			figureNeedsUpdate=false;
-bool			fallingNeedsUpdate=false;
-bool			lampsNeedsUpdate=false;
+bool				treeNeedsUpdate=false;
+bool				flyerNeedsUpdate=false;
+bool				figureNeedsUpdate=false;
+bool				fallingNeedsUpdate=false;
+bool				lampsNeedsUpdate=false;
 
 struct args
 {
-	const char*	name;
-	int			type;
-	void*		data;
+	const char*		name;
+	int				type;
+	void*			data;
 };
 
 struct Hints
@@ -226,10 +225,7 @@ struct Hints
 	unsigned long   status;
 };
 
-
-enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
-
-args	xdecorations_rc[]=
+args				xdecorations_rc[]=
 {
 //app
 	{"theme",TYPESTRING,&prefix},
@@ -1052,14 +1048,6 @@ void eraseRects(void)
 	int	rc=0;
 	int	j;
 
-//	if((lampSet!=0) && (lampsNeedsUpdate==true))
-//		{
-//		printf("XXXXXXXXn");
-////			if(useBuffer==false)
-////				rc=XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
-//			updateLamps();
-//		}
-
 	if((figureNumber!=0) && (figureNeedsUpdate==true))
 		{
 			if(useBuffer==false)
@@ -1098,7 +1086,6 @@ void eraseRects(void)
 	figureNeedsUpdate=false;
 	flyerNeedsUpdate=false;
 	fallingNeedsUpdate=false;
-//	lampsNeedsUpdate=false;
 }
 
 void showUnShow(const char* arg1,const char* arg2,bool *value)
