@@ -156,6 +156,8 @@ int				figureH;
 int				figureOnOff=0;
 int				figureNumber=1;
 
+enum {LAMPFLASH=0,LAMPCHASE=1,LAMPRANDOM=2,INVERTLAMPCHASE=3,LAMPCYCLE=3,NUMOPTIONS=4};
+
 //lamps
 Pixmap			lampsPixmap[4];
 int				lampSpeed=100;
@@ -166,6 +168,12 @@ int				lampHeight;
 int				lampCount;
 int				lampSet=1;
 int				lampsOnOff=0;
+int				lampAnim;
+int				lastLampAnim;
+int				lampSection;
+int				lampCountdown;
+bool			*lampState;
+int				lampCycleDelay;
 
 //trees
 Pixmap			treePixmap[2];
@@ -200,6 +208,7 @@ bool			treeNeedsUpdate=false;
 bool			flyerNeedsUpdate=false;
 bool			figureNeedsUpdate=false;
 bool			fallingNeedsUpdate=false;
+bool			lampsNeedsUpdate=false;
 
 struct args
 {
@@ -232,6 +241,8 @@ args	xdecorations_rc[]=
 	{"lampset",TYPEINT,&lampSet},
 	{"lampy",TYPEINT,&lampY},
 	{"lampdelay",TYPEINT,&lampSpeed},
+	{"lampflash",TYPEINT,&lampAnim},
+	{"lampcycledelay",TYPEINT,&lampCycleDelay},
 
 //flyers
 	{"flyer",TYPEBOOL,&showFlyers},
@@ -531,6 +542,11 @@ void initLamps(void)
 					lampHeight=imlib_image_get_height();
 					lampCount=(displayWidth/lampWidth)+1;
 				}
+			lampState=(bool*)malloc(sizeof(bool)*lampCount);
+			for(int j=0;j<lampCount;j++)
+				lampState[j]=false;
+	lampCountdown=lampCount;
+	lampSection=0;
 		}
 }
 
@@ -729,11 +745,78 @@ void drawLamps(void)
 	CurrentlampX=lampX;
 	rc=XSetClipMask(display,gc,lampsPixmap[_SELECTPIXMAP(ONMASK,lampsOnOff)]);
 
-	for (loop=0; loop<lampCount; loop++)
+	switch(lastLampAnim)
 		{
-			rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-			rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
-			CurrentlampX+=lampWidth;
+			case LAMPFLASH:
+				for (loop=0; loop<lampCount; loop++)
+					{
+						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+						CurrentlampX+=lampWidth;
+					}
+				break;
+
+			case LAMPRANDOM:
+				if(lampsNeedsUpdate==true)
+					{
+						lampsNeedsUpdate=false;
+						for (loop=0; loop<lampCount; loop++)
+							{
+								lampState[loop]=randomEvent(2);
+							}
+					}
+				for (loop=0; loop<lampCount; loop++)
+					{
+						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+						CurrentlampX+=lampWidth;
+					}
+				break;
+
+			case LAMPCHASE:
+				if(lampsNeedsUpdate==true)
+					{
+						lampsNeedsUpdate=false;
+						for (loop=0; loop<lampCount; loop++)
+							{
+								lampState[loop]=false;
+							}
+						lampSection++;
+						if(lampSection==lampCount)
+							lampSection=0;
+						lampState[lampSection]=true;
+					}
+
+				for (loop=0; loop<lampCount; loop++)
+					{
+						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+						CurrentlampX+=lampWidth;
+					}
+				break;
+
+			case INVERTLAMPCHASE:
+				if(lampsNeedsUpdate==true)
+					{
+						lampsNeedsUpdate=false;
+						for (loop=0; loop<lampCount; loop++)
+							{
+								lampState[loop]=true;
+							}
+						lampSection++;
+						if(lampSection==lampCount)
+							lampSection=0;
+						lampState[lampSection]=false;
+					}
+
+				for (loop=0; loop<lampCount; loop++)
+					{
+						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+						CurrentlampX+=lampWidth;
+					}
+				break;
+
 		}
 }
 
@@ -873,6 +956,22 @@ void updateFalling(void)
 void updateLamps(void)
 {
 	lampsOnOff=(lampsOnOff+1) & 1;
+	lampsNeedsUpdate=true;
+
+	if(lampCountdown<1)
+		{
+			if((lampAnim==LAMPCYCLE) && (lampsOnOff==1))
+				{
+					lastLampAnim++;
+
+					if(lastLampAnim==NUMOPTIONS)
+						lastLampAnim=LAMPFLASH;
+
+					lampCountdown=lampCycleDelay;
+				}
+		}
+	else
+		lampCountdown--;
 }
 
 void drawTreeLamps(void)
@@ -953,6 +1052,14 @@ void eraseRects(void)
 	int	rc=0;
 	int	j;
 
+//	if((lampSet!=0) && (lampsNeedsUpdate==true))
+//		{
+//		printf("XXXXXXXXn");
+////			if(useBuffer==false)
+////				rc=XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
+//			updateLamps();
+//		}
+
 	if((figureNumber!=0) && (figureNeedsUpdate==true))
 		{
 			if(useBuffer==false)
@@ -991,6 +1098,7 @@ void eraseRects(void)
 	figureNeedsUpdate=false;
 	flyerNeedsUpdate=false;
 	fallingNeedsUpdate=false;
+//	lampsNeedsUpdate=false;
 }
 
 void showUnShow(const char* arg1,const char* arg2,bool *value)
@@ -1066,8 +1174,10 @@ void doHelp(void)
 	printf("\tThe number of the lamp set to use ( 0=no lamps )\n");
 	printf("-lampy INTEGER\n");
 	printf("\tLamp Y position\n");
-	printf("-lampdelay INTEGER\n");
-	printf("\tLamp delay\n\n");
+	printf("-lampflash INTEGER\n");
+	printf("\tLamp flash type 0=flash, 1=chase ,2=random, 3=inverted chase, 4=cycle\n");
+	printf("-lampcycledelay INTEGER\n");
+	printf("\tDelay before cycling to the next flash type\n\n");
 
 //flying
 	printf("FLYERS\n");
@@ -1105,9 +1215,9 @@ void doHelp(void)
 	printf("\tShow tinsel\n");
 //treelamps
 	printf("-treelampset INTEGER\n");
-	printf("\tLampset to use on tree\n\n");
+	printf("\tLampset to use on tree\n");
 	printf("-treelampdelay INTEGER\n");
-	printf("\tTree lamps delay\n");
+	printf("\tTree lamps delay\n\n");
 
 //figure
 	printf("FIGURE\n");
@@ -1165,6 +1275,15 @@ void setDefaults(void)
 	fallingNumber=1;
 	fallingSpread=2000;
 	lampSpeed=20;
+	gustEvent=1500;
+	gustDuration=100;
+	gustSpeed=60;
+	lampsNeedsUpdate=true;
+	lampSection=0;
+	lampAnim=LAMPFLASH;
+	lastLampAnim=LAMPFLASH;
+	lampCycleDelay=30;
+	lampCountdown=lampCycleDelay;
 }
 
 int translateGravity(char* str)
@@ -1265,6 +1384,12 @@ int main(int argc,char* argv[])
 				lampY=atol(argv[++argnum]);
 			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
 				lampSpeed=atol(argv[++argnum]);
+			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
+				lampSpeed=atol(argv[++argnum]);
+			if(strcmp(argstr,"-lampflash")==0)//lampAnim=LAMPFLASH
+				lampAnim=atol(argv[++argnum]);
+			if(strcmp(argstr,"-lampcycledelay")==0)//lampCycleDelay=30
+				lampCycleDelay=atol(argv[++argnum]);
 
 //flyers
 			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false

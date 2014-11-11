@@ -46,6 +46,15 @@ lampy 0
 #Defaults to 100
 lampdelay 20
 
+#Flash type for lamps.
+#0=flash, 1=chase ,2=random, 3=inverted chase, 4=cycle
+#Default is flash.
+lampflash 1
+
+#Delay between cycling to next flash type.
+#Defaults to 30
+lampcycledelay 40
+
 ##### Flying objects #####
 #Show flyers, 1=show, 0=don't show.
 #Defaults to 0,
