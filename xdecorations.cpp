@@ -454,7 +454,7 @@ void initFlyers(void)
 			for(int j=0;j<flyerCount;j++)
 				{
 					flyersMove[j].imageNum=0;
-					flyersMove[j].countDown=fallingAnimSpeed;
+					flyersMove[j].countDown=flyerAnimSpeed;
 					flyersMove[j].x=0-flyersMove[j].maxW;
 					flyersMove[j].y=(rand() % flyersMaxY);
 				}
@@ -696,7 +696,7 @@ void drawFlyers(void)
 			flyersMove[j].countDown--;
 			if(flyersMove[j].countDown==0)
 				{
-					flyersMove[j].countDown=10;
+					flyersMove[j].countDown=flyerAnimSpeed;
 					flyersMove[j].imageNum++;
 					if(flyersMove[j].imageNum==flyers[j].anims)
 						flyersMove[j].imageNum=0;
