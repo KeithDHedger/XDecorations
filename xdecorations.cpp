@@ -156,7 +156,7 @@ int				figureH;
 int				figureOnOff=0;
 int				figureNumber=1;
 
-enum {LAMPFLASH=0,LAMPCHASE=1,LAMPRANDOM=2,INVERTLAMPCHASE=3,LAMPCYCLE=3,NUMOPTIONS=4};
+enum {LAMPFLASH=0,INVERTLAMPCHASE,LAMPCHASE,LAMPRANDOM,LAMPCYCLE,NUMOPTIONS};
 
 //lamps
 Pixmap			lampsPixmap[4];
@@ -964,7 +964,7 @@ void updateLamps(void)
 				{
 					lastLampAnim++;
 
-					if(lastLampAnim==NUMOPTIONS)
+					if(lastLampAnim==LAMPCYCLE)
 						lastLampAnim=LAMPFLASH;
 
 					lampCountdown=lampCycleDelay;
@@ -1384,10 +1384,13 @@ int main(int argc,char* argv[])
 				lampY=atol(argv[++argnum]);
 			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
 				lampSpeed=atol(argv[++argnum]);
-			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
-				lampSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-lampflash")==0)//lampAnim=LAMPFLASH
-				lampAnim=atol(argv[++argnum]);
+				{
+					lampAnim=atol(argv[++argnum]);
+					lastLampAnim=lampAnim;
+					if(lampAnim==LAMPCYCLE)
+						lastLampAnim=LAMPFLASH;
+				}
 			if(strcmp(argstr,"-lampcycledelay")==0)//lampCycleDelay=30
 				lampCycleDelay=atol(argv[++argnum]);
 
