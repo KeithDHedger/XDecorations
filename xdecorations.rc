@@ -67,6 +67,10 @@ flydelay 1
 #Defaults to 8
 flystep 8
 
+#Delay for animations of flying objects;
+#Defaults to 8
+flyanimdelay 6
+
 ##### Tree and tree decorations. #####
 
 #Number of tree to use.
@@ -132,7 +136,7 @@ falldelay 1
 #Defaults to 100
 maxfalling 100
 
-#Random deleay between new falling objects appearing
+#Random delay between new falling objects appearing
 #Defaults to 1000
 fallingspread 2000
 
@@ -143,6 +147,10 @@ fallingspeed 1
 #Falling objects max X step
 #Defaults to 4
 maxxstep 4
+
+#Animation delay for falling objects
+#Defaults to 8
+fallinanimdelay 6
 
 ##### Wind #####
 #Wind speed/direction ( +INTEGER wind>>> -INTEGER wind<<< 0 no wind )

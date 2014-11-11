@@ -88,8 +88,6 @@ struct			objects
 	int		h[MAXFALLINGANIMATION];
 	int		w[MAXFALLINGANIMATION];
 	int		anims;
-//	int		imageNum;
-//	int		countDown;
 };
 
 struct			movement
@@ -138,19 +136,14 @@ int				fallingCount=0;
 //flyers
 objects			flyers[MAXNUMBEROFFLYERS];
 movement		flyersMove[MAXNUMBEROFFLYERS];
-
-Pixmap			flyersPixmap[MAXNUMBEROFFLYERS][2];
 int				flyersSpeed=1;
 int				flyersStep=8;
-//int				flyersWidth[MAXNUMBEROFFLYERS];
-//int				flyersHeight[MAXNUMBEROFFLYERS];
-//int				flyersX[MAXNUMBEROFFLYERS];
-//int				flyersY[MAXNUMBEROFFLYERS];
 bool			showFlyers=false;
 int				flyersMaxY=400;
 int				flyersActive[MAXNUMBEROFFLYERS];
 int				flyerSpread=500;
 int				flyerCount=0;
+int				flyerAnimSpeed=8;
 
 //figure
 Pixmap			figurePixmap[4];
@@ -245,6 +238,7 @@ args	xdecorations_rc[]=
 	{"spread",TYPEINT,&flyerSpread},
 	{"flydelay",TYPEINT,&flyersSpeed},
 	{"flystep",TYPEINT,&flyersStep},
+	{"flyanimdelay",TYPEINT,&flyerAnimSpeed},
 
 //trees
 	{"tree",TYPEINT,&treeNumber},
@@ -269,6 +263,7 @@ args	xdecorations_rc[]=
 	{"fallingspread",TYPEINT,&fallingSpread},
 	{"fallingspeed",TYPEINT,&fallSpeed},
 	{"maxxstep",TYPEINT,&maxXStep},
+	{"fallinanimdelay",TYPEINT,&fallingAnimSpeed},
 
 //wind
 	{"wind",TYPEINT,&windSpeed},
@@ -1084,7 +1079,9 @@ void doHelp(void)
 	printf("-flydelay INTEGER\n");
 	printf("\tFlying objects delay\n");
 	printf("-flystep INTEGER\n");
-	printf("\tAmount to move flying objects\n\n");
+	printf("\tAmount to move flying objects\n");
+	printf("-flyanimdelay INTEGER\n");
+	printf("\tDelay for animation of flying objects\n\n");
 
 //tree
 	printf("TREES\n");
@@ -1137,7 +1134,9 @@ void doHelp(void)
 	printf("-fallingspeed INTEGER\n");
 	printf("\tDistance falling objects move in Y direction in one go\n");
 	printf("-maxxstep INTEGER\n");
-	printf("\tFalling objects max X step\n\n");
+	printf("\tFalling objects max X step\n");
+	printf("-fallinanimdelay INTEGER\n");
+	printf("\tDelay for animation of falling objects\n\n");
 
 //wind
 	printf("WIND\n");
@@ -1276,6 +1275,8 @@ int main(int argc,char* argv[])
 				flyersSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-flystep")==0)//flyersStep=8
 				flyersStep=atol(argv[++argnum]);
+			if(strcmp(argstr,"-flyanimdelay")==0)//flyersStep=8
+				flyerAnimSpeed=atol(argv[++argnum]);
 
 //tree
 			if(strcmp(argstr,"-tree")==0)//treeNumber=1
@@ -1319,6 +1320,8 @@ int main(int argc,char* argv[])
 				fallSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
 				maxXStep=atol(argv[++argnum]);
+			if(strcmp(argstr,"-fallinanimdelay")==0)//max xstep =4
+				fallingAnimSpeed=atol(argv[++argnum]);
 
 //wind
 			if(strcmp(argstr,"-wind")==0)//windspeed=4
