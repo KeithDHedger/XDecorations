@@ -69,11 +69,6 @@ Drawable		drawOnThis;
 bool			useBuffer=false;
 bool			useDBOveride=true;
 
-int				gustPortion=1;
-double			gustInc;
-bool			doingGusts=false;
-double			incr=1.01;
-
 int				done=0;
 long			mainDelay=25000;
 
@@ -114,6 +109,15 @@ movement		moving[MAXFALLINGOBJECTS];
 int				fallingNumber=1;
 int				fallingDelay=1;
 int				swirlingDirection;
+int				numberOfFalling=100;
+bool			showFalling=true;
+int				fallingSpread=1000;
+int				fallSpeed=1;
+int				maxXStep=4;
+int				fallingAnimSpeed=8;
+int				fallingCount=0;
+
+//wind
 int				gustDuration=3000;
 int				gustEvent=10000;
 int				gustSpeed=40;
@@ -121,17 +125,14 @@ int				realGustSpeed;
 
 bool			useGusts=true;
 int				windSpeed=0;
-int				numberOfFalling=100;
-bool			showFalling=true;
-int				fallingSpread=1000;
-int				fallSpeed=1;
-int				maxXStep=4;
-int				fallingAnimSpeed=8;
+
+int				gustPortion=1;
+double			gustInc;
+bool			doingGusts=false;
+double			incr=1.01;
 
 int				gustDirection=0;
 int				gustCountdown=0;
-
-int				fallingCount=0;
 
 //flyers
 objects			flyers[MAXNUMBEROFFLYERS];
