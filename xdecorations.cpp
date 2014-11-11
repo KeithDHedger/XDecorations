@@ -68,8 +68,11 @@ XdbeSwapInfo	swapInfo;
 Drawable		drawOnThis;
 bool			useBuffer=false;
 bool			useDBOveride=true;
-int				gustStartupDelay;
-bool			gustFlip=true;
+
+int				gustPortion=1;
+double			gustInc;
+bool			doingGusts=false;
+double			incr=1.01;
 
 int				done=0;
 long			mainDelay=25000;
@@ -85,6 +88,8 @@ struct			objects
 	int		h[MAXFALLINGANIMATION];
 	int		w[MAXFALLINGANIMATION];
 	int		anims;
+//	int		imageNum;
+//	int		countDown;
 };
 
 struct			movement
@@ -99,6 +104,8 @@ struct			movement
 	bool	use;
 	int		imageNum;
 	int		countDown;
+	int		maxW;
+	int		maxH;
 };
 	
 //falling
@@ -129,13 +136,16 @@ int				gustCountdown=0;
 int				fallingCount=0;
 
 //flyers
+objects			flyers[MAXNUMBEROFFLYERS];
+movement		flyersMove[MAXNUMBEROFFLYERS];
+
 Pixmap			flyersPixmap[MAXNUMBEROFFLYERS][2];
 int				flyersSpeed=1;
 int				flyersStep=8;
-int				flyersWidth[MAXNUMBEROFFLYERS];
-int				flyersHeight[MAXNUMBEROFFLYERS];
-int				flyersX[MAXNUMBEROFFLYERS];
-int				flyersY[MAXNUMBEROFFLYERS];
+//int				flyersWidth[MAXNUMBEROFFLYERS];
+//int				flyersHeight[MAXNUMBEROFFLYERS];
+//int				flyersX[MAXNUMBEROFFLYERS];
+//int				flyersY[MAXNUMBEROFFLYERS];
 bool			showFlyers=false;
 int				flyersMaxY=400;
 int				flyersActive[MAXNUMBEROFFLYERS];
@@ -410,33 +420,51 @@ int	randomDirection(void)
 
 void initFlyers(void)
 {
-
 	flyerCount=0;
 
-	for(int j=0; j<MAXNUMBEROFFLYERS; j++)
+	for(int j=0;j<MAXNUMBEROFFLYERS;j++)
 		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.png",DATADIR,prefix,j+1);
-			image=imlib_load_image(pathname);
-			if(image!=NULL)
+			flyers[flyerCount].anims=0;
+			flyersMove[flyerCount].maxW=0;
+			flyersMove[flyerCount].maxH=0;
+			for(int k=0;k<MAXFALLINGANIMATION;k++)
 				{
-					imlib_context_set_image(image);
-					imlib_context_set_drawable(drawOnThis);
-					imlib_image_set_has_alpha(1);
-					imlib_render_pixmaps_for_whole_image(&flyersPixmap[flyerCount][ONPIXMAP],&flyersPixmap[flyerCount][ONMASK]);
-					flyersWidth[flyerCount]=imlib_image_get_width();
-					flyersHeight[flyerCount]=imlib_image_get_height();
-					flyersY[flyerCount]=(rand() % flyersMaxY);
-					flyersX[flyerCount]=0-flyersWidth[j];
-					if((rand() % flyerSpread)==0)
-						flyersActive[flyerCount]=1;
-					else
-						flyersActive[flyerCount]=0;
-					flyerCount++;
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.%i.%i.png",DATADIR,prefix,1,j+1,k+1);
+					image=imlib_load_image(pathname);
+					if(image!=NULL)
+						{
+							flyers[flyerCount].pixmap[k]=(Pixmap*)malloc(sizeof(Pixmap));
+							flyers[flyerCount].mask[k]=(Pixmap*)malloc(sizeof(Pixmap));
+							imlib_context_set_image(image);
+							imlib_context_set_drawable(drawOnThis);
+							imlib_image_set_has_alpha(1);
+							imlib_render_pixmaps_for_whole_image(flyers[flyerCount].pixmap[k],flyers[flyerCount].mask[k]);
+							flyers[flyerCount].w[k]=imlib_image_get_width();
+							flyers[flyerCount].h[k]=imlib_image_get_height();
+							flyers[flyerCount].anims++;
+							if(flyers[flyerCount].w[k]>flyersMove[flyerCount].maxW)
+								flyersMove[flyerCount].maxW=flyers[flyerCount].w[k];
+							if(flyers[flyerCount].h[k]>flyersMove[flyerCount].maxH)
+								flyersMove[flyerCount].maxH=flyers[flyerCount].h[k];
+						}
 				}
+			if(flyers[flyerCount].anims!=0)
+					flyerCount++;
 		}
 
 	if(flyerCount==0)
 		showFlyers=false;
+	else
+		{
+			for(int j=0;j<flyerCount;j++)
+				{
+					flyersMove[j].imageNum=0;
+					flyersMove[j].countDown=fallingAnimSpeed;
+					flyersMove[j].x=0-flyersMove[j].maxW;
+					flyersMove[j].y=(rand() % flyersMaxY);
+				}
+		}
+
 }
 
 void initFigure(void)
@@ -531,23 +559,23 @@ void initFalling(void)
 	for(int j=0;j<MAXFLOAT;j++)
 		{
 			floating[fallingCount].anims=0;
-	for(int k=0;k<MAXFALLINGANIMATION;k++)
-		{
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Falling/%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
-			image=imlib_load_image(pathname);
-			if(image!=NULL)
+			for(int k=0;k<MAXFALLINGANIMATION;k++)
 				{
-					floating[fallingCount].pixmap[k]=(Pixmap*)malloc(sizeof(Pixmap));
-					floating[fallingCount].mask[k]=(Pixmap*)malloc(sizeof(Pixmap));
-					imlib_context_set_image(image);
-					imlib_context_set_drawable(drawOnThis);
-					imlib_image_set_has_alpha(1);
-					imlib_render_pixmaps_for_whole_image(floating[fallingCount].pixmap[k],floating[fallingCount].mask[k]);
-					floating[fallingCount].w[k]=imlib_image_get_width();
-					floating[fallingCount].h[k]=imlib_image_get_height();
-					floating[fallingCount].anims++;
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Falling/%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
+					image=imlib_load_image(pathname);
+					if(image!=NULL)
+						{
+							floating[fallingCount].pixmap[k]=(Pixmap*)malloc(sizeof(Pixmap));
+							floating[fallingCount].mask[k]=(Pixmap*)malloc(sizeof(Pixmap));
+							imlib_context_set_image(image);
+							imlib_context_set_drawable(drawOnThis);
+							imlib_image_set_has_alpha(1);
+							imlib_render_pixmaps_for_whole_image(floating[fallingCount].pixmap[k],floating[fallingCount].mask[k]);
+							floating[fallingCount].w[k]=imlib_image_get_width();
+							floating[fallingCount].h[k]=imlib_image_get_height();
+							floating[fallingCount].anims++;
+						}
 				}
-		}
 			if(floating[fallingCount].anims!=0)
 					fallingCount++;
 		}
@@ -660,20 +688,25 @@ void initTree(void)
 void drawFlyers(void)
 {
 	int rc;
-	int	j;
 
 	if(showFlyers==false)
 		return;
 
-	for(j=0; j<flyerCount; j++)
+	for(int j=0;j<flyerCount;j++)
 		{
-			if(flyersActive[j]==1)
+			rc=XSetClipMask(display,gc,*(flyers[j].mask[flyersMove[j].imageNum]));
+			rc=XSetClipOrigin(display,gc,flyersMove[j].x,flyersMove[j].y);
+			rc=XCopyArea(display,*(flyers[j].pixmap[flyersMove[j].imageNum]),drawOnThis,gc,0,0,flyers[j].w[flyersMove[j].imageNum],flyers[j].h[flyersMove[j].imageNum],flyersMove[j].x,flyersMove[j].y);
+
+			flyersMove[j].countDown--;
+			if(flyersMove[j].countDown==0)
 				{
-					rc=XSetClipMask(display,gc,flyersPixmap[j][ONMASK]);
-					rc=XSetClipOrigin(display,gc,flyersX[j],flyersY[j]);
-					rc=XCopyArea(display,flyersPixmap[j][ONPIXMAP],drawOnThis,gc,0,0,flyersWidth[j],flyersHeight[j],flyersX[j],flyersY[j]);
+					flyersMove[j].countDown=10;
+					flyersMove[j].imageNum++;
+					if(flyersMove[j].imageNum==flyers[j].anims)
+						flyersMove[j].imageNum=0;
 				}
-		}
+	}
 }
 
 void drawFigure(void)
@@ -731,77 +764,70 @@ void drawFalling(void)
 	}
 }
 
-int guststart;
-int gustend;
-int gustportion=1;
-int	gustinc;
-bool doinggusts=false;
-
 void updateGusts(void)
 {
 	if(gustCountdown==0)
 		{
-			if((randomEvent(gustEvent)==true) && (gustportion==1))
+			if((randomEvent(gustEvent)==true) && (gustPortion==1))
 				{
 					gustCountdown=gustDuration;
 					gustDirection=randomDirection();
 					realGustSpeed=1;
-					gustStartupDelay=gustDuration/4;
-					gustFlip=true;
-					guststart=gustCountdown/6;
-					gustend=gustCountdown/6;
-					gustportion=1;
-					gustinc=1;
-					doinggusts=true;
+					gustPortion=1;
+					gustInc=1.0;
+					doingGusts=true;
 				}
 		}
-	else
-		gustCountdown--;
 }
 
 int doGusts(void)
 {
 	int ret=0;
-	if(doinggusts==false)
+
+	if(doingGusts==false)
 		return(ret);
 
-	if(gustportion==1)
+	if(gustPortion==1)
 		{
+			gustInc=gustInc*incr;
 			if(realGustSpeed<gustSpeed)
-				realGustSpeed=realGustSpeed+gustinc;
+				realGustSpeed=realGustSpeed+gustInc;
 			else
 				{
-					gustportion=2;
+					gustPortion=2;
 					realGustSpeed=gustSpeed;
 				}
 			ret=realGustSpeed;
 		}
 
-	if(gustportion==2)
+	if(gustPortion==2)
 		{
+			gustCountdown--;
 			realGustSpeed=gustSpeed;
 			ret=realGustSpeed;
 			if(gustCountdown<=0)
 				{
-					gustportion=3;
+					gustPortion=3;
 					gustCountdown=0;
 				}
 		}
 
-	if(gustportion==3)
+	if(gustPortion==3)
 		{
+			gustInc=gustInc/incr;
+			if(gustInc<1)
+				gustInc=1;
 			if(realGustSpeed>0)
-				realGustSpeed=realGustSpeed-gustinc;
+				realGustSpeed=realGustSpeed-(int)gustInc;
 			else
 				{
-					gustportion=1;
+					gustPortion=1;
 					gustCountdown=0;
 					realGustSpeed=0;
-					doinggusts=false;
+					doingGusts=false;
 				}
 			ret=realGustSpeed;
 		}
-
 	return(ret);
 }
  
@@ -809,7 +835,7 @@ void updateFalling(void)
 {
 	int addGust=0;
 
-	if((useGusts==true) &&(doinggusts==true))
+	if((useGusts==true) &&(doingGusts==true))
 		addGust=doGusts();
 
 	for(int j=0;j<numberOfFalling;j++)
@@ -826,7 +852,7 @@ void updateFalling(void)
 						moving[j].stepX=-maxXStep;
 
 					moving[j].y=moving[j].y+moving[j].stepY;
-					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+addGust;
+					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+(addGust*gustDirection);
 					
 					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
@@ -914,13 +940,13 @@ void updateFlyers(void)
 
 			if(flyersActive[j]==1)
 				{
-					flyersX[j]+=flyersStep;
+					flyersMove[j].x+=flyersStep;
 
-					if(flyersX[j]>displayWidth+flyersWidth[j])
+					if(flyersMove[j].x>displayWidth+flyersMove[j].maxW)
 						{
 							flyersActive[j]=0;
-							flyersX[j]=0-flyersWidth[j]*2;
-							flyersY[j]=(rand() % flyersMaxY);
+							flyersMove[j].x=0-flyersMove[j].maxW*2;
+							flyersMove[j].y=(rand() % flyersMaxY);
 						}
 				}
 		}
@@ -950,7 +976,7 @@ void eraseRects(void)
 			if(useBuffer==false)
 				{
 					for(j=0; j<flyerCount; j++)
-						rc=XClearArea(display,drawOnThis,flyersX[j],flyersY[j],flyersWidth[j],flyersHeight[j],False);
+						rc=XClearArea(display,drawOnThis,flyersMove[j].x,flyersMove[j].y,flyersMove[j].maxW,flyersMove[j].maxH,False);
 				}
 			updateFlyers();
 		}
