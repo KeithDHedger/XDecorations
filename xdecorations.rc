@@ -47,7 +47,7 @@ lampy 0
 lampdelay 20
 
 #Flash type for lamps.
-#0=flash, 1=chase ,2=random, 3=inverted chase, 4=cycle
+#0=flash, 1=inverted chase, 2=chase ,3=random, 4=cycle
 #Default is flash.
 lampflash 1
 

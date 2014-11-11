@@ -1175,7 +1175,7 @@ void doHelp(void)
 	printf("-lampy INTEGER\n");
 	printf("\tLamp Y position\n");
 	printf("-lampflash INTEGER\n");
-	printf("\tLamp flash type 0=flash, 1=chase ,2=random, 3=inverted chase, 4=cycle\n");
+	printf("\tLamp flash type 0=flash, 1=inverted chase, 2=chase ,3=random, 4=cycle\n");
 	printf("-lampcycledelay INTEGER\n");
 	printf("\tDelay before cycling to the next flash type\n\n");
 
