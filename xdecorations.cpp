@@ -103,7 +103,7 @@ struct				movement
 	int				maxW;
 	int				maxH;
 };
-	
+
 //falling
 objects				floating[MAXFLOAT];
 movement			moving[MAXFALLINGOBJECTS];
@@ -126,7 +126,7 @@ int					realGustSpeed;
 
 bool				useGusts=true;
 int					windSpeed=0;
-
+int					gustOffSet=0;
 int					gustPortion=1;
 double				gustInc;
 bool				doingGusts=false;
@@ -693,6 +693,58 @@ void initTree(void)
 		}
 }
 
+void doGusts(void)
+{
+	if(doingGusts==false)
+		{
+			gustOffSet=0;
+			return;
+		}
+
+	if(gustPortion==1)
+		{
+			gustInc=gustInc*incr;
+			if(realGustSpeed<gustSpeed)
+				realGustSpeed=realGustSpeed+gustInc;
+			else
+				{
+					gustPortion=2;
+					realGustSpeed=gustSpeed;
+				}
+			gustOffSet=realGustSpeed;
+		}
+
+	if(gustPortion==2)
+		{
+			gustCountdown--;
+			realGustSpeed=gustSpeed;
+			gustOffSet=realGustSpeed;
+			if(gustCountdown<=0)
+				{
+					gustPortion=3;
+					gustCountdown=0;
+				}
+		}
+
+	if(gustPortion==3)
+		{
+			gustInc=gustInc/incr;
+			if(gustInc<1)
+				gustInc=1;
+			if(realGustSpeed>0)
+				realGustSpeed=realGustSpeed-(int)gustInc;
+			else
+				{
+					gustPortion=1;
+					gustCountdown=0;
+					realGustSpeed=0;
+					doingGusts=false;
+					gustOffSet=0;
+				}
+			gustOffSet=realGustSpeed;
+		}
+}
+
 void drawFlyers(void)
 {
 	int rc;
@@ -841,7 +893,7 @@ void drawFalling(void)
 
 void updateGusts(void)
 {
-	if(gustCountdown==0)
+	if(doingGusts==false)
 		{
 			if((randomEvent(gustEvent)==true) && (gustPortion==1))
 				{
@@ -853,71 +905,18 @@ void updateGusts(void)
 					doingGusts=true;
 				}
 		}
+	else
+		doGusts();
+
 }
 
-int doGusts(void)
-{
-	int ret=0;
-
-	if(doingGusts==false)
-		return(ret);
-
-	if(gustPortion==1)
-		{
-			gustInc=gustInc*incr;
-			if(realGustSpeed<gustSpeed)
-				realGustSpeed=realGustSpeed+gustInc;
-			else
-				{
-					gustPortion=2;
-					realGustSpeed=gustSpeed;
-				}
-			ret=realGustSpeed;
-		}
-
-	if(gustPortion==2)
-		{
-			gustCountdown--;
-			realGustSpeed=gustSpeed;
-			ret=realGustSpeed;
-			if(gustCountdown<=0)
-				{
-					gustPortion=3;
-					gustCountdown=0;
-				}
-		}
-
-	if(gustPortion==3)
-		{
-			gustInc=gustInc/incr;
-			if(gustInc<1)
-				gustInc=1;
-			if(realGustSpeed>0)
-				realGustSpeed=realGustSpeed-(int)gustInc;
-			else
-				{
-					gustPortion=1;
-					gustCountdown=0;
-					realGustSpeed=0;
-					doingGusts=false;
-				}
-			ret=realGustSpeed;
-		}
-	return(ret);
-}
- 
 void updateFalling(void)
 {
-	int addGust=0;
-
-	if((useGusts==true) &&(doingGusts==true))
-		addGust=doGusts();
-
 	for(int j=0;j<numberOfFalling;j++)
 		{
 			if(moving[j].use==true)
 				{
-					swirlingDirection=randInt(MAXSWIRL); 
+					swirlingDirection=randInt(MAXSWIRL);
 					if(randomEvent(2)==true)
 						swirlingDirection=-swirlingDirection;
 					moving[j].stepX=moving[j].stepX+swirlingDirection;
@@ -927,17 +926,17 @@ void updateFalling(void)
 						moving[j].stepX=-maxXStep;
 
 					moving[j].y=moving[j].y+moving[j].stepY;
-					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+(addGust*gustDirection);
-					
+					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+(gustOffSet*gustDirection);
+
 					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
 							moving[j].use=false;
 							moving[j].y=0-moving[j].object->h[0];
 						}
-					
+
 					if(moving[j].x>displayWidth+moving[j].object->w[0])
 						moving[j].x=0-moving[j].object->w[0];
-					
+
 					if(moving[j].x<0-moving[j].object->w[0])
 						moving[j].x=displayWidth;
 				}
@@ -1031,7 +1030,7 @@ void updateFlyers(void)
 
 			if(flyersActive[j]==1)
 				{
-					flyersMove[j].x+=flyersStep;
+					flyersMove[j].x+=flyersStep+((gustOffSet*gustDirection)/4);
 
 					if(flyersMove[j].x>displayWidth+flyersMove[j].maxW)
 						{
@@ -1265,6 +1264,7 @@ void setDefaults(void)
 	gustEvent=1500;
 	gustDuration=100;
 	gustSpeed=60;
+	gustOffSet=0;
 	lampsNeedsUpdate=true;
 	lampSection=0;
 	lampAnim=LAMPFLASH;
@@ -1470,7 +1470,7 @@ int main(int argc,char* argv[])
 			visual=DefaultVisual(display,screen);
 			useBuffer=false;
 			drawOnThis=rootWin;
-		}	
+		}
 	else
 		{
 			rc=get_argb_visual(&visual,&depth);
@@ -1503,7 +1503,7 @@ int main(int argc,char* argv[])
 					rg=XCreateRegion();
 					XMapWindow(display,rootWin);
 					XSync(display, False);
-					
+
 					XMoveWindow(display,rootWin,0,0);
 					XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
 
@@ -1556,7 +1556,7 @@ int main(int argc,char* argv[])
 						if (ev.xclient.message_type == XInternAtom(display,"WM_PROTOCOLS",1) && (Atom)ev.xclient.data.l[0] == XInternAtom(display,"WM_DELETE_WINDOW",1))
 						done=1;
 						continue;
-						
+
 						break;
 				}
 
