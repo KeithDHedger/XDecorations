@@ -102,6 +102,7 @@ struct				movement
 	int				countDown;
 	int				maxW;
 	int				maxH;
+	bool			direction;
 };
 
 //falling
@@ -605,6 +606,7 @@ void initFalling(void)
 					moving[j].use=false;
 					moving[j].imageNum=randInt(moving[j].object->anims);
 					moving[j].countDown=fallingAnimSpeed;
+					moving[j].direction=randomEvent(2);
 				}
 		}
 }
@@ -884,9 +886,18 @@ void drawFalling(void)
 			if(moving[j].countDown==0)
 				{
 					moving[j].countDown=fallingAnimSpeed;
-					moving[j].imageNum++;
-					if(moving[j].imageNum==moving[j].object->anims)
-						moving[j].imageNum=0;
+					if(moving[j].direction==true)
+						{
+							moving[j].imageNum++;
+							if(moving[j].imageNum==moving[j].object->anims)
+								moving[j].imageNum=0;
+						}
+					else
+						{
+							moving[j].imageNum--;
+							if(moving[j].imageNum<0)
+								moving[j].imageNum=moving[j].object->anims-1;
+						}
 				}
 	}
 }
