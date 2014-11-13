@@ -38,7 +38,8 @@ if not,write to the Free Software
 #include "toon.h"
 
 #define MAXPATHNAMELEN 2048
-#define MAXNUMBEROFFLYERS 10
+#define MAXNUMBEROFFLYERS 100
+#define MAXFLYER 10
 #define MAXNUMBEROFTREELIGHTS 10
 #define MAXFLOAT 10
 #define MAXFALLINGOBJECTS 5000
@@ -138,17 +139,18 @@ int					gustDirection=0;
 int					gustCountdown=0;
 
 //flyers
-objects				flyers[MAXNUMBEROFFLYERS];
+objects				flyers[MAXFLYER];
 movement			flyersMove[MAXNUMBEROFFLYERS];
 int					flyersSpeed=1;
 int					flyersStep=8;
 bool				showFlyers=false;
 int					flyersMaxY=400;
-int					flyersActive[MAXNUMBEROFFLYERS];
+//int					flyersActive[MAXNUMBEROFFLYERS];
 int					flyerSpread=500;
 int					flyerCount=0;
 int					flyerAnimSpeed=8;
 int					flyerNumber;
+int					numberOfFlyers=1;
 
 //figure
 Pixmap				figurePixmap[4];
@@ -426,6 +428,8 @@ int	randomDirection(void)
 
 void initFlyers(void)
 {
+	int flynumber;
+
 	if(flyerNumber==0)
 		{
 			showFlyers=false;
@@ -436,7 +440,7 @@ void initFlyers(void)
 
 	flyerCount=0;
 
-	for(int j=0;j<MAXNUMBEROFFLYERS;j++)
+	for(int j=0;j<MAXFLYER;j++)
 		{
 			flyers[flyerCount].anims=0;
 			flyersMove[flyerCount].maxW=0;
@@ -470,12 +474,16 @@ void initFlyers(void)
 		showFlyers=false;
 	else
 		{
-			for(int j=0;j<flyerCount;j++)
+			showFlyers=true;
+			for(int j=0;j<numberOfFlyers;j++)
 				{
+					flynumber=randInt(flyerCount);
+					flyersMove[j].object=&flyers[flynumber];
 					flyersMove[j].imageNum=0;
 					flyersMove[j].countDown=flyerAnimSpeed;
-					flyersMove[j].x=0-flyersMove[j].maxW;
+					flyersMove[j].x=0-flyersMove[j].object->w[0];
 					flyersMove[j].y=(rand() % flyersMaxY);
+					flyersMove[j].use=false;
 				}
 		}
 
@@ -764,18 +772,18 @@ void drawFlyers(void)
 	if(showFlyers==false)
 		return;
 
-	for(int j=0;j<flyerCount;j++)
+	for(int j=0;j<numberOfFlyers;j++)
 		{
-			rc=XSetClipMask(display,gc,*(flyers[j].mask[flyersMove[j].imageNum]));
+			rc=XSetClipMask(display,gc,*(flyersMove[j].object->mask[flyersMove[j].imageNum]));
 			rc=XSetClipOrigin(display,gc,flyersMove[j].x,flyersMove[j].y);
-			rc=XCopyArea(display,*(flyers[j].pixmap[flyersMove[j].imageNum]),drawOnThis,gc,0,0,flyers[j].w[flyersMove[j].imageNum],flyers[j].h[flyersMove[j].imageNum],flyersMove[j].x,flyersMove[j].y);
+			rc=XCopyArea(display,*(flyersMove[j].object->pixmap[flyersMove[j].imageNum]),drawOnThis,gc,0,0,flyersMove[j].object->w[0],flyersMove[j].object->h[0],flyersMove[j].x,flyersMove[j].y);
 
 			flyersMove[j].countDown--;
 			if(flyersMove[j].countDown==0)
 				{
 					flyersMove[j].countDown=flyerAnimSpeed;
 					flyersMove[j].imageNum++;
-					if(flyersMove[j].imageNum==flyers[j].anims)
+					if(flyersMove[j].imageNum==flyersMove[j].object->anims)
 						flyersMove[j].imageNum=0;
 				}
 	}
@@ -1044,22 +1052,24 @@ void updateFlyers(void)
 {
 	int	j=0;
 
-	for(j=0; j<flyerCount; j++)
+	for(j=0; j<numberOfFlyers; j++)
 		{
-			if((flyersActive[j]==0) && ((rand() % flyerSpread)==0))
-				flyersActive[j]=1;
-
-			if(flyersActive[j]==1)
+			if(flyersMove[j].use==true)
 				{
 					flyersMove[j].x+=flyersStep+((gustOffSet*gustDirection)/4);
 
-					if(flyersMove[j].x>displayWidth+flyersMove[j].maxW)
+					if(flyersMove[j].x>displayWidth+flyersMove[j].object->w[0])
 						{
-							flyersActive[j]=0;
-							flyersMove[j].x=0-flyersMove[j].maxW*2;
 							flyersMove[j].y=(rand() % flyersMaxY);
+							flyersMove[j].x=0-flyersMove[j].object->w[0];
 						}
 				}
+			else
+				{
+					if(randomEvent(flyerSpread)==true)
+						flyersMove[j].use=true;
+				}
+			
 		}
 }
 
@@ -1190,6 +1200,8 @@ void doHelp(void)
 	printf("FLYERS\n");
 	printf("-flyer\n");
 	printf("\tFlying object set ( 0=disable flyers )\n");
+	printf("-maxflyers INTEGER\n");
+	printf("\tNumber of flying objects to use <%i\n",MAXNUMBEROFFLYERS);
 	printf("-flyermaxy INTEGER\n");
 	printf("\tLowest point on screen for flying objects\n");
 	printf("-spread INTEGER\n");
@@ -1298,6 +1310,7 @@ void setDefaults(void)
 	fallSpeed=1;
 	minFallSpeed=1;
 	flyerNumber=0;
+	numberOfFlyers=20;
 }
 
 int translateGravity(char* str)
@@ -1411,6 +1424,8 @@ int main(int argc,char* argv[])
 //flyers
 			if(strcmp(argstr,"-flyer")==0)//flyersMaxY=400
 				flyerNumber=atol(argv[++argnum]);
+			if(strcmp(argstr,"-maxflyers")==0)//flyersMaxY=400
+				numberOfFlyers=atol(argv[++argnum]);
 			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
 				flyersMaxY=atol(argv[++argnum]);
 			if(strcmp(argstr,"-spread")==0)//flyerSpread=500
