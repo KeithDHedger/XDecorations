@@ -73,7 +73,7 @@ bool				useBuffer=false;
 bool				useDBOveride=true;
 
 int					done=0;
-long				mainDelay=25000;
+long				mainDelay;
 
 uint				runCounter=0;
 bool				useWindow=true;
@@ -115,6 +115,7 @@ int					numberOfFalling=100;
 bool				showFalling=true;
 int					fallingSpread=1000;
 int					fallSpeed=1;
+int					minfallSpeed=1;
 int					maxXStep=4;
 int					fallingAnimSpeed=8;
 int					fallingCount=0;
@@ -602,7 +603,7 @@ void initFalling(void)
 					moving[j].deltaX=1;
 					moving[j].deltaY=1;
 					moving[j].stepX=1;
-					moving[j].stepY=randInt(fallSpeed)+1;
+					moving[j].stepY=randInt(fallSpeed-minfallSpeed)+1+minfallSpeed;
 					moving[j].use=false;
 					moving[j].imageNum=randInt(moving[j].object->anims);
 					moving[j].countDown=fallingAnimSpeed;
@@ -1241,6 +1242,8 @@ void doHelp(void)
 	printf("\tRandom deleay between new falling objects appearing\n");
 	printf("-fallingspeed INTEGER\n");
 	printf("\tDistance falling objects move in Y direction in one go\n");
+	printf("-minfallspeed INTEGER\n");
+	printf("\tMin distance falling objects move in Y direction in one go ( MUST be less than fallingspeed )\n");
 	printf("-maxxstep INTEGER\n");
 	printf("\tFalling objects max X step\n");
 	printf("-fallinanimdelay INTEGER\n");
@@ -1282,6 +1285,8 @@ void setDefaults(void)
 	lastLampAnim=LAMPFLASH;
 	lampCycleDelay=30;
 	lampCountdown=lampCycleDelay;
+	mainDelay=25000;
+	minfallSpeed=1;
 }
 
 int translateGravity(char* str)
@@ -1445,6 +1450,8 @@ int main(int argc,char* argv[])
 				fallingSpread=atol(argv[++argnum]);
 			if(strcmp(argstr,"-fallingspeed")==0)//leaf spread=400
 				fallSpeed=atol(argv[++argnum]);
+			if(strcmp(argstr,"-minfallspeed")==0)//max xstep =4
+				minfallSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
 				maxXStep=atol(argv[++argnum]);
 			if(strcmp(argstr,"-fallinanimdelay")==0)//max xstep =4
