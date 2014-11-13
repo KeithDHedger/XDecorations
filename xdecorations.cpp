@@ -115,7 +115,7 @@ int					numberOfFalling=100;
 bool				showFalling=true;
 int					fallingSpread=1000;
 int					fallSpeed=1;
-int					minfallSpeed=1;
+int					minFallSpeed=1;
 int					maxXStep=4;
 int					fallingAnimSpeed=8;
 int					fallingCount=0;
@@ -148,6 +148,7 @@ int					flyersActive[MAXNUMBEROFFLYERS];
 int					flyerSpread=500;
 int					flyerCount=0;
 int					flyerAnimSpeed=8;
+int					flyerNumber;
 
 //figure
 Pixmap				figurePixmap[4];
@@ -425,6 +426,14 @@ int	randomDirection(void)
 
 void initFlyers(void)
 {
+	if(flyerNumber==0)
+		{
+			showFlyers=false;
+			return;
+		}
+	else
+		showFlyers=true;
+
 	flyerCount=0;
 
 	for(int j=0;j<MAXNUMBEROFFLYERS;j++)
@@ -434,7 +443,7 @@ void initFlyers(void)
 			flyersMove[flyerCount].maxH=0;
 			for(int k=0;k<MAXFALLINGANIMATION;k++)
 				{
-					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.%i.%i.png",DATADIR,prefix,1,j+1,k+1);
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.%i.%i.png",DATADIR,prefix,flyerNumber,j+1,k+1);
 					image=imlib_load_image(pathname);
 					if(image!=NULL)
 						{
@@ -603,7 +612,7 @@ void initFalling(void)
 					moving[j].deltaX=1;
 					moving[j].deltaY=1;
 					moving[j].stepX=1;
-					moving[j].stepY=randInt(fallSpeed-minfallSpeed)+1+minfallSpeed;
+					moving[j].stepY=randInt(fallSpeed-minFallSpeed+1)+minFallSpeed;
 					moving[j].use=false;
 					moving[j].imageNum=randInt(moving[j].object->anims);
 					moving[j].countDown=fallingAnimSpeed;
@@ -1179,8 +1188,8 @@ void doHelp(void)
 
 //flying
 	printf("FLYERS\n");
-	printf("-showflyer/-no-showflyer\n");
-	printf("\tShow flying objects\n");
+	printf("-flyer\n");
+	printf("\tFlying object set ( 0=disable flyers )\n");
 	printf("-flyermaxy INTEGER\n");
 	printf("\tLowest point on screen for flying objects\n");
 	printf("-spread INTEGER\n");
@@ -1286,7 +1295,9 @@ void setDefaults(void)
 	lampCycleDelay=30;
 	lampCountdown=lampCycleDelay;
 	mainDelay=25000;
-	minfallSpeed=1;
+	fallSpeed=1;
+	minFallSpeed=1;
+	flyerNumber=0;
 }
 
 int translateGravity(char* str)
@@ -1398,7 +1409,8 @@ int main(int argc,char* argv[])
 				lampCycleDelay=atol(argv[++argnum]);
 
 //flyers
-			showUnShow(argstr,"showflyer",&showFlyers);//showFlyers=false
+			if(strcmp(argstr,"-flyer")==0)//flyersMaxY=400
+				flyerNumber=atol(argv[++argnum]);
 			if(strcmp(argstr,"-flyermaxy")==0)//flyersMaxY=400
 				flyersMaxY=atol(argv[++argnum]);
 			if(strcmp(argstr,"-spread")==0)//flyerSpread=500
@@ -1451,7 +1463,7 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-fallingspeed")==0)//leaf spread=400
 				fallSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-minfallspeed")==0)//max xstep =4
-				minfallSpeed=atol(argv[++argnum]);
+				minFallSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
 				maxXStep=atol(argv[++argnum]);
 			if(strcmp(argstr,"-fallinanimdelay")==0)//max xstep =4
