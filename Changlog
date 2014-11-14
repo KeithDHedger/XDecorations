@@ -1,4 +1,8 @@
 0.1.5
+Can now set flyer image chosen from random loaded flyers ( default ) or sequentially ( use negative number ).
+Can now set the number of flying objects.
+Added clouds to Autumn.
+Can now write config file to stdout ( use - as  the argument to writeconfig ).
 Added 'Weather' theme.
 Added -minfallspeed to options.
 Added rain to Autumn ( You can tell I live in England! ).

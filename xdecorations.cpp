@@ -246,7 +246,8 @@ args				xdecorations_rc[]=
 	{"lampcycledelay",TYPEINT,&lampCycleDelay},
 
 //flyers
-	{"flyer",TYPEBOOL,&showFlyers},
+	{"flyer",TYPEBOOL,&flyerNumber},
+	{"maxflyers",TYPEBOOL,&numberOfFlyers},
 	{"flyermaxy",TYPEINT,&flyersMaxY},
 	{"spread",TYPEINT,&flyerSpread},
 	{"flydelay",TYPEINT,&flyersSpeed},
@@ -274,9 +275,9 @@ args				xdecorations_rc[]=
 	{"falldelay",TYPEINT,&fallingDelay},
 	{"maxfalling",TYPEINT,&numberOfFalling},
 	{"fallingspread",TYPEINT,&fallingSpread},
-	{"fallingspeed",TYPEINT,&fallSpeed},
+	{"fallingspeed",TYPEINT,&minFallSpeed},
+	{"minfallspeed",TYPEINT,&fallSpeed},
 	{"maxxstep",TYPEINT,&maxXStep},
-	{"fallinanimdelay",TYPEINT,&fallingAnimSpeed},
 
 //wind
 	{"wind",TYPEINT,&windSpeed},
@@ -325,7 +326,11 @@ void saveVarsToFile(const char* filepath,args* dataptr)
 	FILE*	fd=NULL;
 	int		cnt=0;
 
-	fd=fopen(filepath,"w");
+	if(filepath[0]=='-')
+		fd=stdout;
+	else
+		fd=fopen(filepath,"w");
+
 	if(fd!=NULL)
 		{
 			while(dataptr[cnt].name!=NULL)
@@ -428,7 +433,9 @@ int	randomDirection(void)
 
 void initFlyers(void)
 {
-	int flynumber;
+	int		flynumber;
+	int		numfly;
+	bool	randomize=true;
 
 	if(flyerNumber==0)
 		{
@@ -439,6 +446,20 @@ void initFlyers(void)
 		showFlyers=true;
 
 	flyerCount=0;
+
+	if(numberOfFlyers<0)
+		{
+			numberOfFlyers=numberOfFlyers*-1;
+			numfly=numberOfFlyers;
+			randomize=false;
+			flynumber=-1;
+		}
+	else
+		{
+			numfly=numberOfFlyers;
+			randomize=true;
+		}
+
 
 	for(int j=0;j<MAXFLYER;j++)
 		{
@@ -475,9 +496,16 @@ void initFlyers(void)
 	else
 		{
 			showFlyers=true;
-			for(int j=0;j<numberOfFlyers;j++)
+			for(int j=0;j<numfly;j++)
 				{
-					flynumber=randInt(flyerCount);
+					if(randomize==true)
+						flynumber=randInt(flyerCount);
+					else
+						{
+							flynumber++;
+							if(flynumber==flyerCount)
+								flynumber=0;
+						}
 					flyersMove[j].object=&flyers[flynumber];
 					flyersMove[j].imageNum=0;
 					flyersMove[j].countDown=flyerAnimSpeed;
@@ -1202,6 +1230,8 @@ void doHelp(void)
 	printf("\tFlying object set ( 0=disable flyers )\n");
 	printf("-maxflyers INTEGER\n");
 	printf("\tNumber of flying objects to use <%i\n",MAXNUMBEROFFLYERS);
+	printf("\tIf the number of flyers are > 0 then the image is chosen randomly from the available flyers\n");
+	printf("\tIf the number of flyers are < 0 then tthe image is chosen sequentially\n");
 	printf("-flyermaxy INTEGER\n");
 	printf("\tLowest point on screen for flying objects\n");
 	printf("-spread INTEGER\n");
