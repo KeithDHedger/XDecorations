@@ -338,7 +338,7 @@ ToonGetRootWindow(Display *display, int screen, Window *clientparent)
       }
       else if ((background = __ToonGetKDEDesktop(display, screen, children[i],
 						 _NET_WM_WINDOW_TYPE,
-						 "_NET_WM_WINDOW_TYPE_DESKTOP",
+						 (char*)"_NET_WM_WINDOW_TYPE_DESKTOP",
 						 0))) {
 	/* Found a KDE 2.0 desktop and located the background window */
 	/* Note that the clientparent is still the root window */

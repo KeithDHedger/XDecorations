@@ -594,6 +594,25 @@ void initLamps(void)
 		}
 }
 
+void destroyLamps(void)
+{
+	imlib_free_pixmap_and_mask(lampsPixmap[ONPIXMAP]);
+	imlib_free_pixmap_and_mask(lampsPixmap[OFFPIXMAP]);
+}
+
+void destroyTree(void)
+{
+	imlib_free_pixmap_and_mask(treePixmap[ONPIXMAP]);
+	for(int j=0;j<treeLampCount;j++)
+		imlib_free_pixmap_and_mask(treeLampsPixmap[j][ONPIXMAP]);
+}
+
+void destroyFigure(void)
+{
+	imlib_free_pixmap_and_mask(figurePixmap[ONPIXMAP]);
+	imlib_free_pixmap_and_mask(figurePixmap[OFFPIXMAP]);
+}
+
 void destroyFalling(void)
 {
 	for(int j=0;j<fallingCount;j++)
@@ -692,6 +711,7 @@ void initTree(void)
 		showTree=false;
 	else
 		{
+			showTree=true;
 			imlib_context_set_image(image);
 			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
@@ -1401,6 +1421,9 @@ void reloadConfig(void)
 	int flysetnumber=flyerNumber;
 	int numfallobjects=numberOfFalling;
 	int fallsetnumber=fallingNumber;
+	int	tmptree=treeNumber;
+	int	tmptreelampset=treeLampSet;
+	int	tmpfig=figureNumber;
 
 	if(numflyobjects<0)
 		numflyobjects=numflyobjects*-1;
@@ -1418,6 +1441,23 @@ void reloadConfig(void)
 			destroyFalling();
 			initFalling();
 		}
+
+	if((treeNumber!=tmptree) || (tmptreelampset!=treeLampSet))
+		{
+			destroyTree();
+			treeOnOff=0;
+			initTree();
+		}
+
+	if(tmpfig!=figureNumber)
+		{
+			destroyFigure();
+			figureOnOff=0;
+			initFigure();
+		}
+
+	setGravity(&treeX,&treeY,treeWidth,treeHeight);
+	setGravity(&figureX,&figureY,figureW,figureH);
 }
 
 int main(int argc,char* argv[])
