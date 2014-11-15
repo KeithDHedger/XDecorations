@@ -37,7 +37,7 @@ if not,write to the Free Software
 
 #include "toon.h"
 
-#define MAXPATHNAMELEN 2048
+#define MAXPATHNAMELEN 4096
 #define MAXNUMBEROFFLYERS 100
 #define MAXFLYER 10
 #define MAXNUMBEROFTREELIGHTS 10
@@ -79,6 +79,7 @@ long				mainDelay;
 uint				runCounter=0;
 bool				useWindow=true;
 int					offSetY=0;
+bool				watchConfig=false;
 
 struct				objects
 {
@@ -246,8 +247,8 @@ args				xdecorations_rc[]=
 	{"lampcycledelay",TYPEINT,&lampCycleDelay},
 
 //flyers
-	{"flyer",TYPEBOOL,&flyerNumber},
-	{"maxflyers",TYPEBOOL,&numberOfFlyers},
+	{"flyer",TYPEINT,&flyerNumber},
+	{"maxflyers",TYPEINT,&numberOfFlyers},
 	{"flyermaxy",TYPEINT,&flyersMaxY},
 	{"spread",TYPEINT,&flyerSpread},
 	{"flydelay",TYPEINT,&flyersSpeed},
@@ -600,10 +601,21 @@ void destroyFalling(void)
 			for(int k=0;k<floating[j].anims;k++)
 				{
 					imlib_free_pixmap_and_mask(*(floating[j].pixmap[k]));
-					free(floating[j].pixmap[k]);
 				}
 		}
 }
+
+void destroyFlyers(void)
+{
+	for(int j=0;j<flyerCount;j++)
+		{
+			for(int k=0;k<flyers[j].anims;k++)
+				{
+					imlib_free_pixmap_and_mask(*(flyers[j].pixmap[k]));
+				}
+		}
+}
+
 
 void initFalling(void)
 {
@@ -1000,7 +1012,14 @@ void updateFalling(void)
 			else
 				{
 					if(randomEvent(fallingSpread)==true)
-						moving[j].use=true;
+						{
+							moving[j].use=true;
+							moving[j].stepY=randInt(fallSpeed-minFallSpeed+1)+minFallSpeed;
+							moving[j].x=(rand() % displayWidth);
+							moving[j].imageNum=randInt(moving[j].object->anims);
+							moving[j].countDown=fallingAnimSpeed;
+							moving[j].direction=randomEvent(2);
+						}
 				}
 		}
 }
@@ -1090,6 +1109,7 @@ void updateFlyers(void)
 						{
 							flyersMove[j].y=(rand() % flyersMaxY);
 							flyersMove[j].x=0-flyersMove[j].object->w[0];
+							flyersMove[j].use=false;						
 						}
 				}
 			else
@@ -1367,6 +1387,27 @@ int translateGravity(char* str)
 
 }
 
+void reloadConfig(void)
+{
+	int nf=numberOfFlyers;
+	int fn=flyerNumber;
+
+	if(nf<0)
+		nf=nf*-1;
+
+	loadVarsFromFile(configFilePath,xdecorations_rc);
+
+	//	printf("%i %i\n",numberOfFlyers,flyerNumber);
+	if((nf<numberOfFlyers) || (fn!=flyerNumber))
+		{
+	//	printf("here\n");
+		//exit(0);
+		//printf("%i %i\n",numberOfFlyers,flyerNumber);
+			destroyFlyers();
+			initFlyers();
+		}
+}
+
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -1422,6 +1463,7 @@ int main(int argc,char* argv[])
 
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
+			showUnShow(argstr,"watchconfig",&watchConfig);//use/don'tdouble buffering
 			if(strcmp(argstr,"-theme")==0)//Xmas
 				{
 					free(prefix);
@@ -1673,7 +1715,6 @@ int main(int argc,char* argv[])
 
 			if(useGusts==true)
 				{
-					//if((runCounter % gustEvent)==0)
 						updateGusts();
 				}
 
@@ -1686,12 +1727,17 @@ int main(int argc,char* argv[])
 
 			if(useBuffer==true)
 				XdbeSwapBuffers(display,&swapInfo,1);
+
+			if(watchConfig==true)
+				reloadConfig();
+
 		}
 	if(useWindow==false)
 		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 
 	destroyFalling();
+	destroyFlyers();
 	return(0);
 }
 
