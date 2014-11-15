@@ -621,6 +621,14 @@ void initFalling(void)
 {
 	int	floatnumber;
 
+	if(fallingNumber==0)
+		{
+			showFalling=false;
+			return;
+		}
+	else
+		showFalling=true;
+
 	fallingCount=0;
 
 	for(int j=0;j<MAXFLOAT;j++)
@@ -1389,22 +1397,26 @@ int translateGravity(char* str)
 
 void reloadConfig(void)
 {
-	int nf=numberOfFlyers;
-	int fn=flyerNumber;
+	int numflyobjects=numberOfFlyers;
+	int flysetnumber=flyerNumber;
+	int numfallobjects=numberOfFalling;
+	int fallsetnumber=fallingNumber;
 
-	if(nf<0)
-		nf=nf*-1;
+	if(numflyobjects<0)
+		numflyobjects=numflyobjects*-1;
 
 	loadVarsFromFile(configFilePath,xdecorations_rc);
 
-	//	printf("%i %i\n",numberOfFlyers,flyerNumber);
-	if((nf<numberOfFlyers) || (fn!=flyerNumber))
+	if((numflyobjects<numberOfFlyers) || (flysetnumber!=flyerNumber))
 		{
-	//	printf("here\n");
-		//exit(0);
-		//printf("%i %i\n",numberOfFlyers,flyerNumber);
 			destroyFlyers();
 			initFlyers();
+		}
+
+	if((numfallobjects<numberOfFalling) || (fallsetnumber!=fallingNumber))
+		{
+			destroyFalling();
+			initFalling();
 		}
 }
 
