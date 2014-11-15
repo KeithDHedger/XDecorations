@@ -450,7 +450,7 @@ void initFlyers(void)
 
 	if(numberOfFlyers<0)
 		{
-			numberOfFlyers=numberOfFlyers*-1;
+			numberOfFlyers=abs(numberOfFlyers);
 			numfly=numberOfFlyers;
 			randomize=false;
 			flynumber=-1;
@@ -460,7 +460,6 @@ void initFlyers(void)
 			numfly=numberOfFlyers;
 			randomize=true;
 		}
-
 
 	for(int j=0;j<MAXFLYER;j++)
 		{
@@ -507,6 +506,7 @@ void initFlyers(void)
 							if(flynumber==flyerCount)
 								flynumber=0;
 						}
+
 					flyersMove[j].object=&flyers[flynumber];
 					flyersMove[j].imageNum=0;
 					flyersMove[j].countDown=flyerAnimSpeed;
@@ -515,7 +515,6 @@ void initFlyers(void)
 					flyersMove[j].use=false;
 				}
 		}
-
 }
 
 void initFigure(void)
@@ -1149,7 +1148,6 @@ void updateFlyers(void)
 					if(randomEvent(flyerSpread)==true)
 						flyersMove[j].use=true;
 				}
-			
 		}
 }
 
@@ -1419,9 +1417,9 @@ int translateGravity(char* str)
 
 }
 
-	void reloadConfig(void)
+void reloadConfig(void)
 {
-	int numflyobjects=numberOfFlyers;
+	int numflyobjects;
 	int flysetnumber=flyerNumber;
 	int numfallobjects=numberOfFalling;
 	int fallsetnumber=fallingNumber;
@@ -1429,39 +1427,45 @@ int translateGravity(char* str)
 	int	tmptreelampset=treeLampSet;
 	int	tmpfig=figureNumber;
 	int tmplamps=lampSet;
+	char*	tmptheme;
+	bool	force=false;
+	int		absnumflyers;
 
-	if(numflyobjects<0)
-		numflyobjects=numflyobjects*-1;
+	tmptheme=strdup(prefix);
+	numflyobjects=abs(numberOfFlyers);
 
 	loadVarsFromFile(configFilePath,xdecorations_rc);
 
-	if((numflyobjects<numberOfFlyers) || (flysetnumber!=flyerNumber))
+	if(strcmp(tmptheme,prefix)!=0)
+		force=true;
+
+	if((numflyobjects<abs(numberOfFlyers)) || (flysetnumber!=flyerNumber) || (force==true))
 		{
 			destroyFlyers();
 			initFlyers();
 		}
 
-	if((numfallobjects<numberOfFalling) || (fallsetnumber!=fallingNumber))
+	if((numfallobjects<numberOfFalling) || (fallsetnumber!=fallingNumber) || (force==true))
 		{
 			destroyFalling();
 			initFalling();
 		}
 
-	if((treeNumber!=tmptree) || (tmptreelampset!=treeLampSet))
+	if((treeNumber!=tmptree) || (tmptreelampset!=treeLampSet) || (force==true))
 		{
 			destroyTree();
 			treeOnOff=0;
 			initTree();
 		}
 
-	if(tmpfig!=figureNumber)
+	if((tmpfig!=figureNumber) || (force==true))
 		{
 			destroyFigure();
 			figureOnOff=0;
 			initFigure();
 		}
 
-	if(tmplamps!=lampSet)
+	if((tmplamps!=lampSet) || (force==true))
 		{
 			destroyLamps();
 			lampsOnOff=0;
@@ -1474,6 +1478,8 @@ int translateGravity(char* str)
 	lastLampAnim=lampAnim;
 	if(lampAnim==LAMPCYCLE)
 		lastLampAnim=LAMPFLASH;
+	free(tmptheme);
+	numberOfFlyers=abs(numberOfFlyers);
 }
 
 int main(int argc,char* argv[])
@@ -1552,12 +1558,7 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-lampdelay")==0)//lampSpeed=100
 				lampSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-lampflash")==0)//lampAnim=LAMPFLASH
-				{
-					lampAnim=atol(argv[++argnum]);
-//					lastLampAnim=lampAnim;
-//					if(lampAnim==LAMPCYCLE)
-//						lastLampAnim=LAMPFLASH;
-				}
+				lampAnim=atol(argv[++argnum]);
 			if(strcmp(argstr,"-lampcycledelay")==0)//lampCycleDelay=30
 				lampCycleDelay=atol(argv[++argnum]);
 
