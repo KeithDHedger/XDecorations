@@ -591,6 +591,10 @@ void initLamps(void)
 				lampState[j]=false;
 	lampCountdown=lampCount;
 	lampSection=0;
+
+	lastLampAnim=lampAnim;
+	if(lampAnim==LAMPCYCLE)
+		lastLampAnim=LAMPFLASH;
 		}
 }
 
@@ -1415,7 +1419,7 @@ int translateGravity(char* str)
 
 }
 
-void reloadConfig(void)
+	void reloadConfig(void)
 {
 	int numflyobjects=numberOfFlyers;
 	int flysetnumber=flyerNumber;
@@ -1424,6 +1428,7 @@ void reloadConfig(void)
 	int	tmptree=treeNumber;
 	int	tmptreelampset=treeLampSet;
 	int	tmpfig=figureNumber;
+	int tmplamps=lampSet;
 
 	if(numflyobjects<0)
 		numflyobjects=numflyobjects*-1;
@@ -1456,8 +1461,19 @@ void reloadConfig(void)
 			initFigure();
 		}
 
+	if(tmplamps!=lampSet)
+		{
+			destroyLamps();
+			lampsOnOff=0;
+			lastLampAnim=0;
+			initLamps();
+		}
+
 	setGravity(&treeX,&treeY,treeWidth,treeHeight);
 	setGravity(&figureX,&figureY,figureW,figureH);
+	lastLampAnim=lampAnim;
+	if(lampAnim==LAMPCYCLE)
+		lastLampAnim=LAMPFLASH;
 }
 
 int main(int argc,char* argv[])
@@ -1538,9 +1554,9 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-lampflash")==0)//lampAnim=LAMPFLASH
 				{
 					lampAnim=atol(argv[++argnum]);
-					lastLampAnim=lampAnim;
-					if(lampAnim==LAMPCYCLE)
-						lastLampAnim=LAMPFLASH;
+//					lastLampAnim=lampAnim;
+//					if(lampAnim==LAMPCYCLE)
+//						lastLampAnim=LAMPFLASH;
 				}
 			if(strcmp(argstr,"-lampcycledelay")==0)//lampCycleDelay=30
 				lampCycleDelay=atol(argv[++argnum]);

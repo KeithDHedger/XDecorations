@@ -1,4 +1,5 @@
 0.1.5
+Can now change figure/tree/lamps variables from watched configfile.
 Can now change falling/flying variables from watched configfile.
 falling objects  speed etc re randomized after reaching bottom.
 Started to add watch config.
