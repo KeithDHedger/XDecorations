@@ -233,11 +233,13 @@ struct Hints
 
 args				xdecorations_rc[]=
 {
+
 //app
 	{"theme",TYPESTRING,&prefix},
 	{"delay",TYPEINT,&mainDelay},
 	{"usewindow",TYPEBOOL,&useWindow},
 	{"usebuffer",TYPEBOOL,&useDBOveride},
+	{"offsety",TYPEINT,&offSetY},
 
 //lamps
 	{"lampset",TYPEINT,&lampSet},
@@ -276,8 +278,9 @@ args				xdecorations_rc[]=
 	{"falldelay",TYPEINT,&fallingDelay},
 	{"maxfalling",TYPEINT,&numberOfFalling},
 	{"fallingspread",TYPEINT,&fallingSpread},
-	{"fallingspeed",TYPEINT,&minFallSpeed},
-	{"minfallspeed",TYPEINT,&fallSpeed},
+	{"fallingspeed",TYPEINT,&fallSpeed},
+	{"minfallspeed",TYPEINT,&minFallSpeed},
+	{"fallinanimdelay",TYPEINT,&fallingAnimSpeed},
 	{"maxxstep",TYPEINT,&maxXStep},
 
 //wind
