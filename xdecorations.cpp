@@ -1269,6 +1269,8 @@ void doHelp(void)
 	printf("\tThe number of the lamp set to use ( 0=no lamps )\n");
 	printf("-lampy INTEGER\n");
 	printf("\tLamp Y position\n");
+	printf("-lampdelay INTEGER\n");
+	printf("\tDelay for flashing lamps\n");
 	printf("-lampflash INTEGER\n");
 	printf("\tLamp flash type 0=flash, 1=inverted chase, 2=chase ,3=random, 4=cycle\n");
 	printf("-lampcycledelay INTEGER\n");
