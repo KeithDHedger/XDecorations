@@ -1,7 +1,7 @@
 
 #Example xdecorations config file should be in ~/.config and named xdecorations.rc
-#Lines begining with '#' are comments and ignored.
-#To use the default values either comment out the relevent line or remove it.
+#Lines beginning with '#' are comments and ignored.
+#To use the default values either comment out the relevant line or remove it.
 #
 #All values have a command line equivalent, additionally some switches have the form -no-XXX or -XXX, these are simple on/off switches and take no argument on the commandline, but to use them in the config file you need to supply a 0 or 1,ie to either use double buffering or not you would use:
 #xdecorations -usebuffer
@@ -60,6 +60,12 @@ lampcycledelay 40
 #Defaults to 0,
 flyer 1
 
+#Number of flying objects to use <100
+#If the number of flyers are > 0 then the image is chosen randomly from the available flyers
+#If the number of flyers are < 0 then tthe image is chosen sequentially
+#defaults to 20
+maxflyers 1
+
 #The lowest point that the flyers will fly at, good for confining them to the top screen in a multi-screen setup.
 #Defaults to 400
 flyermaxy 600
@@ -83,6 +89,7 @@ flyanimdelay 6
 ##### Tree and tree decorations. #####
 
 #Number of tree to use.
+#If no trees are shown star/treelights/tinsel are also disabled
 #Defaults to 0.
 tree 1
 
@@ -93,6 +100,9 @@ treex 500
 #The absolute y position of the tree on the screen.
 #Defaults to 0
 treey 350
+
+#You can also use the terms left/centre/right with treex to position the tree
+#You can also use the terms top/centre/bottom with treey to position the tree
 
 #Show star, 1=show, 0=don't show.
 #Defaults to 0.
@@ -127,6 +137,9 @@ figurex 100
 #Defaults to 100
 figurey 100
 
+#You can also use the terms left/centre/right with figurex to position the figure
+#You can also use the terms top/centre/bottom with figurey to position the figure
+
 #The delay between the figure animation. 
 #Defaults to 100
 figuredelay 100
@@ -152,6 +165,12 @@ fallingspread 2000
 #Distance falling objects move in Y direction in one go
 #Defaults to 1
 fallingspeed 1
+
+#Minimum distance falling objects move in th Y direction in one go ( MUST be <= fallingspeed )
+#Defaults to 1
+minfallspeed 1
+
+#Falling objects are randomly set to fall at a rate between fallingspeed and minfallspeed, to make all objects fall at the same rate make both values the same
 
 #Falling objects max X step
 #Defaults to 4
@@ -184,8 +203,8 @@ gustspeed 60
 
 #### EXTRAS #####
 #These are not used in the config file but are command line switches ONLY.
-#Dont't load the default config file ( ~/.config/xdecorations.rc ).
-#MUST be the firts option given.
+#Don't load the default config file ( ~/.config/xdecorations.rc ).
+#MUST be the first option given.
 #-noconfig
 
 #Set new config file ( using only one instance of this makes any sense )
@@ -195,7 +214,9 @@ gustspeed 60
 #Write out a new config file including currently loaded config file,defaults and command line options then exit
 #-writeconfig  "/path/to/config/file"
 
-
+#Watch the last loaded config file ( which may be an empty file ) for changes and apply them in real time.
+#this is experimental at the moment and will probably be changed in future releases.
+#-watchconfig
 
 
 

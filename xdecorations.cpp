@@ -1266,6 +1266,10 @@ void doHelp(void)
 	printf("-usebuffer/-no-usebuffer\n");
 	printf("\tUse double buffering\n\tUsing double buffering gives best graphical results but is slower\n");
 	printf("\tThe default is to use a transparent window with double buffering\n\n");
+
+	printf("-watchconfig/-no-watchconfig\n");
+	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
+	
 //lamps
 	printf("LAMPS\n");
 	printf("-lampset INTEGER\n");
@@ -1331,10 +1335,10 @@ void doHelp(void)
 	printf("\tAbsolute X position of figure\n");
 	printf("-figurey INTEGER\n");
 	printf("\tAbsolute Y position of figure\n");
-	printf("-figuredelay INTEGER\n");
-	printf("\tDelay for figure\n");
 	printf("\tYou can also use the terms left/centre/right with figurex to position the figure\n");
-	printf("\tYou can also use the terms top/centre/bottom with figurey to position the figure\n\n");
+	printf("\tYou can also use the terms top/centre/bottom with figurey to position the figure\n");
+	printf("-figuredelay INTEGER\n");
+	printf("\tDelay for figure\n\n");
 
 //falling
 	printf("FALLING OBJECTS\n");
@@ -1542,7 +1546,7 @@ int main(int argc,char* argv[])
 
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
-			showUnShow(argstr,"watchconfig",&watchConfig);//use/don'tdouble buffering
+			showUnShow(argstr,"watchconfig",&watchConfig);//watch config file for changes
 			if(strcmp(argstr,"-theme")==0)//Xmas
 				{
 					free(prefix);
