@@ -1,4 +1,3 @@
-
 #Example xdecorations config file should be in ~/.config and named xdecorations.rc
 #Lines beginning with '#' are comments and ignored.
 #To use the default values either comment out the relevant line or remove it.
@@ -26,7 +25,7 @@ delay 25000
 
 #Write direct to the root window(0) or to a transparent window(1).
 usewindow 1
-#Default is to use transparent windows
+#Defaults is to use transparent windows
 
 #Use double buffering (0) no double buffer, (1) use double buffer.
 #Using double buffering gives best graphical results but is slower
@@ -204,7 +203,7 @@ gustspeed 60
 #### EXTRAS #####
 #These are not used in the config file but are command line switches ONLY.
 #Don't load the default config file ( ~/.config/xdecorations.rc ).
-#MUST be the first option given.
+#MUST be the firts option given.
 #-noconfig
 
 #Set new config file ( using only one instance of this makes any sense )
