@@ -805,14 +805,21 @@ void clearSettled(void)
 	for(int j=0;j<displayWidth;j++)
 		down[j]=settledHeight;
 
-	blackColor=BlackPixel(display,screen);
-	XSetForeground(display, gcpm,blackColor);
+	XSetClipMask(display,gcpm,0);
+	XSetClipOrigin(display,gcpm,0,0);
+
+	XSetForeground(display,gcpm,blackColor);
 	XSetFillStyle(display,gcpm,FillSolid);
 	XFillRectangle(display,settledPixmapMask,gcpm,0,0,displayWidth,settledHeight);
+
+	XSetClipMask(display,gc,0);
+	XSetClipOrigin(display,gc,0,0);
 
 	XSetForeground(display,gc,blackColor);
 	XSetFillStyle(display,gc,FillSolid);
 	XFillRectangle(display,settledPixmap,gc,0,0,displayWidth,settledHeight);
+	keepSettling=true;
+
 }
 
 void doGusts(void)
@@ -862,6 +869,7 @@ void doGusts(void)
 					realGustSpeed=0;
 					doingGusts=false;
 					gustOffSet=0;
+					clearSettled();
 				}
 			gustOffSet=realGustSpeed;
 		}
@@ -1798,11 +1806,22 @@ int main(int argc,char* argv[])
 	initFalling();
 
 	down=(int*)malloc(sizeof(int)*displayWidth);
+//	for(int j=0;j<displayWidth;j++)
+//		down[j]=settledHeight;
 
 	XSetFillStyle(display,gc,FillSolid);
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
+	blackColor=BlackPixel(display,screen);
+	whiteColor=WhitePixel(display,screen);
 	clearSettled();
+//	XSetForeground(display, gcpm,blackColor);
+//	XSetFillStyle(display,gcpm,FillSolid);
+//	XFillRectangle(display,settledPixmapMask,gcpm,0,0,displayWidth,settledHeight);
+//
+//	XSetForeground(display,gc,blackColor);
+//	XSetFillStyle(display,gc,FillSolid);
+//	XFillRectangle(display,settledPixmap,gc,0,0,displayWidth,settledHeight);
 
 	while (!done)
 		{
