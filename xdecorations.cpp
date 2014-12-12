@@ -45,7 +45,7 @@ if not,write to the Free Software
 #define MAXFALLINGOBJECTS 5000
 #define	MAXFALLINGANIMATION 48
 #define MAXSWIRL 2
-#define MAXSETTLED 4000
+#define MAXSETTLED 8000
 
 #define VERSION "0.1.5"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
@@ -63,6 +63,8 @@ Window				rootWin;
 int					displayWidth;
 int					displayHeight;
 GC					gc;
+GC					gcpm;
+
 Visual*				visual=NULL;
 int					depth=0;
 Imlib_Image			image;
@@ -106,26 +108,17 @@ struct				movement
 	int				maxW;
 	int				maxH;
 	bool			direction;
-	bool			settled;
 };
-
-struct				settled
-{
-//	objects			*ob;
-	int				x;
-	int				y;
-	int				w;
-	int				h;
-};
-
 
 //settled
-settled				down[MAXSETTLED];
-int					numberOfSettled=0;
-int					currentSettled=0;
+int					*down;
 Pixmap				settledPixmap;
 Pixmap				settledPixmapMask;
 int					settledHeight;
+int					settleRate=8;
+bool				keepSettling=true;
+int					blackColor;
+int					whiteColor;
 
 //falling
 objects				floating[MAXFLOAT];
@@ -715,7 +708,6 @@ void initFalling(void)
 					moving[j].stepX=1;
 					moving[j].stepY=randInt(fallSpeed-minFallSpeed+1)+minFallSpeed;
 					moving[j].use=false;
-					moving[j].settled=false;
 					moving[j].imageNum=randInt(moving[j].object->anims);
 					moving[j].countDown=fallingAnimSpeed;
 					moving[j].direction=randomEvent(2);
@@ -806,6 +798,21 @@ void initTree(void)
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&tinselPixmap[ONPIXMAP],&tinselPixmap[ONMASK]);
 		}
+}
+
+void clearSettled(void)
+{
+	for(int j=0;j<displayWidth;j++)
+		down[j]=settledHeight;
+
+	blackColor=BlackPixel(display,screen);
+	XSetForeground(display, gcpm,blackColor);
+	XSetFillStyle(display,gcpm,FillSolid);
+	XFillRectangle(display,settledPixmapMask,gcpm,0,0,displayWidth,settledHeight);
+
+	XSetForeground(display,gc,blackColor);
+	XSetFillStyle(display,gc,FillSolid);
+	XFillRectangle(display,settledPixmap,gc,0,0,displayWidth,settledHeight);
 }
 
 void doGusts(void)
@@ -986,13 +993,10 @@ void drawLamps(void)
 void drawSettled(void)
 {
 	int rc;
-//	for(int j=0;j<numberOfSettled;j++)
-//		{
-		//	printf("zzzzzzzzz\n");
-			rc=XSetClipMask(display,gc,settledPixmapMask);
-			rc=XSetClipOrigin(display,gc,0,400);
-			rc=XCopyArea(display,settledPixmap,drawOnThis,gc,0,0,displayWidth,settledHeight,0,400);
-//		}
+
+	rc=XSetClipMask(display,gc,settledPixmapMask);
+	rc=XSetClipOrigin(display,gc,0,displayHeight-settledHeight);
+	rc=XCopyArea(display,settledPixmap,drawOnThis,gc,0,0,displayWidth,settledHeight,0,displayHeight-settledHeight);
 }
 
 void drawFalling(void)
@@ -1024,17 +1028,6 @@ void drawFalling(void)
 								moving[j].imageNum=moving[j].object->anims-1;
 						}
 				}
-
-//			if(moving[j].settled==true)
-//				{
-//					int ty;
-//				//	ty=200;
-//				//	ty=displayHeight-moving[j].object->h[0];
-//					rc=XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
-//					rc=XSetClipOrigin(display,gc,moving[j].x,ty);
-//					rc=XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],moving[j].x,ty);
-//
-//				}
 	}
 }
 
@@ -1054,17 +1047,17 @@ void updateGusts(void)
 		}
 	else
 		doGusts();
-
 }
 
 void updateFalling(void)
 {
+	int		downx;
+	Pixmap	*pmm;
+
 	for(int j=0;j<numberOfFalling;j++)
 		{
 			if(moving[j].use==true)
 				{
-				//	if(moving[j].settled==false)
-				//	{
 					swirlingDirection=randInt(MAXSWIRL);
 					if(randomEvent(2)==true)
 						swirlingDirection=-swirlingDirection;
@@ -1079,63 +1072,24 @@ void updateFalling(void)
 
 					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
-
 							moving[j].use=false;
-							int rc;
-							Pixmap* pmm=moving[j].object->mask[0];
-							//down[currentSettled].ob=moving[j].object;
-							down[currentSettled].x=moving[j].x;
-							down[currentSettled].w=moving[j].object->w[0];
-							down[currentSettled].h=moving[j].object->h[0];
-							down[currentSettled].y=settledHeight-down[currentSettled].h;
-							//down[currentSettled].y=displayHeight-moving[j].object->h[0];
-							int ty;
-							//ty=settledHeight-down[currentSettled].ob->h[0];
-							for(int k=0;k<numberOfSettled;k++)
-								{
-									//if((down[currentSettled].x==down[k].x) && (down[currentSettled].ob->w[0]<=moving[j].object->w[0]))
-									if(down[currentSettled].x==down[k].x)
-										{
-											if(down[currentSettled].w<=down[k].w)
-												{
-													down[currentSettled].y=down[k].y-down[k].h;
-												//ty=50;
-												}
-											break;
-										}
-								}
-
-ty=down[currentSettled].y;
-						//	XSetClipMask(display,gc,*(down[currentSettled].ob->mask[0]));
-							XSetClipMask(display,gc,*(pmm));
-							XSetClipMask(display,gc,*(pmm));
-							//			printf("111111111111\n");
-							//ty=20;
-							
-							XSetClipOrigin(display,gc,down[currentSettled].x,ty);
-XCopyArea(display,*(moving[j].object->pixmap[0]),settledPixmap,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],down[currentSettled].x,ty);
-							//XCopyArea(display,*(down[currentSettled].ob->pixmap[0]),settledPixmap,gc,0,0,down[j].ob->w[0],down[currentSettled].ob->h[0],0,0);
-							//			printf("222222222222222\n");
-
-							if(numberOfSettled<MAXSETTLED)
-								numberOfSettled++;
-							currentSettled++;
-							if(currentSettled==MAXSETTLED)
-								currentSettled=0;
-							
-	//						int rc=0;
-//							int ty=displayHeight-moving[j].object->h[j];
-//							ty=200;
-//							rc=XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
-//							rc=XSetClipOrigin(display,gc,moving[j].x,ty);
-//							rc=XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[j],moving[j].object->h[j],moving[j].x,ty);
-//
-//							//moving[j].y=0-moving[j].object->h[0];
-//
-//							
-
 							moving[j].y=0-moving[j].object->h[0];
-							moving[j].settled=true;
+							if(keepSettling==true)
+								{
+									downx=moving[j].x;
+									pmm=moving[j].object->mask[0];
+									down[downx]=down[downx]-settleRate;
+									if(down[downx]<=0)
+										keepSettling=false;
+
+									XSetClipMask(display,gcpm,*(pmm));
+									XSetClipOrigin(display,gcpm,downx,down[downx]);
+									XCopyArea(display,*(moving[j].object->mask[0]),settledPixmapMask,gcpm,0,0,moving[j].object->w[0],moving[j].object->h[0],downx,down[downx]);
+
+									XSetClipMask(display,gc,*(pmm));
+									XSetClipOrigin(display,gc,downx,down[downx]);
+									XCopyArea(display,*(moving[j].object->pixmap[0]),settledPixmap,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],downx,down[downx]);
+								}
 						}
 
 					if(moving[j].x>displayWidth+moving[j].object->w[0])
@@ -1143,26 +1097,17 @@ XCopyArea(display,*(moving[j].object->pixmap[0]),settledPixmap,gc,0,0,moving[j].
 
 					if(moving[j].x<0-moving[j].object->w[0])
 						moving[j].x=displayWidth;
-					//}
 				}
 			else
 				{
 					if(randomEvent(fallingSpread)==true)
 						{
 							moving[j].use=true;
-							moving[j].settled=false;
 							moving[j].stepY=randInt(fallSpeed-minFallSpeed+1)+minFallSpeed;
 							moving[j].x=(rand() % displayWidth);
 							moving[j].imageNum=randInt(moving[j].object->anims);
 							moving[j].countDown=fallingAnimSpeed;
 							moving[j].direction=randomEvent(2);
-							
-//int rc=0;
-//							rc=XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
-//							rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
-//							rc=XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[j],moving[j].object->h[j],moving[j].x,moving[j].y);
-//
-						//	moving[j].y=0-moving[j].object->h[0];
 						}
 				}
 		}
@@ -1844,6 +1789,7 @@ int main(int argc,char* argv[])
 	settledHeight=100;
 	settledPixmap=XCreatePixmap(display,drawOnThis,displayWidth,settledHeight,depth);
 	settledPixmapMask=XCreatePixmap(display,drawOnThis,displayWidth,settledHeight,1);
+	gcpm=XCreateGC(display,settledPixmapMask,0,NULL);
 
 	initLamps();
 	initTree();
@@ -1851,54 +1797,13 @@ int main(int argc,char* argv[])
 	initFlyers();
 	initFalling();
 
+	down=(int*)malloc(sizeof(int)*displayWidth);
 
 	XSetFillStyle(display,gc,FillSolid);
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
-	GC gcpm=XCreateGC(display,settledPixmapMask,0,NULL);
-//	GC gcpmap=XCreateGC(display,settledPixmap,0,NULL);
-//
-int blackColor = BlackPixel(display,screen);
-//
-int whiteColor = WhitePixel(display,screen);
-//XSetForeground(display,gcpm, blackColor);
-//
-//	XSetClipMask(display,gcpm,settledPixmapMask);
-//	XSetClipOrigin(display, gcpm,0,0);
-//	XFillRectangle(display, settledPixmapMask, gcpm, 0, 0, 100, 100);
-//
-//	XSetClipMask(display,gcpmap,settledPixmapMask);
-//	XSetClipOrigin(display,gcpmap,0,0);
-//	XCopyArea(display,figurePixmap[0],settledPixmap,gcpmap,0,0,100,100,0,0);
+	clearSettled();
 
-//	image=imlib_create_image(displayWidth,displayHeight);
-//	imlib_context_set_drawable(drawOnThis);
-//	imlib_image_set_has_alpha(1);
-//	imlib_context_set_color(0,0,0,255);
-//	imlib_image_fill_rectangle(0,0,displayWidth,displayHeight);
-//	imlib_render_pixmaps_for_whole_image(&settledPixmap,&settledPixmapMask);
-//	XSetClipMask(display,gc,settledPixmapMask);
-//	XSetClipOrigin(display,gc,0,0);
-//	XFillRectangle(display,settledPixmapMask,gcpm, 0, 0, 100, 100);
-
-//	XSetClipMask(display,gc,settledPixmapMask);
-//	XSetClipOrigin(display,gc,0,0);
-//	XFillRectangle(display,settledPixmap,gc, 0, 0, 100, 100);
-// XSetForeground(display, gcpm, 0xffffff);
- XSetForeground(display, gcpm,whiteColor);
-	XSetFillStyle(display,gcpm,FillSolid);
- XFillRectangle(display,settledPixmapMask,gcpm, 0, 0, displayWidth, settledHeight);
-
-#if 1
- XSetForeground(display, gc,0x00000);
-	XSetFillStyle(display,gc,FillSolid);
- XFillRectangle(display,settledPixmap,gc, 0, 0, displayWidth, settledHeight);
-#endif
-//XDrawRectangle(display,settledPixmap, gc, 0, 0, 200, 400);
-
-
-
-printf("XXXXXXXXXX\n");
 	while (!done)
 		{
 			while (XPending(display))
@@ -1960,8 +1865,8 @@ printf("XXXXXXXXXX\n");
 			drawFigure();
 			drawFlyers();
 			drawLamps();
-			drawFalling();
 			drawSettled();
+			drawFalling();
 
 			if(useBuffer==true)
 				XdbeSwapBuffers(display,&swapInfo,1);
@@ -1976,6 +1881,7 @@ printf("XXXXXXXXXX\n");
 
 	destroyFalling();
 	destroyFlyers();
+	free(down);
 	return(0);
 }
 
