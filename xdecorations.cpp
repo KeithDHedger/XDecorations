@@ -47,7 +47,8 @@ if not,write to the Free Software
 #define MAXSWIRL 2
 #define MAXSETTLED 4000
 
-#define VERSION "0.1.5"
+#define VERSION "0.1.6"
+
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
