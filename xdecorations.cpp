@@ -45,6 +45,7 @@ if not,write to the Free Software
 #define MAXFALLINGOBJECTS 5000
 #define	MAXFALLINGANIMATION 48
 #define MAXSWIRL 2
+#define MAXSETTLED 4000
 
 #define VERSION "0.1.5"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
@@ -105,6 +106,7 @@ struct				movement
 	int				maxW;
 	int				maxH;
 	bool			direction;
+	bool			settled;
 };
 
 //falling
@@ -695,6 +697,7 @@ void initFalling(void)
 					moving[j].stepX=1;
 					moving[j].stepY=randInt(fallSpeed-minFallSpeed+1)+minFallSpeed;
 					moving[j].use=false;
+					moving[j].settled=false;
 					moving[j].imageNum=randInt(moving[j].object->anims);
 					moving[j].countDown=fallingAnimSpeed;
 					moving[j].direction=randomEvent(2);
@@ -1033,8 +1036,9 @@ void updateFalling(void)
 
 					if(moving[j].y>displayHeight+moving[j].object->h[0])
 						{
-							moving[j].use=false;
+
 							moving[j].y=0-moving[j].object->h[0];
+							moving[j].settled=true;
 						}
 
 					if(moving[j].x>displayWidth+moving[j].object->w[0])
@@ -1048,6 +1052,7 @@ void updateFalling(void)
 					if(randomEvent(fallingSpread)==true)
 						{
 							moving[j].use=true;
+							moving[j].settled=false;
 							moving[j].stepY=randInt(fallSpeed-minFallSpeed+1)+minFallSpeed;
 							moving[j].x=(rand() % displayWidth);
 							moving[j].imageNum=randInt(moving[j].object->anims);
