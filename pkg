@@ -1,0 +1,15 @@
+#!/bin/sh
+
+VERSION=0.1.6
+DESCRIPTION="X11 eye candy/animations with holiday themes
+Adds animated objects to the desktop, in the style of Xpenguins/Xsnow."
+URL="http://keithhedger.hostingsiteforfree.com/pages/xdecorations/xdecorations.html"
+
+for PKG in rpm deb sh #tar
+do
+   fpm -t $PKG -n "xdecorations" -v $VERSION -a amd64 \
+	--description "$DESCRIPTION" -m Keith --category x11 --url "$URL" \
+        -f -s dir \
+		./xdecorations=/usr/bin/xdecorations \
+        	./pixmaps=/usr/share/xdecorations/pixmaps
+done
