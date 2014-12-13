@@ -115,10 +115,11 @@ int					*down;
 Pixmap				settledPixmap;
 Pixmap				settledPixmapMask;
 int					settledHeight;
-int					settleRate=8;
+int					settleRate;
 bool				keepSettling=true;
 int					blackColor;
 int					whiteColor;
+bool				clearOnMaxHeight;
 
 //falling
 objects				floating[MAXFLOAT];
@@ -302,6 +303,11 @@ args				xdecorations_rc[]=
 	{"gustlen",TYPEINT,&gustDuration},
 	{"gustdelay",TYPEINT,&gustEvent},
 	{"gustspeed",TYPEINT,&gustSpeed},
+
+//settling
+	{"settleheight",TYPEINT,&settledHeight},
+	{"settlerate",TYPEINT,&settleRate},
+	{"clearonmaxhight",TYPEBOOL,&clearOnMaxHeight},
 
 	{NULL,0,NULL}
 };
@@ -819,7 +825,6 @@ void clearSettled(void)
 	XSetFillStyle(display,gc,FillSolid);
 	XFillRectangle(display,settledPixmap,gc,0,0,displayWidth,settledHeight);
 	keepSettling=true;
-
 }
 
 void doGusts(void)
@@ -869,9 +874,9 @@ void doGusts(void)
 					realGustSpeed=0;
 					doingGusts=false;
 					gustOffSet=0;
-					clearSettled();
 				}
 			gustOffSet=realGustSpeed;
+			clearSettled();
 		}
 }
 
@@ -1085,18 +1090,29 @@ void updateFalling(void)
 							if(keepSettling==true)
 								{
 									downx=moving[j].x;
-									pmm=moving[j].object->mask[0];
-									down[downx]=down[downx]-settleRate;
-									if(down[downx]<=0)
-										keepSettling=false;
+									if((downx>=0) && (downx<displayWidth) && (settledHeight>0))
+										{
+											pmm=moving[j].object->mask[0];
 
-									XSetClipMask(display,gcpm,*(pmm));
-									XSetClipOrigin(display,gcpm,downx,down[downx]);
-									XCopyArea(display,*(moving[j].object->mask[0]),settledPixmapMask,gcpm,0,0,moving[j].object->w[0],moving[j].object->h[0],downx,down[downx]);
+											if(down[downx]-settleRate<=0)
+												{
+													if(clearOnMaxHeight==true)
+														clearSettled();
+													else
+														down[downx]=settledHeight;
+												}										
+											down[downx]=down[downx]-settleRate;
+											if(down[downx]<=0)
+												keepSettling=false;
 
-									XSetClipMask(display,gc,*(pmm));
-									XSetClipOrigin(display,gc,downx,down[downx]);
-									XCopyArea(display,*(moving[j].object->pixmap[0]),settledPixmap,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],downx,down[downx]);
+											XSetClipMask(display,gcpm,*(pmm));
+											XSetClipOrigin(display,gcpm,downx,down[downx]);
+											XCopyArea(display,*(moving[j].object->mask[0]),settledPixmapMask,gcpm,0,0,moving[j].object->w[0],moving[j].object->h[0],downx,down[downx]);
+
+											XSetClipMask(display,gc,*(pmm));
+											XSetClipOrigin(display,gc,downx,down[downx]);
+											XCopyArea(display,*(moving[j].object->pixmap[0]),settledPixmap,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],downx,down[downx]);
+										}
 								}
 						}
 
@@ -1434,7 +1450,18 @@ void doHelp(void)
 	printf("-gustdelay INTEGER\n");
 	printf("\tRandom delay between gusts of wind\n");
 	printf("-gustspeed INTEGER\n");
-	printf("\tSpeed of gusts of wind\n");
+	printf("\tSpeed of gusts of wind\n\n");
+
+//settling
+	printf("-settleheight INTEGER\n");
+	printf("\tHeight of settled snow etc, 0 = Don't let snow settle\n");
+	printf("-settlerate INTEGER\n");
+	printf("\tRate at which settling occurs - lower the number slower but better\n");
+	printf("\tSettled snow etc is swept clean at the end of a gust\n");
+	printf("\tYou should set maxxstep > 1 for a more relaistic settle after being swept clean\n");
+	printf("-clearonmaxheight/-no-clearonmaxheight\n");
+	printf("\tClear the snow etc when it reaches the maximum height set by settleheight\n");
+
 	printf("\n");
 	exit(0);
 }
@@ -1463,6 +1490,9 @@ void setDefaults(void)
 	minFallSpeed=1;
 	flyerNumber=0;
 	numberOfFlyers=20;
+	settledHeight=100;
+	settleRate=2;
+	clearOnMaxHeight=true;
 }
 
 int translateGravity(char* str)
@@ -1610,6 +1640,8 @@ int main(int argc,char* argv[])
 			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
 			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
 			showUnShow(argstr,"watchconfig",&watchConfig);//watch config file for changes
+			showUnShow(argstr,"clearonmaxheight",&clearOnMaxHeight);//clear settletled snow when reaches max hite
+
 			if(strcmp(argstr,"-theme")==0)//Xmas
 				{
 					free(prefix);
@@ -1709,6 +1741,12 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-gustspeed")==0)//gustSpeed=40
 				gustSpeed=atol(argv[++argnum]);
 
+//settling
+			if(strcmp(argstr,"-settleheight")==0)//settledHeight=100
+				settledHeight=atol(argv[++argnum]);
+			if(strcmp(argstr,"-settlerate")==0)//settleRate=2
+				settleRate=atol(argv[++argnum]);
+
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
@@ -1794,7 +1832,6 @@ int main(int argc,char* argv[])
 
 	gc=XCreateGC(display,drawOnThis,0,NULL);
 
-	settledHeight=100;
 	settledPixmap=XCreatePixmap(display,drawOnThis,displayWidth,settledHeight,depth);
 	settledPixmapMask=XCreatePixmap(display,drawOnThis,displayWidth,settledHeight,1);
 	gcpm=XCreateGC(display,settledPixmapMask,0,NULL);
@@ -1806,8 +1843,6 @@ int main(int argc,char* argv[])
 	initFalling();
 
 	down=(int*)malloc(sizeof(int)*displayWidth);
-//	for(int j=0;j<displayWidth;j++)
-//		down[j]=settledHeight;
 
 	XSetFillStyle(display,gc,FillSolid);
 	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
@@ -1815,13 +1850,6 @@ int main(int argc,char* argv[])
 	blackColor=BlackPixel(display,screen);
 	whiteColor=WhitePixel(display,screen);
 	clearSettled();
-//	XSetForeground(display, gcpm,blackColor);
-//	XSetFillStyle(display,gcpm,FillSolid);
-//	XFillRectangle(display,settledPixmapMask,gcpm,0,0,displayWidth,settledHeight);
-//
-//	XSetForeground(display,gc,blackColor);
-//	XSetFillStyle(display,gc,FillSolid);
-//	XFillRectangle(display,settledPixmap,gc,0,0,displayWidth,settledHeight);
 
 	while (!done)
 		{

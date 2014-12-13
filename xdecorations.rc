@@ -200,6 +200,24 @@ gustdelay 10000
 #Defaults to 40
 gustspeed 60
 
+##### Settling #####
+#Settle snow etc height.
+#Defaults to 100.
+#Set to 0 to disable settling.
+settleheight 100
+
+#Settle rate of snow etc.
+#Defaults to 2
+#the lower the number the slower snow etc settles but the better it looks.
+#Gusts should be enabled as a gust of wind will clear the settled snow.
+#You should set maxxstep >1 for a more realistic effect.
+#The settle rate should be lower than the height of the smallest falling object.
+settlerate 2
+
+#Clear snow etc when it reaches the maximum height.
+#Defaults to 1
+clearonmaxheight 1
+
 #### EXTRAS #####
 #These are not used in the config file but are command line switches ONLY.
 #Don't load the default config file ( ~/.config/xdecorations.rc ).
