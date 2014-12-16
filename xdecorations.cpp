@@ -882,16 +882,14 @@ void doGusts(void)
 
 void drawFlyers(void)
 {
-	int rc;
-
 	if(showFlyers==false)
 		return;
 
 	for(int j=0; j<numberOfFlyers; j++)
 		{
-			rc=XSetClipMask(display,gc,*(flyersMove[j].object->mask[flyersMove[j].imageNum]));
-			rc=XSetClipOrigin(display,gc,flyersMove[j].x,flyersMove[j].y);
-			rc=XCopyArea(display,*(flyersMove[j].object->pixmap[flyersMove[j].imageNum]),drawOnThis,gc,0,0,flyersMove[j].object->w[0],flyersMove[j].object->h[0],flyersMove[j].x,flyersMove[j].y);
+			XSetClipMask(display,gc,*(flyersMove[j].object->mask[flyersMove[j].imageNum]));
+			XSetClipOrigin(display,gc,flyersMove[j].x,flyersMove[j].y);
+			XCopyArea(display,*(flyersMove[j].object->pixmap[flyersMove[j].imageNum]),drawOnThis,gc,0,0,flyersMove[j].object->w[0],flyersMove[j].object->h[0],flyersMove[j].x,flyersMove[j].y);
 
 			flyersMove[j].countDown--;
 			if(flyersMove[j].countDown==0)
@@ -906,14 +904,12 @@ void drawFlyers(void)
 
 void drawFigure(void)
 {
-	int rc;
-
 	if(figureNumber==0)
 		return;
 
-	rc=XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
-	rc=XSetClipOrigin(display,gc,figureX,figureY);
-	rc=XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],drawOnThis,gc,0,0,figureW,figureH,figureX,figureY);
+	XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
+	XSetClipOrigin(display,gc,figureX,figureY);
+	XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],drawOnThis,gc,0,0,figureW,figureH,figureX,figureY);
 }
 
 void drawLamps(void)
@@ -1005,25 +1001,21 @@ void drawLamps(void)
 
 void drawSettled(void)
 {
-	int rc;
-
-	rc=XSetClipMask(display,gc,settledPixmapMask);
-	rc=XSetClipOrigin(display,gc,0,displayHeight-settledHeight);
-	rc=XCopyArea(display,settledPixmap,drawOnThis,gc,0,0,displayWidth,settledHeight,0,displayHeight-settledHeight);
+	XSetClipMask(display,gc,settledPixmapMask);
+	XSetClipOrigin(display,gc,0,displayHeight-settledHeight);
+	XCopyArea(display,settledPixmap,drawOnThis,gc,0,0,displayWidth,settledHeight,0,displayHeight-settledHeight);
 }
 
 void drawFalling(void)
 {
-	int rc;
-
 	if(showFalling==false)
 		return;
 
 	for(int j=0; j<numberOfFalling; j++)
 		{
-			rc=XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
-			rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
-			rc=XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],moving[j].x,moving[j].y);
+			XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
+			XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
+			XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],moving[j].x,moving[j].y);
 			moving[j].countDown--;
 			if(moving[j].countDown==0)
 				{
@@ -1160,33 +1152,29 @@ void updateLamps(void)
 
 void drawTreeLamps(void)
 {
-	int rc;
-	int lampset;
-
 	if(showTree==false)
 		return;
 
-	lampset=(treeLampSet-1)*4;
-	rc=XSetClipMask(display,gc,treePixmap[ONMASK]);
-	rc=XSetClipOrigin(display,gc,treeX,treeY);
-	rc=XCopyArea(display,treePixmap[ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+	XSetClipMask(display,gc,treePixmap[ONMASK]);
+	XSetClipOrigin(display,gc,treeX,treeY);
+	XCopyArea(display,treePixmap[ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 
 	if(showTreeLamps==true)
 		{
-			rc=XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
-			rc=XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			XSetClipMask(display,gc,treeLampsPixmap[treeOnOff][ONMASK]);
+			XCopyArea(display,treeLampsPixmap[treeOnOff][ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showStar==true)
 		{
-			rc=XSetClipMask(display,gc,starPixmap[_SELECTPIXMAP(ONMASK,starOnOff)]);
-			rc=XCopyArea(display,starPixmap[_SELECTPIXMAP(ONPIXMAP,starOnOff)],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			XSetClipMask(display,gc,starPixmap[_SELECTPIXMAP(ONMASK,starOnOff)]);
+			XCopyArea(display,starPixmap[_SELECTPIXMAP(ONPIXMAP,starOnOff)],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 
 	if(showTinsel==true)
 		{
-			rc=XSetClipMask(display,gc,tinselPixmap[ONMASK]);
-			rc=XCopyArea(display,tinselPixmap[ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
+			XSetClipMask(display,gc,tinselPixmap[ONMASK]);
+			XCopyArea(display,tinselPixmap[ONPIXMAP],drawOnThis,gc,0,0,treeWidth,treeHeight,treeX,treeY);
 		}
 }
 
@@ -1235,20 +1223,19 @@ void updateFlyers(void)
 
 void eraseRects(void)
 {
-	int	rc=0;
 	int	j;
 
 	if((figureNumber!=0) && (figureNeedsUpdate==true))
 		{
 			if(useBuffer==false)
-				rc=XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
+				XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
 			updateFigure();
 		}
 
 	if((showTree==true) && (treeNeedsUpdate==true))
 		{
 			if(useBuffer==false)
-				rc=XClearArea(display,drawOnThis,treeX,treeY,treeWidth,treeHeight,False);
+				XClearArea(display,drawOnThis,treeX,treeY,treeWidth,treeHeight,False);
 			updateTreeLamps();
 		}
 
@@ -1257,7 +1244,7 @@ void eraseRects(void)
 			if(useBuffer==false)
 				{
 					for(j=0; j<flyerCount; j++)
-						rc=XClearArea(display,drawOnThis,flyersMove[j].x,flyersMove[j].y,flyersMove[j].maxW,flyersMove[j].maxH,False);
+						XClearArea(display,drawOnThis,flyersMove[j].x,flyersMove[j].y,flyersMove[j].maxW,flyersMove[j].maxH,False);
 				}
 			updateFlyers();
 		}
@@ -1267,7 +1254,7 @@ void eraseRects(void)
 			if(useBuffer==false)
 				{
 					for(int j=0; j<numberOfFalling; j++)
-						rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
+						XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
 				}
 			updateFalling();
 		}
@@ -1531,7 +1518,6 @@ void reloadConfig(void)
 	int tmplamps=lampSet;
 	char*	tmptheme;
 	bool	force=false;
-	int		absnumflyers;
 
 	tmptheme=strdup(prefix);
 	numflyobjects=abs(numberOfFlyers);
@@ -1586,163 +1572,58 @@ void reloadConfig(void)
 
 void getOpenwindows(void)
 {
-	Window			rootWindow;
-	XRectangle		WinRect;
-	int				winX,winY;
-	int				NouMoe;
-	unsigned int	winHeight,winWidth;
-	unsigned int	depth;
-//	unsigned int borderWidth = 0;
-	Atom			windowlist;
-	Atom			stateatom;
-	Atom			type;
+	Window				rootWindow;
+	Atom				windowlist;
+	Atom				stateatom;
+	Atom				type;
+	Atom				actualType;
+	int					format;
+	unsigned long		numItems,bytesAfter;
+	unsigned char		*data;
+	XWindowAttributes	attr;
+	char				*name=NULL;
+	long				*array;
+	int					status;
+	int					form;
+	unsigned long		remain,len;
+	unsigned char		*list;
+	Window				w;
+	int					screen_x,screen_y;
+	Window				dummy;
 
 	XGrabServer(display);
 
 	rootWindow=RootWindow(display,screen);
 	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
-	Atom actualType;
-	int format;
-	unsigned long numItems, bytesAfter;
-	unsigned char *data =0;
-	int status = XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
+	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
 
-	if (status >= Success && numItems)
+	if ((status==Success) && (numItems>0))
 		{
-			char* name = '\0';
-			long *array = (long*) data;
-			for (long k = 0; k < numItems; k++)
+			name=NULL;
+			array=(long*)data;
+			for(long k=0;k<numItems;k++)
 				{
-					// get window Id:
-					Window w = (Window) array[k];
-
-					//	printf("Scanned client window:\n");
-//status = XFetchName(display, w, &name);
-					XWindowAttributes attr,win_attr;
+					w=(Window)array[k];
 					XGetWindowAttributes(display,w,&attr);
 
 					if((attr.map_state==2))
 						{
-//if (status == Success)
-//{
-
-							//Atom prop = XInternAtom(display,"WM_NAME",False), type;
-							stateatom= XInternAtom(display,"_NET_WM_STATE",False), type;
-							//Atom prop = XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",false), type;
-							int form;
-							unsigned long remain, len;
-							unsigned char *list;
-
+							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
 							type=0;
 							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
 							if (status == Success)
 								{
 									if(len==0)
 										{
-											int screen_x=-10000, screen_y=-10000;
-Window child_win;
-
-#if 1
-Window parent_win;
-/* this variable will store the ID of the root window of the screen    */
-/* our window is mapped on.                                            */
-Window root_win;
-/* this variable will store an array of IDs of the child windows of    */
-/* our window.                                                         */
-Window* child_windows;
-/* and this one will store the number of child windows our window has. */
-unsigned int num_child_windows;
-
-/* finally, make the query for the above values. */
-XQueryTree(display, w,
-           &root_win,
-           &parent_win,
-           &child_windows, &num_child_windows);
-
-/* we need to free the list of child IDs, as it was dynamically allocated */
-/* by the XQueryTree function.                                            */
-XFree(child_windows);
-#endif
-
-XTranslateCoordinates(display,parent_win,root_win,attr.x,attr.y, &screen_x, &screen_y, &child_win);
-//XTranslateCoordinates(display,w,attr.root, win_attr.x, win_attr.y, &screen_x, &screen_y, &child_win);
-
-
-
-
-
-											XFetchName(display, w, &name);
+											XTranslateCoordinates(display,w,rootWindow,attr.x,attr.y,&screen_x,&screen_y,&dummy);
+											XFetchName(display,w,&name);
 											if(name!=NULL)
 												printf("name=%s\n",name);
 											printf("x=%i y=%i w=%i h=%i\n",(int)(long)screen_x,screen_y,attr.width,attr.height);
 										}
 								}
 						}
-
-
-#if 0
-					XGetWindowAttributes(display,w,&attr);
-
-					if((attr.map_state==2))
-						{
-							Atom wmState = XInternAtom(display, "_NET_WM_STATE", True);
-							Atom type;
-							int format;
-							unsigned long nItem, bytesAfter;
-							unsigned char *properties = NULL;
-							XGetWindowProperty(display, w, wmState, 0, (~0L), False, AnyPropertyType, &type, &format, &nItem, &bytesAfter, &properties);
-							int iItem;
-							char* atomName;
-
-							if(nItem==0)
-								{
-									int x_return,y_return;
-									unsigned int width_return,height_return;
-									Window root_return;
-									unsigned int border_width_return;
-									unsigned int depth_return;
-
-									XGetWindowAttributes(display,w,&attr);
-									XGetGeometry(display,w,&root_return,&x_return,&y_return,&width_return,&height_return,&border_width_return,&depth_return);
-									printf("win=%i name %s x=%i y=%i w=%i h=%i\n",w,name,x_return,y_return,width_return,height_return);
-									//	printf("name %s x=%i y=%i w=%i h=%i\n",name,x_return,y_return,attr.width,attr.height);
-									if (attr.map_state == IsViewable)
-										{
-											XGetGeometry(display,w,&root_return,&x_return,&y_return,&width_return,&height_return,&border_width_return,&depth_return);
-											/*if (winWidth == 1280) continue;  /* debug */
-											//#if debug
-											//printf("\nw x:%d y:%d w:%d h:%d - bw:%d d:%d \n", winX,winY,winWidth,winHeight,borderWidth,depth);
-											//#endif
-											//#if debug
-											//printf("MakeWrx: (x;%d\ty:%d\tx+w%d\ty+h%d)\tbw:%d d:%d\n",
-											//			winX,winY,winX+winWidth,winY+winHeight,borderWidth,depth);
-											//#endif
-											//if (errorVal) continue;
-//						WinRect.x = x_return;
-//						WinRect.y = y_return;
-//						WinRect.height = height_return + 2*borderWidth;
-//						WinRect.width = width_return + 2*borderWidth;
-											//if (WinRect.x >= displayWidth) continue;
-											//if (WinRect.y >= displayHeight) continue;
-											//	if (WinRect.y <= 0) continue;
-											//if ((WinRect.x + WinRect.width) < 0) continue;
-											//XUnionRectWithRegion(&WinRect,Wr, Wr);
-											//char* name;
-											//XFetchName(display,children[wx], &name);
-//						printf("w=%i x=%i y=%i w=%i h=%i\n",(int)w,WinRect.x,WinRect.y,WinRect.width,WinRect.height);
-										}
-
-
-
-								}
-
-
-						}
-#endif
-
-//	}
 				}
-
 			XFree(data);
 		}
 	XUngrabServer(display);
@@ -1753,7 +1634,6 @@ int main(int argc,char* argv[])
 	int		argnum;
 	const	char* argstr;
 	XEvent	ev;
-	Window	root;
 	Window	parentWindow;
 	int		rc=0;
 	Hints	hints;
