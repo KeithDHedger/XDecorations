@@ -8,7 +8,7 @@ LOCALDATADIR = "`/bin/pwd`/pixmaps"
 INSTALLDATADIR = $(PREFIX)/share/$(PROGRAM)/pixmaps
 
 all:
-	g++ -o $(PROGRAM) -DDATADIR=\"${LOCALDATADIR}\" -Wall $(SRC) $(LIBS)
+	g++ -o $(PROGRAM) -DDATADIR=\"${LOCALDATADIR}\" -Wunused $(SRC) $(LIBS)
 
 install:
 	g++ -o $(PROGRAM) -DDATADIR=\"${INSTALLDATADIR}\" $(SRC) $(LIBS)

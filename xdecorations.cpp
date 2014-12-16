@@ -1586,26 +1586,26 @@ void reloadConfig(void)
 
 void getOpenwindows(void)
 {
-	Window	rootWindow;
-	XRectangle WinRect;
-	int winX, winY;
-	int NouMoe;
-	unsigned int winHeight, winWidth;
-	unsigned int depth;
-	int Force=1;
-	int NoPopuphandling = 0;
-	int errorVal = 0;
-	unsigned int borderWidth = 0;
+	Window			rootWindow;
+	XRectangle		WinRect;
+	int				winX,winY;
+	int				NouMoe;
+	unsigned int	winHeight,winWidth;
+	unsigned int	depth;
+//	unsigned int borderWidth = 0;
+	Atom			windowlist;
+	Atom			stateatom;
+	Atom			type;
 
 	XGrabServer(display);
 
 	rootWindow=RootWindow(display,screen);
-	Atom a = XInternAtom(display, "_NET_CLIENT_LIST" , true);
+	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
 	Atom actualType;
 	int format;
 	unsigned long numItems, bytesAfter;
 	unsigned char *data =0;
-	int status = XGetWindowProperty(display,rootWindow,a,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
+	int status = XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
 
 	if (status >= Success && numItems)
 		{
@@ -1627,14 +1627,14 @@ void getOpenwindows(void)
 //{
 
 							//Atom prop = XInternAtom(display,"WM_NAME",False), type;
-							Atom prop = XInternAtom(display,"_NET_WM_STATE",False), type;
+							stateatom= XInternAtom(display,"_NET_WM_STATE",False), type;
 							//Atom prop = XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",false), type;
 							int form;
 							unsigned long remain, len;
 							unsigned char *list;
 
 							type=0;
-							status=XGetWindowProperty(display,w,prop,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
+							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
 							if (status == Success)
 								{
 									if(len==0)
