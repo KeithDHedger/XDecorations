@@ -50,7 +50,7 @@ if not,write to the Free Software
 #define VERSION "0.1.5"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
-enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
+	enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 enum {LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000};
 enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
 enum {LAMPFLASH=0,INVERTLAMPCHASE,LAMPCHASE,LAMPRANDOM,LAMPCYCLE,NUMOPTIONS};
@@ -316,31 +316,31 @@ void setGravity(int *x,int *y,int w,int h)
 {
 	switch(*x)
 		{
-			case LEFT:
-				*x=0;
+		case LEFT:
+			*x=0;
 			break;
-			case CENTRE:
-				*x=(displayWidth/2)-(w/2);
-				break;
-			case RIGHT:
-				*x=displayWidth-w;
-				break;
-			default:
-				break;
+		case CENTRE:
+			*x=(displayWidth/2)-(w/2);
+			break;
+		case RIGHT:
+			*x=displayWidth-w;
+			break;
+		default:
+			break;
 		}
 	switch(*y)
 		{
-			case TOP:
-				*y=0+offSetY;
+		case TOP:
+			*y=0+offSetY;
 			break;
-			case CENTRE:
-				*y=(displayHeight/2)-(h/2)+offSetY;
-				break;
-			case BOTTOM:
-				*y=displayHeight-h+offSetY;
-				break;
-			default:
-				break;
+		case CENTRE:
+			*y=(displayHeight/2)-(h/2)+offSetY;
+			break;
+		case BOTTOM:
+			*y=displayHeight-h+offSetY;
+			break;
+		default:
+			break;
 		}
 }
 
@@ -483,12 +483,12 @@ void initFlyers(void)
 			randomize=true;
 		}
 
-	for(int j=0;j<MAXFLYER;j++)
+	for(int j=0; j<MAXFLYER; j++)
 		{
 			flyers[flyerCount].anims=0;
 			flyersMove[flyerCount].maxW=0;
 			flyersMove[flyerCount].maxH=0;
-			for(int k=0;k<MAXFALLINGANIMATION;k++)
+			for(int k=0; k<MAXFALLINGANIMATION; k++)
 				{
 					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.%i.%i.png",DATADIR,prefix,flyerNumber,j+1,k+1);
 					image=imlib_load_image(pathname);
@@ -510,7 +510,7 @@ void initFlyers(void)
 						}
 				}
 			if(flyers[flyerCount].anims!=0)
-					flyerCount++;
+				flyerCount++;
 		}
 
 	if(flyerCount==0)
@@ -518,7 +518,7 @@ void initFlyers(void)
 	else
 		{
 			showFlyers=true;
-			for(int j=0;j<numfly;j++)
+			for(int j=0; j<numfly; j++)
 				{
 					if(randomize==true)
 						flynumber=randInt(flyerCount);
@@ -608,14 +608,14 @@ void initLamps(void)
 					lampCount=(displayWidth/lampWidth)+1;
 				}
 			lampState=(bool*)malloc(sizeof(bool)*lampCount);
-			for(int j=0;j<lampCount;j++)
+			for(int j=0; j<lampCount; j++)
 				lampState[j]=false;
-	lampCountdown=lampCount;
-	lampSection=0;
+			lampCountdown=lampCount;
+			lampSection=0;
 
-	lastLampAnim=lampAnim;
-	if(lampAnim==LAMPCYCLE)
-		lastLampAnim=LAMPFLASH;
+			lastLampAnim=lampAnim;
+			if(lampAnim==LAMPCYCLE)
+				lastLampAnim=LAMPFLASH;
 		}
 }
 
@@ -628,7 +628,7 @@ void destroyLamps(void)
 void destroyTree(void)
 {
 	imlib_free_pixmap_and_mask(treePixmap[ONPIXMAP]);
-	for(int j=0;j<treeLampCount;j++)
+	for(int j=0; j<treeLampCount; j++)
 		imlib_free_pixmap_and_mask(treeLampsPixmap[j][ONPIXMAP]);
 }
 
@@ -640,9 +640,9 @@ void destroyFigure(void)
 
 void destroyFalling(void)
 {
-	for(int j=0;j<fallingCount;j++)
+	for(int j=0; j<fallingCount; j++)
 		{
-			for(int k=0;k<floating[j].anims;k++)
+			for(int k=0; k<floating[j].anims; k++)
 				{
 					imlib_free_pixmap_and_mask(*(floating[j].pixmap[k]));
 				}
@@ -651,9 +651,9 @@ void destroyFalling(void)
 
 void destroyFlyers(void)
 {
-	for(int j=0;j<flyerCount;j++)
+	for(int j=0; j<flyerCount; j++)
 		{
-			for(int k=0;k<flyers[j].anims;k++)
+			for(int k=0; k<flyers[j].anims; k++)
 				{
 					imlib_free_pixmap_and_mask(*(flyers[j].pixmap[k]));
 				}
@@ -675,10 +675,10 @@ void initFalling(void)
 
 	fallingCount=0;
 
-	for(int j=0;j<MAXFLOAT;j++)
+	for(int j=0; j<MAXFLOAT; j++)
 		{
 			floating[fallingCount].anims=0;
-			for(int k=0;k<MAXFALLINGANIMATION;k++)
+			for(int k=0; k<MAXFALLINGANIMATION; k++)
 				{
 					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Falling/%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
 					image=imlib_load_image(pathname);
@@ -696,14 +696,14 @@ void initFalling(void)
 						}
 				}
 			if(floating[fallingCount].anims!=0)
-					fallingCount++;
+				fallingCount++;
 		}
 
 	if(fallingCount==0)
 		showFalling=false;
 	else
 		{
-			for(int j=0;j<numberOfFalling;j++)
+			for(int j=0; j<numberOfFalling; j++)
 				{
 					floatnumber=(rand() % fallingCount);
 					moving[j].object=&floating[floatnumber];
@@ -808,7 +808,7 @@ void initTree(void)
 
 void clearSettled(void)
 {
-	for(int j=0;j<displayWidth;j++)
+	for(int j=0; j<displayWidth; j++)
 		down[j]=settledHeight;
 
 	XSetClipMask(display,gcpm,0);
@@ -887,7 +887,7 @@ void drawFlyers(void)
 	if(showFlyers==false)
 		return;
 
-	for(int j=0;j<numberOfFlyers;j++)
+	for(int j=0; j<numberOfFlyers; j++)
 		{
 			rc=XSetClipMask(display,gc,*(flyersMove[j].object->mask[flyersMove[j].imageNum]));
 			rc=XSetClipOrigin(display,gc,flyersMove[j].x,flyersMove[j].y);
@@ -901,7 +901,7 @@ void drawFlyers(void)
 					if(flyersMove[j].imageNum==flyersMove[j].object->anims)
 						flyersMove[j].imageNum=0;
 				}
-	}
+		}
 }
 
 void drawFigure(void)
@@ -930,75 +930,75 @@ void drawLamps(void)
 
 	switch(lastLampAnim)
 		{
-			case LAMPFLASH:
-				for (loop=0; loop<lampCount; loop++)
-					{
-						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
-						CurrentlampX+=lampWidth;
-					}
-				break;
+		case LAMPFLASH:
+			for (loop=0; loop<lampCount; loop++)
+				{
+					rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+					rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,lampsOnOff)],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+					CurrentlampX+=lampWidth;
+				}
+			break;
 
-			case LAMPRANDOM:
-				if(lampsNeedsUpdate==true)
-					{
-						lampsNeedsUpdate=false;
-						for (loop=0; loop<lampCount; loop++)
-							{
-								lampState[loop]=randomEvent(2);
-							}
-					}
-				for (loop=0; loop<lampCount; loop++)
-					{
-						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
-						CurrentlampX+=lampWidth;
-					}
-				break;
+		case LAMPRANDOM:
+			if(lampsNeedsUpdate==true)
+				{
+					lampsNeedsUpdate=false;
+					for (loop=0; loop<lampCount; loop++)
+						{
+							lampState[loop]=randomEvent(2);
+						}
+				}
+			for (loop=0; loop<lampCount; loop++)
+				{
+					rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+					rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+					CurrentlampX+=lampWidth;
+				}
+			break;
 
-			case LAMPCHASE:
-				if(lampsNeedsUpdate==true)
-					{
-						lampsNeedsUpdate=false;
-						for (loop=0; loop<lampCount; loop++)
-							{
-								lampState[loop]=false;
-							}
-						lampSection++;
-						if(lampSection==lampCount)
-							lampSection=0;
-						lampState[lampSection]=true;
-					}
+		case LAMPCHASE:
+			if(lampsNeedsUpdate==true)
+				{
+					lampsNeedsUpdate=false;
+					for (loop=0; loop<lampCount; loop++)
+						{
+							lampState[loop]=false;
+						}
+					lampSection++;
+					if(lampSection==lampCount)
+						lampSection=0;
+					lampState[lampSection]=true;
+				}
 
-				for (loop=0; loop<lampCount; loop++)
-					{
-						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
-						CurrentlampX+=lampWidth;
-					}
-				break;
+			for (loop=0; loop<lampCount; loop++)
+				{
+					rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+					rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+					CurrentlampX+=lampWidth;
+				}
+			break;
 
-			case INVERTLAMPCHASE:
-				if(lampsNeedsUpdate==true)
-					{
-						lampsNeedsUpdate=false;
-						for (loop=0; loop<lampCount; loop++)
-							{
-								lampState[loop]=true;
-							}
-						lampSection++;
-						if(lampSection==lampCount)
-							lampSection=0;
-						lampState[lampSection]=false;
-					}
+		case INVERTLAMPCHASE:
+			if(lampsNeedsUpdate==true)
+				{
+					lampsNeedsUpdate=false;
+					for (loop=0; loop<lampCount; loop++)
+						{
+							lampState[loop]=true;
+						}
+					lampSection++;
+					if(lampSection==lampCount)
+						lampSection=0;
+					lampState[lampSection]=false;
+				}
 
-				for (loop=0; loop<lampCount; loop++)
-					{
-						rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
-						rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
-						CurrentlampX+=lampWidth;
-					}
-				break;
+			for (loop=0; loop<lampCount; loop++)
+				{
+					rc+=XSetClipOrigin(display,gc,CurrentlampX,lampY);
+					rc+=XCopyArea(display,lampsPixmap[_SELECTPIXMAP(ONPIXMAP,(int)lampState[loop])],drawOnThis,gc,0,0,lampWidth,lampHeight,CurrentlampX,lampY);
+					CurrentlampX+=lampWidth;
+				}
+			break;
 
 		}
 }
@@ -1019,7 +1019,7 @@ void drawFalling(void)
 	if(showFalling==false)
 		return;
 
-	for(int j=0;j<numberOfFalling;j++)
+	for(int j=0; j<numberOfFalling; j++)
 		{
 			rc=XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
 			rc=XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
@@ -1041,7 +1041,7 @@ void drawFalling(void)
 								moving[j].imageNum=moving[j].object->anims-1;
 						}
 				}
-	}
+		}
 }
 
 void updateGusts(void)
@@ -1067,7 +1067,7 @@ void updateFalling(void)
 	int		downx;
 	Pixmap	*pmm;
 
-	for(int j=0;j<numberOfFalling;j++)
+	for(int j=0; j<numberOfFalling; j++)
 		{
 			if(moving[j].use==true)
 				{
@@ -1100,7 +1100,7 @@ void updateFalling(void)
 														clearSettled();
 													else
 														down[downx]=settledHeight;
-												}										
+												}
 											down[downx]=down[downx]-settleRate;
 											if(down[downx]<=0)
 												keepSettling=false;
@@ -1222,7 +1222,7 @@ void updateFlyers(void)
 						{
 							flyersMove[j].y=(rand() % flyersMaxY);
 							flyersMove[j].x=0-flyersMove[j].object->w[0];
-							flyersMove[j].use=false;						
+							flyersMove[j].use=false;
 						}
 				}
 			else
@@ -1266,7 +1266,7 @@ void eraseRects(void)
 		{
 			if(useBuffer==false)
 				{
-					for(int j=0;j<numberOfFalling;j++)
+					for(int j=0; j<numberOfFalling; j++)
 						rc=XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
 				}
 			updateFalling();
@@ -1348,7 +1348,7 @@ void doHelp(void)
 
 	printf("-watchconfig/-no-watchconfig\n");
 	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
-	
+
 //lamps
 	printf("LAMPS\n");
 	printf("-lampset INTEGER\n");
@@ -1584,6 +1584,170 @@ void reloadConfig(void)
 	numberOfFlyers=abs(numberOfFlyers);
 }
 
+void getOpenwindows(void)
+{
+	Window	rootWindow;
+	XRectangle WinRect;
+	int winX, winY;
+	int NouMoe;
+	unsigned int winHeight, winWidth;
+	unsigned int depth;
+	int Force=1;
+	int NoPopuphandling = 0;
+	int errorVal = 0;
+	unsigned int borderWidth = 0;
+
+	XGrabServer(display);
+
+	rootWindow=RootWindow(display,screen);
+	Atom a = XInternAtom(display, "_NET_CLIENT_LIST" , true);
+	Atom actualType;
+	int format;
+	unsigned long numItems, bytesAfter;
+	unsigned char *data =0;
+	int status = XGetWindowProperty(display,rootWindow,a,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
+
+	if (status >= Success && numItems)
+		{
+			char* name = '\0';
+			long *array = (long*) data;
+			for (long k = 0; k < numItems; k++)
+				{
+					// get window Id:
+					Window w = (Window) array[k];
+
+					//	printf("Scanned client window:\n");
+//status = XFetchName(display, w, &name);
+					XWindowAttributes attr,win_attr;
+					XGetWindowAttributes(display,w,&attr);
+
+					if((attr.map_state==2))
+						{
+//if (status == Success)
+//{
+
+							//Atom prop = XInternAtom(display,"WM_NAME",False), type;
+							Atom prop = XInternAtom(display,"_NET_WM_STATE",False), type;
+							//Atom prop = XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",false), type;
+							int form;
+							unsigned long remain, len;
+							unsigned char *list;
+
+							type=0;
+							status=XGetWindowProperty(display,w,prop,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
+							if (status == Success)
+								{
+									if(len==0)
+										{
+											int screen_x=-10000, screen_y=-10000;
+Window child_win;
+
+#if 1
+Window parent_win;
+/* this variable will store the ID of the root window of the screen    */
+/* our window is mapped on.                                            */
+Window root_win;
+/* this variable will store an array of IDs of the child windows of    */
+/* our window.                                                         */
+Window* child_windows;
+/* and this one will store the number of child windows our window has. */
+unsigned int num_child_windows;
+
+/* finally, make the query for the above values. */
+XQueryTree(display, w,
+           &root_win,
+           &parent_win,
+           &child_windows, &num_child_windows);
+
+/* we need to free the list of child IDs, as it was dynamically allocated */
+/* by the XQueryTree function.                                            */
+XFree(child_windows);
+#endif
+
+XTranslateCoordinates(display,parent_win,root_win,attr.x,attr.y, &screen_x, &screen_y, &child_win);
+//XTranslateCoordinates(display,w,attr.root, win_attr.x, win_attr.y, &screen_x, &screen_y, &child_win);
+
+
+
+
+
+											XFetchName(display, w, &name);
+											if(name!=NULL)
+												printf("name=%s\n",name);
+											printf("x=%i y=%i w=%i h=%i\n",(int)(long)screen_x,screen_y,attr.width,attr.height);
+										}
+								}
+						}
+
+
+#if 0
+					XGetWindowAttributes(display,w,&attr);
+
+					if((attr.map_state==2))
+						{
+							Atom wmState = XInternAtom(display, "_NET_WM_STATE", True);
+							Atom type;
+							int format;
+							unsigned long nItem, bytesAfter;
+							unsigned char *properties = NULL;
+							XGetWindowProperty(display, w, wmState, 0, (~0L), False, AnyPropertyType, &type, &format, &nItem, &bytesAfter, &properties);
+							int iItem;
+							char* atomName;
+
+							if(nItem==0)
+								{
+									int x_return,y_return;
+									unsigned int width_return,height_return;
+									Window root_return;
+									unsigned int border_width_return;
+									unsigned int depth_return;
+
+									XGetWindowAttributes(display,w,&attr);
+									XGetGeometry(display,w,&root_return,&x_return,&y_return,&width_return,&height_return,&border_width_return,&depth_return);
+									printf("win=%i name %s x=%i y=%i w=%i h=%i\n",w,name,x_return,y_return,width_return,height_return);
+									//	printf("name %s x=%i y=%i w=%i h=%i\n",name,x_return,y_return,attr.width,attr.height);
+									if (attr.map_state == IsViewable)
+										{
+											XGetGeometry(display,w,&root_return,&x_return,&y_return,&width_return,&height_return,&border_width_return,&depth_return);
+											/*if (winWidth == 1280) continue;  /* debug */
+											//#if debug
+											//printf("\nw x:%d y:%d w:%d h:%d - bw:%d d:%d \n", winX,winY,winWidth,winHeight,borderWidth,depth);
+											//#endif
+											//#if debug
+											//printf("MakeWrx: (x;%d\ty:%d\tx+w%d\ty+h%d)\tbw:%d d:%d\n",
+											//			winX,winY,winX+winWidth,winY+winHeight,borderWidth,depth);
+											//#endif
+											//if (errorVal) continue;
+//						WinRect.x = x_return;
+//						WinRect.y = y_return;
+//						WinRect.height = height_return + 2*borderWidth;
+//						WinRect.width = width_return + 2*borderWidth;
+											//if (WinRect.x >= displayWidth) continue;
+											//if (WinRect.y >= displayHeight) continue;
+											//	if (WinRect.y <= 0) continue;
+											//if ((WinRect.x + WinRect.width) < 0) continue;
+											//XUnionRectWithRegion(&WinRect,Wr, Wr);
+											//char* name;
+											//XFetchName(display,children[wx], &name);
+//						printf("w=%i x=%i y=%i w=%i h=%i\n",(int)w,WinRect.x,WinRect.y,WinRect.width,WinRect.height);
+										}
+
+
+
+								}
+
+
+						}
+#endif
+
+//	}
+				}
+
+			XFree(data);
+		}
+	XUngrabServer(display);
+}
+
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -1707,7 +1871,7 @@ int main(int argc,char* argv[])
 			if(strcmp(argstr,"-figurex")==0)//figureX=100
 				figureX=translateGravity(argv[++argnum]);
 			if(strcmp(argstr,"-figurey")==0)//figureY=100
-					figureY=translateGravity(argv[++argnum]);
+				figureY=translateGravity(argv[++argnum]);
 			if(strcmp(argstr,"-figuredelay")==0)//figureSpeed=100
 				figureSpeed=atol(argv[++argnum]);
 
@@ -1807,9 +1971,7 @@ int main(int argc,char* argv[])
 					swapInfo.swap_window = rootWin;
 					swapInfo.swap_action = XdbeBackground;
 					if((XdbeSwapBuffers(display,&swapInfo,1)) && (useDBOveride==true))
-					//if(false && (useDBOveride==true))
 						{
-							printf("got double buffer\n");
 							useBuffer=true;
 							drawOnThis=buffer;
 						}
@@ -1851,6 +2013,8 @@ int main(int argc,char* argv[])
 	whiteColor=WhitePixel(display,screen);
 	clearSettled();
 
+	getOpenwindows();
+
 	while (!done)
 		{
 			while (XPending(display))
@@ -1858,12 +2022,12 @@ int main(int argc,char* argv[])
 
 			switch(ev.type)
 				{
-					case ClientMessage:
-						if (ev.xclient.message_type == XInternAtom(display,"WM_PROTOCOLS",1) && (Atom)ev.xclient.data.l[0] == XInternAtom(display,"WM_DELETE_WINDOW",1))
+				case ClientMessage:
+					if (ev.xclient.message_type == XInternAtom(display,"WM_PROTOCOLS",1) && (Atom)ev.xclient.data.l[0] == XInternAtom(display,"WM_DELETE_WINDOW",1))
 						done=1;
-						continue;
+					continue;
 
-						break;
+					break;
 				}
 
 			usleep(mainDelay);
@@ -1904,7 +2068,7 @@ int main(int argc,char* argv[])
 
 			if(useGusts==true)
 				{
-						updateGusts();
+					updateGusts();
 				}
 
 			eraseRects();
@@ -1931,6 +2095,7 @@ int main(int argc,char* argv[])
 	free(down);
 	return(0);
 }
+
 
 
 
