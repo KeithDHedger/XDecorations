@@ -9,6 +9,7 @@
 
 #include "globals.h"
 #include "routines.h"
+#include "update.h"
 
 void drawTreeLamps(void)
 {
@@ -154,6 +155,26 @@ void drawLamps(void)
 				}
 			break;
 
+		}
+}
+/*
+					XSetClipMask(display,gc,windowSnow[j].mask);
+					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y);
+					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y);
+
+*/
+void drawWindowSnow(void)
+{
+	for(int j=0;j<MAXWINDOWS;j++)
+		{
+			if(windowSnow[j].wid>0)
+				{
+				//	XSetClipMask(display,gc,windowSnow[j].mask);
+					XSetClipMask(display,gc,0);
+					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight);
+					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight);
+					printf("w=%i h=%i x=%i y=%i\n",windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y);
+				}
 		}
 }
 

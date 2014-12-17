@@ -21,5 +21,6 @@ void updateStar(void);
 void updateFigure(void);
 void updateFlyers(void);
 void getOpenwindows(void);
+void clearWindowSnow(int winid);
 
 #endif

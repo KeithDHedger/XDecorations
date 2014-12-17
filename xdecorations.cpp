@@ -817,6 +817,7 @@ int main(int argc,char* argv[])
 			drawFlyers();
 			drawLamps();
 			drawSettled();
+			drawWindowSnow();
 			drawFalling();
 
 			if(useBuffer==true)

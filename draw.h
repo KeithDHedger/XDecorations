@@ -19,5 +19,6 @@ void drawFigure(void);
 void drawLamps(void);
 void drawSettled(void);
 void drawFalling(void);
+void drawWindowSnow(void);
 
 #endif
