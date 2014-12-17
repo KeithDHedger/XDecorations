@@ -136,7 +136,7 @@ void updateWindowSnow(movement *mov,int windownum)
 		{
 			downx=mov->x;
 			//downx=200;
-			if((downx>windowSnow[windownum].x) && (downx<windowSnow[windownum].width+windowSnow[windownum].x))
+			if((downx>windowSnow[windownum].x) && (downx<(windowSnow[windownum].width+windowSnow[windownum].x)))
 				{
 					pmm=mov->object->mask[0];
 
@@ -161,6 +161,7 @@ void updateWindowSnow(movement *mov,int windownum)
 					XSetClipOrigin(display,gc,downx-windowSnow[windownum].x,windowSnow[windownum].lasty[downx]);
 					//XCopyArea(display,*(mov->object->pixmap[0]),windowSnow[windownum].pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,windowSnow[windownum].lasty[downx]);
 					XCopyArea(display,*(mov->object->pixmap[0]),windowSnow[windownum].pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx-windowSnow[windownum].x,windowSnow[windownum].lasty[downx]);
+					printf("w=%i h=%i x=%i y=%i\n",windowSnow[windownum].width,0,downx-windowSnow[windownum].x,windowSnow[windownum].lasty[downx]);
 				}
 	}
 }
@@ -169,7 +170,7 @@ bool checkOnWindow(movement *mov)
 {
 	for(int j=0;j<MAXWINDOWS;j++)
 		{
-			if((mov->x>=windowSnow[j].x) && (mov->x<=(windowSnow[j].width-windowSnow[j].x)))
+			if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width-windowSnow[j].x)))
 				{
 					if(mov->y>=windowSnow[j].y)
 						{
