@@ -6,19 +6,6 @@
 *     routines.cpp
 * 
 ******************************************************/
-#include <X11/Intrinsic.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/xpm.h>
-#include <Imlib2.h>
-#include <X11/extensions/shape.h>
-#include <X11/Xatom.h>
-#include <X11/extensions/Xdbe.h>
-
-#include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #include "globals.h"
 
@@ -76,4 +63,28 @@ void setGravity(int *x,int *y,int w,int h)
 		default:
 			break;
 		}
+}
+
+int translateGravity(char* str)
+{
+	int retcode=0;
+
+	if(isalpha(str[0]))
+		{
+			if(strcasecmp(str,"left")==0)
+				retcode=LEFT;
+			if(strcasecmp(str,"centre")==0)
+				retcode=CENTRE;
+			if(strcasecmp(str,"right")==0)
+				retcode=RIGHT;
+			if(strcasecmp(str,"top")==0)
+				retcode=TOP;
+			if(strcasecmp(str,"bottom")==0)
+				retcode=BOTTOM;
+		}
+	else
+		retcode=atol(str);
+
+	return(retcode);
+
 }

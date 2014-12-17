@@ -7,20 +7,6 @@
 * 
 ******************************************************/
 
-#include <X11/Intrinsic.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/xpm.h>
-#include <Imlib2.h>
-#include <X11/extensions/shape.h>
-#include <X11/Xatom.h>
-#include <X11/extensions/Xdbe.h>
-
-#include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 #include "globals.h"
 
 char		pathname[MAXPATHNAMELEN];

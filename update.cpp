@@ -7,20 +7,6 @@
 * 
 ******************************************************/
 
-#include <X11/Intrinsic.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/xpm.h>
-#include <Imlib2.h>
-#include <X11/extensions/shape.h>
-#include <X11/Xatom.h>
-#include <X11/extensions/Xdbe.h>
-
-#include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 #include "globals.h"
 #include "routines.h"
 
@@ -255,3 +241,48 @@ void updateFlyers(void)
 				}
 		}
 }
+
+void eraseRects(void)
+{
+	int	j;
+
+	if((figureNumber!=0) && (figureNeedsUpdate==true))
+		{
+			if(useBuffer==false)
+				XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
+			updateFigure();
+		}
+
+	if((showTree==true) && (treeNeedsUpdate==true))
+		{
+			if(useBuffer==false)
+				XClearArea(display,drawOnThis,treeX,treeY,treeWidth,treeHeight,False);
+			updateTreeLamps();
+		}
+
+	if((showFlyers==true) && (flyerNeedsUpdate==true))
+		{
+			if(useBuffer==false)
+				{
+					for(j=0; j<flyerCount; j++)
+						XClearArea(display,drawOnThis,flyersMove[j].x,flyersMove[j].y,flyersMove[j].maxW,flyersMove[j].maxH,False);
+				}
+			updateFlyers();
+		}
+
+	if((showFalling==true) && (fallingNeedsUpdate==true))
+		{
+			if(useBuffer==false)
+				{
+					for(int j=0; j<numberOfFalling; j++)
+						XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
+				}
+			updateFalling();
+		}
+
+	treeNeedsUpdate=false;
+	figureNeedsUpdate=false;
+	flyerNeedsUpdate=false;
+	fallingNeedsUpdate=false;
+}
+

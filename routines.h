@@ -14,5 +14,6 @@ int randInt(int maxVal);
 bool randomEvent(int max);
 int	randomDirection(void);
 void setGravity(int *x,int *y,int w,int h);
+int translateGravity(char* str);
 
 #endif

@@ -210,51 +210,6 @@ void signalHandler()
 	done=1;
 }
 
-
-void eraseRects(void)
-{
-	int	j;
-
-	if((figureNumber!=0) && (figureNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
-			updateFigure();
-		}
-
-	if((showTree==true) && (treeNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				XClearArea(display,drawOnThis,treeX,treeY,treeWidth,treeHeight,False);
-			updateTreeLamps();
-		}
-
-	if((showFlyers==true) && (flyerNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				{
-					for(j=0; j<flyerCount; j++)
-						XClearArea(display,drawOnThis,flyersMove[j].x,flyersMove[j].y,flyersMove[j].maxW,flyersMove[j].maxH,False);
-				}
-			updateFlyers();
-		}
-
-	if((showFalling==true) && (fallingNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				{
-					for(int j=0; j<numberOfFalling; j++)
-						XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
-				}
-			updateFalling();
-		}
-
-	treeNeedsUpdate=false;
-	figureNeedsUpdate=false;
-	flyerNeedsUpdate=false;
-	fallingNeedsUpdate=false;
-}
-
 void showUnShow(const char* arg1,const char* arg2,bool *value)
 {
 	const char*	ptr=NULL;
@@ -470,30 +425,6 @@ void setDefaults(void)
 	settledHeight=100;
 	settleRate=2;
 	clearOnMaxHeight=true;
-}
-
-int translateGravity(char* str)
-{
-	int retcode=0;
-
-	if(isalpha(str[0]))
-		{
-			if(strcasecmp(str,"left")==0)
-				retcode=LEFT;
-			if(strcasecmp(str,"centre")==0)
-				retcode=CENTRE;
-			if(strcasecmp(str,"right")==0)
-				retcode=RIGHT;
-			if(strcasecmp(str,"top")==0)
-				retcode=TOP;
-			if(strcasecmp(str,"bottom")==0)
-				retcode=BOTTOM;
-		}
-	else
-		retcode=atol(str);
-
-	return(retcode);
-
 }
 
 void reloadConfig(void)
