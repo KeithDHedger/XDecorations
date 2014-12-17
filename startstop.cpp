@@ -20,6 +20,8 @@ void initBottomSnow(void)
 	bottomSnow.lasty=(int*)malloc(sizeof(int)*displayWidth);
 	bottomSnow.wid=0;
 	bottomSnow.width=displayWidth;
+	bottomSnow.x=0;
+	bottomSnow.y=0;
 }
 
 void initWindowSnow(void)
@@ -34,6 +36,8 @@ void initWindowSnow(void)
 			windowSnow[j].lasty=(int*)malloc(sizeof(int)*displayWidth);
 			windowSnow[j].wid=0;
 			windowSnow[j].width=0;
+			windowSnow[j].x=0;
+			windowSnow[j].y=0;
 		}
 }
 

@@ -74,6 +74,7 @@ struct					settled
 	GC					maskgc;
 	Window				wid;
 	int					width;
+	int					x,y;
 };
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};

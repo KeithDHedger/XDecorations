@@ -103,6 +103,72 @@ void updateGusts(void)
 		doGusts();
 }
 
+void updateWindowSnow(movement *mov,int windownum)
+{
+	int		downx;
+	Pixmap	*pmm;
+
+	if(bottomSnow.keepSettling==true)
+		{
+			downx=mov->x;
+			if((downx>=0) && (downx<displayWidth) && (maxBottomHeight>0))
+				{
+					pmm=mov->object->mask[0];
+
+					if(bottomSnow.lasty[downx]-settleRate<=0)
+						{
+							if(clearOnMaxHeight==true)
+								clearBottomSnow();
+							else
+								bottomSnow.lasty[downx]=maxBottomHeight;
+						}
+					bottomSnow.lasty[downx]=bottomSnow.lasty[downx]-settleRate;
+					if(bottomSnow.lasty[downx]<=0)
+						bottomSnow.keepSettling=false;
+
+					XSetClipMask(display,bottomSnow.maskgc,*(pmm));
+					XSetClipOrigin(display,bottomSnow.maskgc,downx,bottomSnow.lasty[downx]);
+					XCopyArea(display,*(mov->object->mask[0]),bottomSnow.mask,bottomSnow.maskgc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
+
+					XSetClipMask(display,gc,*(pmm));
+					XSetClipOrigin(display,gc,downx,bottomSnow.lasty[downx]);
+					XCopyArea(display,*(mov->object->pixmap[0]),bottomSnow.pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
+				}
+	}
+}
+
+bool checkOnWindow(movement *mov)
+{
+	for(int j=0;j<MAXWINDOWS;j++)
+		{
+			if((mov->x>=windowSnow[j].x) && (mov->x<=(windowSnow[j].width-windowSnow[j].x)))
+				{
+					if(mov->y>windowSnow[j].y)
+						{
+						printf("on window\n");
+						}
+				}
+//			if(windowSnow[j].wid==wid)
+//				{
+//					XFetchName(display,wid,&name);
+//					if(name!=NULL)
+//						{
+//							windowSnow[j].width=attr->width;
+//							printf("xid=%i name=%s changedn",(int)(long)wid,name);
+//							printf("width=%in",attr->width);
+//							return(false);
+//						}
+//				}
+//			if(windowSnow[j].wid==wid)
+//				{
+//					newwindow=false;
+//					break;
+//				}
+		}
+
+	return(false);
+}
+
 void updateBottomSnow(movement *mov)
 {
 	int		downx;
@@ -155,11 +221,14 @@ void updateFalling(void)
 					moving[j].y=moving[j].y+moving[j].stepY;
 					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+(gustOffSet*gustDirection);
 
-					if(moving[j].y>displayHeight+moving[j].object->h[0])
+					if(checkOnWindow(&moving[j])==false)
 						{
-							moving[j].use=false;
-							moving[j].y=0-moving[j].object->h[0];
-							updateBottomSnow(&moving[j]);
+							if(moving[j].y>displayHeight+moving[j].object->h[0])
+								{
+									moving[j].use=false;
+									moving[j].y=0-moving[j].object->h[0];
+									updateBottomSnow(&moving[j]);
+								}
 						}
 
 					if(moving[j].x>displayWidth+moving[j].object->w[0])
@@ -296,17 +365,68 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 	Window	rootWindow=RootWindow(display,screen);
 	int		screen_x,screen_y;
 	bool	retval=false;
+	bool	newwindow=true;
+	int		newwinid=-1;
+	char	*name=NULL;
+	Window	dummy;
 
 	for(int j=0;j<MAXWINDOWS;j++)
 		{
+			if((windowSnow[j].wid==wid) && (windowSnow[j].width!=attr->width))
+				{
+					XFetchName(display,wid,&name);
+					if(name!=NULL)
+						{
+							windowSnow[j].width=attr->width;
+							printf("xid=%i name=%s changed\n",(int)(long)wid,name);
+							printf("width=%i\n",attr->width);
+							return(false);
+						}
+				}
 			if(windowSnow[j].wid==wid)
 				{
-			XTranslateCoordinates(display,wid,rootWindow,attr->x,attr->y,&screen_x,&screen_y,&dummy);
-			XFetchName(display,w,&name);
-			if(name!=NULL)
-				printf("xid=%i name=%s\n",(int)(long)w,name);
-			printf("x=%i y=%i w=%i h=%i\n",(int
+					newwindow=false;
+					break;
+				}
 		}
+	
+	for(int j=0;j<MAXWINDOWS;j++)
+		{
+			if(windowSnow[j].wid==0)
+				{
+					newwinid=j;
+					break;
+				}
+		}
+
+	if (newwinid==-1)
+		{
+			printf("NO MORE WINDOWS\n");
+			return(false);
+		}
+
+	if(newwindow==true)
+		{
+			windowSnow[newwinid].pixmap=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight,depth);
+			windowSnow[newwinid].mask=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight,1);
+			windowSnow[newwinid].maskgc=XCreateGC(display,windowSnow[newwinid].mask,0,NULL);
+			windowSnow[newwinid].keepSettling=true;
+			windowSnow[newwinid].maxHeight=maxBottomHeight;
+			windowSnow[newwinid].lasty=(int*)malloc(sizeof(int)*attr->width);
+			windowSnow[newwinid].wid=wid;
+			windowSnow[newwinid].width=attr->width;
+			XTranslateCoordinates(display,wid,rootWindow,attr->x,attr->y,&screen_x,&screen_y,&dummy);
+			windowSnow[newwinid].x=screen_x;
+			windowSnow[newwinid].y=screen_y;
+			retval=true;
+			XFetchName(display,wid,&name);
+			if(name!=NULL)
+				{
+					printf("xid=%i name=%s added\n",(int)(long)wid,name);
+					printf("width=%i\n",attr->width);
+				}
+		}
+
 	return(retval);	
 }
 
@@ -356,14 +476,14 @@ void getOpenwindows(void)
 								{
 									if(len==0)
 										{
-											windowchanged=checkForWindowChange(w);
+											windowchanged=checkForWindowChange(w,&attr);
 											if(windowchanged==true)
 												{
-													XTranslateCoordinates(display,w,rootWindow,attr.x,attr.y,&screen_x,&screen_y,&dummy);
-													XFetchName(display,w,&name);
-													if(name!=NULL)
-														printf("xid=%i name=%s\n",(int)(long)w,name);
-													printf("x=%i y=%i w=%i h=%i\n",(int)(long)screen_x,screen_y,attr.width,attr.height);
+													//XTranslateCoordinates(display,w,rootWindow,attr.x,attr.y,&screen_x,&screen_y,&dummy);
+												//	XFetchName(display,w,&name);
+													//if(name!=NULL)
+													//	printf("xid=%i name=%s\n",(int)(long)w,name);
+													//printf("x=%i y=%i w=%i h=%i\n",(int)(long)screen_x,screen_y,attr.width,attr.height);
 												}
 										}
 								}
