@@ -10,6 +10,33 @@
 #include "globals.h"
 #include "routines.h"
 
+void initBottomSnow(void)
+{
+	bottomSnow.pixmap=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight,depth);
+	bottomSnow.mask=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight,1);
+	bottomSnow.maskgc=XCreateGC(display,bottomSnow.mask,0,NULL);
+	bottomSnow.keepSettling=true;
+	bottomSnow.maxHeight=maxBottomHeight;
+	bottomSnow.lasty=(int*)malloc(sizeof(int)*displayWidth);
+	bottomSnow.wid=0;
+	bottomSnow.width=displayWidth;
+}
+
+void initWindowSnow(void)
+{
+	for(int j=0;j<MAXWINDOWS;j++)
+		{
+			windowSnow[j].pixmap=0;
+			windowSnow[j].mask=0;
+			windowSnow[j].maskgc=0;
+			windowSnow[j].keepSettling=false;
+			windowSnow[j].maxHeight=maxBottomHeight;
+			windowSnow[j].lasty=(int*)malloc(sizeof(int)*displayWidth);
+			windowSnow[j].wid=0;
+			windowSnow[j].width=0;
+		}
+}
+
 void initFlyers(void)
 {
 	int		flynumber;

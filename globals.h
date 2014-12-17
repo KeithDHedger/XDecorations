@@ -32,7 +32,8 @@
 #define MAXFALLINGOBJECTS 5000
 #define	MAXFALLINGANIMATION 48
 #define MAXSWIRL 2
-#define MAXSETTLED 8000
+//#define MAXSETTLED 8000
+#define MAXWINDOWS 100
 
 #define VERSION "0.1.5"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
@@ -63,6 +64,18 @@ struct					movement
 	bool				direction;
 };
 
+struct					settled
+{
+	int					*lasty;
+	Pixmap				pixmap;
+	Pixmap				mask;
+	bool				keepSettling;
+	int					maxHeight;
+	GC					maskgc;
+	Window				wid;
+	int					width;
+};
+
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 enum {LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000};
 enum {TYPEINT=1,TYPESTRING,TYPEBOOL};
@@ -76,7 +89,7 @@ extern Window			rootWin;
 extern int				displayWidth;
 extern int				displayHeight;
 extern GC				gc;
-extern GC				gcpm;
+//extern GC				gcpm;
 
 extern Visual*			visual;
 extern int				depth;
@@ -110,12 +123,16 @@ extern bool				fallingNeedsUpdate;
 extern bool				lampsNeedsUpdate;
 
 //settled
-extern int				*down;
-extern Pixmap			settledPixmap;
-extern Pixmap			settledPixmapMask;
-extern int				settledHeight;
+extern settled			windowSnow[MAXWINDOWS];
+extern settled			bottomSnow;
+extern int				maxWindows;
+
+//extern int				*down;
+//extern Pixmap			settledPixmap;
+//extern Pixmap			settledPixmapMask;
+extern int				maxBottomHeight;
 extern int				settleRate;
-extern bool				keepSettling;
+//extern bool				keepSettling;
 extern int				blackColor;
 extern int				whiteColor;
 extern bool				clearOnMaxHeight;

@@ -159,9 +159,9 @@ void drawLamps(void)
 
 void drawSettled(void)
 {
-	XSetClipMask(display,gc,settledPixmapMask);
-	XSetClipOrigin(display,gc,0,displayHeight-settledHeight);
-	XCopyArea(display,settledPixmap,drawOnThis,gc,0,0,displayWidth,settledHeight,0,displayHeight-settledHeight);
+	XSetClipMask(display,gc,bottomSnow.mask);
+	XSetClipOrigin(display,gc,0,displayHeight-bottomSnow.maxHeight);
+	XCopyArea(display,bottomSnow.pixmap,drawOnThis,gc,0,0,displayWidth,bottomSnow.maxHeight,0,displayHeight-bottomSnow.maxHeight);
 }
 
 void drawFalling(void)

@@ -11,7 +11,7 @@
 #define _UPDATE_
 
 void eraseRects(void);
-void clearSettled(void);
+void clearBottomSnow(void);
 void doGusts(void);
 void updateGusts(void);
 void updateFalling(void);
@@ -20,5 +20,6 @@ void updateTreeLamps(void);
 void updateStar(void);
 void updateFigure(void);
 void updateFlyers(void);
+void getOpenwindows(void);
 
 #endif

@@ -117,7 +117,7 @@ args				xdecorations_rc[]=
 	{"gustspeed",TYPEINT,&gustSpeed},
 
 //settling
-	{"settleheight",TYPEINT,&settledHeight},
+	{"settleheight",TYPEINT,&maxBottomHeight},
 	{"settlerate",TYPEINT,&settleRate},
 	{"clearonmaxhight",TYPEBOOL,&clearOnMaxHeight},
 
@@ -422,7 +422,7 @@ void setDefaults(void)
 	minFallSpeed=1;
 	flyerNumber=0;
 	numberOfFlyers=20;
-	settledHeight=100;
+	maxBottomHeight=100;
 	settleRate=2;
 	clearOnMaxHeight=true;
 }
@@ -489,65 +489,6 @@ void reloadConfig(void)
 		lastLampAnim=LAMPFLASH;
 	free(tmptheme);
 	numberOfFlyers=abs(numberOfFlyers);
-}
-
-void getOpenwindows(void)
-{
-	Window				rootWindow;
-	Atom				windowlist;
-	Atom				stateatom;
-	Atom				type;
-	Atom				actualType;
-	int					format;
-	unsigned long		numItems,bytesAfter;
-	unsigned char		*data;
-	XWindowAttributes	attr;
-	char				*name=NULL;
-	long				*array;
-	int					status;
-	int					form;
-	unsigned long		remain,len;
-	unsigned char		*list;
-	Window				w;
-	int					screen_x,screen_y;
-	Window				dummy;
-
-	XGrabServer(display);
-
-	rootWindow=RootWindow(display,screen);
-	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
-	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
-
-	if ((status==Success) && (numItems>0))
-		{
-			name=NULL;
-			array=(long*)data;
-			for(long k=0;k<numItems;k++)
-				{
-					w=(Window)array[k];
-					XGetWindowAttributes(display,w,&attr);
-
-					if((attr.map_state==2))
-						{
-							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
-							type=0;
-							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
-							if (status == Success)
-								{
-									if(len==0)
-										{
-											XTranslateCoordinates(display,w,rootWindow,attr.x,attr.y,&screen_x,&screen_y,&dummy);
-											XFetchName(display,w,&name);
-											if(name!=NULL)
-												printf("name=%s\n",name);
-											printf("x=%i y=%i w=%i h=%i\n",(int)(long)screen_x,screen_y,attr.width,attr.height);
-										}
-								}
-						}
-				}
-			XFree(data);
-		}
-	XUngrabServer(display);
 }
 
 int main(int argc,char* argv[])
@@ -707,8 +648,8 @@ int main(int argc,char* argv[])
 				gustSpeed=atol(argv[++argnum]);
 
 //settling
-			if(strcmp(argstr,"-settleheight")==0)//settledHeight=100
-				settledHeight=atol(argv[++argnum]);
+			if(strcmp(argstr,"-settleheight")==0)//maxBottomHeight=100
+				maxBottomHeight=atol(argv[++argnum]);
 			if(strcmp(argstr,"-settlerate")==0)//settleRate=2
 				settleRate=atol(argv[++argnum]);
 
@@ -794,25 +735,21 @@ int main(int argc,char* argv[])
 		}
 
 	gc=XCreateGC(display,drawOnThis,0,NULL);
+	XSetFillStyle(display,gc,FillSolid);
+	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
-	settledPixmap=XCreatePixmap(display,drawOnThis,displayWidth,settledHeight,depth);
-	settledPixmapMask=XCreatePixmap(display,drawOnThis,displayWidth,settledHeight,1);
-	gcpm=XCreateGC(display,settledPixmapMask,0,NULL);
+	blackColor=BlackPixel(display,screen);
+	whiteColor=WhitePixel(display,screen);
 
+	initBottomSnow();
+	initWindowSnow();
 	initLamps();
 	initTree();
 	initFigure();
 	initFlyers();
 	initFalling();
 
-	down=(int*)malloc(sizeof(int)*displayWidth);
-
-	XSetFillStyle(display,gc,FillSolid);
-	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
-
-	blackColor=BlackPixel(display,screen);
-	whiteColor=WhitePixel(display,screen);
-	clearSettled();
+	clearBottomSnow();
 
 	getOpenwindows();
 
@@ -833,6 +770,8 @@ int main(int argc,char* argv[])
 
 			usleep(mainDelay);
 			runCounter++;
+
+			getOpenwindows();
 
 			if(lampSet!=0)
 				{
@@ -893,7 +832,7 @@ int main(int argc,char* argv[])
 
 	destroyFalling();
 	destroyFlyers();
-	free(down);
+	free(bottomSnow.lasty);
 	return(0);
 }
 

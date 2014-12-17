@@ -17,7 +17,7 @@ Window			rootWin;
 int				displayWidth;
 int				displayHeight;
 GC				gc;
-GC				gcpm;
+//GC				gcpm;
 
 Visual*			visual=NULL;
 int				depth=0;
@@ -46,13 +46,31 @@ bool			figureNeedsUpdate=false;
 bool			fallingNeedsUpdate=false;
 bool			lampsNeedsUpdate=false;
 
+//settled on windows
+//int				*down;
+//Pixmap			settledPixmap;
+//Pixmap			settledPixmapMask;
+//int				maxBottomHeight;
+//int				settleRate;
+//bool			keepSettling=true;
+//int				blackColor;
+//int				whiteColor;
+//bool			clearOnMaxHeight;
+
+
 //settled
-int				*down;
-Pixmap			settledPixmap;
-Pixmap			settledPixmapMask;
-int				settledHeight;
+
+settled			windowSnow[MAXWINDOWS];
+settled			bottomSnow;
+
+int				maxWindows=0;
+
+//int				*down;
+//Pixmap			settledPixmap;
+//Pixmap			settledPixmapMask;
+int				maxBottomHeight;
 int				settleRate;
-bool			keepSettling=true;
+//bool			keepSettling=true;
 int				blackColor;
 int				whiteColor;
 bool			clearOnMaxHeight;

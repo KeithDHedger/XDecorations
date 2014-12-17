@@ -10,6 +10,9 @@
 #ifndef _STARTSTOP_
 #define _STARTSTOP_
 
+void initBottomSnow(void);
+void initWindowSnow(void);
+
 void initFlyers(void);
 void initFigure(void);
 void initLamps(void);
