@@ -825,7 +825,7 @@ int main(int argc,char* argv[])
 
 			if(watchConfig==true)
 				reloadConfig();
-
+//done=true;
 		}
 	if(useWindow==false)
 		XClearWindow(display,rootWin);

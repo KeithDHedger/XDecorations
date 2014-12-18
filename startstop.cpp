@@ -33,11 +33,11 @@ void initWindowSnow(void)
 			windowSnow[j].maskgc=0;
 			windowSnow[j].keepSettling=false;
 			windowSnow[j].maxHeight=maxBottomHeight;
-			windowSnow[j].lasty=(int*)malloc(sizeof(int)*displayWidth);
+			windowSnow[j].lasty=NULL;
 			windowSnow[j].wid=0;
 			windowSnow[j].width=0;
-			windowSnow[j].x=0;
-			windowSnow[j].y=0;
+			windowSnow[j].x=-1;
+			windowSnow[j].y=-1;
 		}
 }
 
