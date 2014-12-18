@@ -31,8 +31,26 @@ void clearBottomSnow(void)
 	bottomSnow.keepSettling=true;
 }
 
-void clearWindowSnow(int winid)
+void clearWindowSnow(int winid,bool newrsrc)
 {
+	if(newrsrc==true)
+		{
+			if(windowSnow[winid].lasty!=NULL)
+				free(windowSnow[winid].lasty);
+			if(windowSnow[winid].pixmap!=0)
+				XFreePixmap(display,windowSnow[winid].pixmap);
+			if(windowSnow[winid].mask!=0)
+				XFreePixmap(display,windowSnow[winid].mask);
+			if(windowSnow[winid].maskgc!=0)
+				XFreeGC(display,windowSnow[winid].maskgc);
+
+			windowSnow[winid].pixmap=XCreatePixmap(display,drawOnThis,windowSnow[winid].width,windowSnow[winid].maxHeight,depth);
+			windowSnow[winid].mask=XCreatePixmap(display,drawOnThis,windowSnow[winid].width,windowSnow[winid].maxHeight,1);
+			windowSnow[winid].maskgc=XCreateGC(display,windowSnow[winid].mask,0,NULL);
+		}
+
+	windowSnow[winid].lasty=(int*)malloc(sizeof(int)*windowSnow[winid].width);
+
 	for(int j=0;j<windowSnow[winid].width;j++)
 		windowSnow[winid].lasty[j]=windowSnow[winid].maxHeight;
 
@@ -132,7 +150,7 @@ void updateWindowSnow(movement *mov,int windownum)
 	int		downx;
 	Pixmap	*pmm;
 
-	if(windowSnow[windownum].keepSettling==true)
+	if((windowSnow[windownum].showing==true) && (windowSnow[windownum].keepSettling==true))
 		{
 			downx=mov->x;
 			if((downx>windowSnow[windownum].x) && (downx<(windowSnow[windownum].width+windowSnow[windownum].x)))
@@ -143,7 +161,7 @@ void updateWindowSnow(movement *mov,int windownum)
 					if(windowSnow[windownum].lasty[downx]-settleRate<=0)
 						{
 							if(clearOnMaxHeight==true)
-								clearWindowSnow(windownum);
+								clearWindowSnow(windownum,false);
 							else
 								windowSnow[windownum].lasty[downx]=windowSnow[windownum].maxHeight;
 						}
@@ -163,7 +181,7 @@ bool checkOnWindow(movement *mov)
 {
 	for(int j=0;j<MAXWINDOWS;j++)
 		{
-			if(windowSnow[j].wid>0)
+			if((windowSnow[j].wid>0) && (windowSnow[j].showing==true))
 				{
 					if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width+windowSnow[j].x)))
 						{
@@ -231,7 +249,6 @@ void updateFalling(void)
 					moving[j].x=moving[j].x+moving[j].stepX+windSpeed+(gustOffSet*gustDirection);
 
 					if(checkOnWindow(&moving[j])==false)
-					//if(true)
 						{
 							if(moving[j].y>displayHeight+moving[j].object->h[0])
 								{
@@ -387,20 +404,40 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 
 	for(int j=0;j<MAXWINDOWS;j++)
 		{
-			if((windowSnow[j].wid==wid) && (windowSnow[j].width!=attr->width))
+			if(windowSnow[j].wid==wid)
 				{
-					XFetchName(display,wid,&name);
+					XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
+					screen_x=abs(screen_x);
+					screen_y=abs(screen_y);
+
+					if((windowSnow[j].x!=screen_x) || (windowSnow[j].y!=screen_y) || (windowSnow[j].width!=attr->width))
+						{
+							windowSnow[j].x=screen_x;
+							windowSnow[j].y=screen_y;
+							if(windowSnow[j].width!=attr->width)
+								{
+									windowSnow[j].width=attr->width;
+									clearWindowSnow(j,true);
+									return(true);
+								}
+
+				XFetchName(display,wid,&name);
 					if(name!=NULL)
 						{
-							windowSnow[j].width=attr->width;
 							printf("xid=%i name=%s changed\n",(int)(long)wid,name);
 							printf("width=%i\n",attr->width);
-							return(false);
 						}
+							return(false);
+					}
 				}
+
 			if(windowSnow[j].wid==wid)
 				{
 					newwindow=false;
+					if(attr->map_state!=IsViewable)
+						windowSnow[j].showing=false;
+					else
+						windowSnow[j].showing=true;
 					break;
 				}
 		}
@@ -422,18 +459,16 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 
 	if(newwindow==true)
 		{
-			windowSnow[newwinid].pixmap=XCreatePixmap(display,drawOnThis,attr->width,maxBottomHeight,depth);
-			windowSnow[newwinid].mask=XCreatePixmap(display,drawOnThis,attr->width,maxBottomHeight,1);
-			windowSnow[newwinid].maskgc=XCreateGC(display,windowSnow[newwinid].mask,0,NULL);
 			windowSnow[newwinid].keepSettling=true;
 			windowSnow[newwinid].maxHeight=maxBottomHeight;
-			windowSnow[newwinid].lasty=(int*)malloc(sizeof(int)*attr->width);
+			windowSnow[newwinid].lasty=NULL;
 			windowSnow[newwinid].wid=wid;
 			windowSnow[newwinid].width=attr->width;
 			XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
 			windowSnow[newwinid].x=abs(screen_x);
 			windowSnow[newwinid].y=abs(screen_y);
-			clearWindowSnow(newwinid);
+			//windowSnow[newwinid].valid=true;
+			clearWindowSnow(newwinid,true);
 			retval=true;
 			XFetchName(display,wid,&name);
 			if(name!=NULL)
@@ -444,6 +479,15 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 		}
 
 	return(retval);	
+}
+
+void windowShowing(Window wid,bool show)
+{
+	for(int j=0;j<MAXWINDOWS;j++)
+		{
+			if(windowSnow[j].wid==wid)
+				windowSnow[j].showing=show;
+		}
 }
 
 void getOpenwindows(void)
@@ -474,7 +518,7 @@ void getOpenwindows(void)
 	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
 	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
 
-	if ((status==Success) && (numItems>0))
+	if((status==Success) && (numItems>0))
 		{
 			name=NULL;
 			array=(long*)data;
@@ -483,7 +527,7 @@ void getOpenwindows(void)
 					w=(Window)array[k];
 					XGetWindowAttributes(display,w,&attr);
 
-					if((attr.map_state==2))
+					if((attr.map_state==IsViewable))
 						{
 							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
 							type=0;
@@ -492,18 +536,13 @@ void getOpenwindows(void)
 								{
 									if(len==0)
 										{
+											XGetWindowAttributes(display,w,&attr);
 											windowchanged=checkForWindowChange(w,&attr);
-											if(windowchanged==true)
-												{
-													//XTranslateCoordinates(display,w,rootWindow,attr.x,attr.y,&screen_x,&screen_y,&dummy);
-												//	XFetchName(display,w,&name);
-													//if(name!=NULL)
-													//	printf("xid=%i name=%s\n",(int)(long)w,name);
-													//printf("x=%i y=%i w=%i h=%i\n",(int)(long)screen_x,screen_y,attr.width,attr.height);
-												}
 										}
 								}
 						}
+					else
+						windowShowing(w,false);
 				}
 			XFree(data);
 		}

@@ -11,6 +11,9 @@
 #include "routines.h"
 #include "update.h"
 
+int				windowid;
+XErrorHandler	old_handler=(XErrorHandler)0;
+
 void drawTreeLamps(void)
 {
 	if(showTree==false)
@@ -157,25 +160,64 @@ void drawLamps(void)
 
 		}
 }
-/*
-					XSetClipMask(display,gc,windowSnow[j].mask);
-					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y);
-					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y);
 
-*/
+void removeInvalidWindow(void)
+{
+	if(windowSnow[windowid].lasty!=NULL)
+		free(windowSnow[windowid].lasty);
+	if(windowSnow[windowid].pixmap!=0)
+		XFreePixmap(display,windowSnow[windowid].pixmap);
+	if(windowSnow[windowid].mask!=0)
+		XFreePixmap(display,windowSnow[windowid].mask);
+	if(windowSnow[windowid].maskgc!=0)
+		XFreeGC(display,windowSnow[windowid].maskgc);
+
+	windowSnow[windowid].pixmap=0;
+	windowSnow[windowid].mask=0;
+	windowSnow[windowid].maskgc=0;
+	windowSnow[windowid].keepSettling=false;
+	windowSnow[windowid].maxHeight=maxBottomHeight;
+	windowSnow[windowid].lasty=NULL;
+	windowSnow[windowid].wid=0;
+	windowSnow[windowid].width=0;
+	windowSnow[windowid].x=-1;
+	windowSnow[windowid].y=-1;
+	windowSnow[windowid].showing=false;
+	windowSnow[windowid].valid=false;
+}
+
+int ApplicationErrorHandler(Display *display,XErrorEvent *theEvent)
+{
+	removeInvalidWindow();
+    return 0 ;
+}
+
 void drawWindowSnow(void)
 {
+	XWindowAttributes	attr;
+
+	XSync(display, true) ;
+	XFlush(display) ;
+	old_handler=XSetErrorHandler(ApplicationErrorHandler) ;
+
 	for(int j=0;j<MAXWINDOWS;j++)
 		{
+			if(windowSnow[j].showing==false)
+				continue;
+
 			if(windowSnow[j].wid>0)
 				{
-				//	XSetClipMask(display,gc,windowSnow[j].mask);
+					windowid=j;
+					XGetWindowAttributes(display,windowSnow[j].wid,&attr);
 					XSetClipMask(display,gc,0);
 					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight);
 					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight);
-				//	printf("w=%i h=%i x=%i y=%i\n",windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y);
 				}
 		}
+
+	XFlush(display);
+	XSync(display,false);
+	XSetErrorHandler(old_handler);
 }
 
 void drawSettled(void)

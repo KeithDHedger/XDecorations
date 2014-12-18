@@ -38,6 +38,8 @@ void initWindowSnow(void)
 			windowSnow[j].width=0;
 			windowSnow[j].x=-1;
 			windowSnow[j].y=-1;
+			windowSnow[j].showing=false;
+			windowSnow[j].valid=false;
 		}
 }
 
