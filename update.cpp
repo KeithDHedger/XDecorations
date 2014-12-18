@@ -4,7 +4,7 @@
 *     kdhedger68713@gmail.com
 *
 *     update.cpp
-* 
+*
 ******************************************************/
 
 #include "globals.h"
@@ -51,7 +51,7 @@ void clearWindowSnow(int winid,bool newrsrc)
 
 	windowSnow[winid].lasty=(int*)malloc(sizeof(int)*windowSnow[winid].width);
 
-	for(int j=0;j<windowSnow[winid].width;j++)
+	for(int j=0; j<windowSnow[winid].width; j++)
 		windowSnow[winid].lasty[j]=windowSnow[winid].maxHeight;
 
 	//XSetClipMask(display,windowSnow[winid].maskgc,0);
@@ -179,7 +179,7 @@ void updateWindowSnow(movement *mov,int windownum)
 
 bool checkOnWindow(movement *mov)
 {
-	for(int j=0;j<MAXWINDOWS;j++)
+	for(int j=0; j<MAXWINDOWS; j++)
 		{
 			if((windowSnow[j].wid>0) && (windowSnow[j].showing==true))
 				{
@@ -227,7 +227,7 @@ void updateBottomSnow(movement *mov)
 					XSetClipOrigin(display,gc,downx,bottomSnow.lasty[downx]);
 					XCopyArea(display,*(mov->object->pixmap[0]),bottomSnow.pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
 				}
-	}
+		}
 }
 
 void updateFalling(void)
@@ -402,7 +402,7 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 	char	*name=NULL;
 	Window	dummy;
 
-	for(int j=0;j<MAXWINDOWS;j++)
+	for(int j=0; j<MAXWINDOWS; j++)
 		{
 			if(windowSnow[j].wid==wid)
 				{
@@ -421,14 +421,14 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 									return(true);
 								}
 
-				XFetchName(display,wid,&name);
-					if(name!=NULL)
-						{
-							printf("xid=%i name=%s changed\n",(int)(long)wid,name);
-							printf("width=%i\n",attr->width);
-						}
+							XFetchName(display,wid,&name);
+							if(name!=NULL)
+								{
+									printf("xid=%i name=%s changed\n",(int)(long)wid,name);
+									printf("width=%i\n",attr->width);
+								}
 							return(false);
-					}
+						}
 				}
 
 			if(windowSnow[j].wid==wid)
@@ -441,8 +441,8 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 					break;
 				}
 		}
-	
-	for(int j=0;j<MAXWINDOWS;j++)
+
+	for(int j=0; j<MAXWINDOWS; j++)
 		{
 			if(windowSnow[j].wid==0)
 				{
@@ -478,12 +478,12 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 				}
 		}
 
-	return(retval);	
+	return(retval);
 }
 
 void windowShowing(Window wid,bool show)
 {
-	for(int j=0;j<MAXWINDOWS;j++)
+	for(int j=0; j<MAXWINDOWS; j++)
 		{
 			if(windowSnow[j].wid==wid)
 				windowSnow[j].showing=show;
@@ -493,171 +493,50 @@ void windowShowing(Window wid,bool show)
 void getOpenwindows(void)
 {
 	Window				rootWindow;
-	Atom				windowlist;
-//	Atom				stateatom;
-//	Atom				type;
 	Atom				actualType;
 	int					format;
 	unsigned long		numItems,bytesAfter;
-//	unsigned char		*data;
 	XWindowAttributes	attr;
-	char				*name=NULL;
 	long				*array;
-//	int					status;
-//	int					form;
-//	unsigned long		remain,len;
-//	unsigned char		*list;
 	Window				w;
-//	int					screen_x,screen_y;
-//	Window				dummy;
-	bool				windowchanged=false;
- 
- Atom  _NET_WM_STATE=XInternAtom(display,"_NET_WM_STATE",False);
- Atom _NET_WM_WINDOW_TYPE=XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
- Atom _NET_WM_STATE_SKIP_TASKBAR=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
- Atom _NET_WM_WINDOW_TYPE_NORMAL=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
-       unsigned char *data;
-        Atom *atoms;
-        int status, real_format;
-        Atom real_type;
-        unsigned long items_read, items_left, i;
-        int result = 1;
+	unsigned char *data;
+	Atom *atoms;
+	int status, real_format;
+	Atom real_type;
+	unsigned long items_read, items_left, i;
 
-	rootWindow=RootWindow(display,screen);
-	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
-	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
-
-	if((status==Success) && (numItems>0))
-		{
-			name=NULL;
-			array=(long*)data;
-			for(long k=0;k<numItems;k++)
-				{
-					w=(Window)array[k];
-					
-//status = XGetWindowProperty(display,w,_NET_WM_WINDOW_TYPE,0L,8192L,False,XA_ATOM,&real_type,&real_format,&items_read, &items_left, &data);
-status = XGetWindowProperty(display, w, _NET_WM_WINDOW_TYPE,0L, 1L, False, XA_ATOM, &real_type, &real_format, &items_read, &items_left, &data);
- atoms = (Atom *)data;
- for(i = 0; i < items_read; i++)
- 	{
- 	//printf("i=%i\n");
- 		if( atoms[i] == _NET_WM_WINDOW_TYPE_NORMAL)
- 			{
- 				skipErrors(true);
- 				XGetWindowAttributes(display,w,&attr);
- 				//if((attr.map_state==IsViewable))
-				//	windowShowing(w,true);
-			//		
-			//	else
-			//		windowShowing(w,false);
-				windowchanged=checkForWindowChange(w,&attr);
- 				skipErrors(false);
-			}
- 	}
-	}
-		}
-
-
-return;
-#if 0
-
-//	XGrabServer(display);
-
-	rootWindow=RootWindow(display,screen);
-	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
-	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
-
-	if((status==Success) && (numItems>0))
-		{
-			name=NULL;
-			array=(long*)data;
-			for(long k=0;k<numItems;k++)
-				{
-					w=(Window)array[k];
-					XGetWindowAttributes(display,w,&attr);
-
-					if((attr.map_state==IsViewable))
-						{
-							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
-							type=0;
-							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
-
-							if (status == Success)
-								{
-									if(len==0)
-										{
-											XGetWindowAttributes(display,w,&attr);
-											windowchanged=checkForWindowChange(w,&attr);
-										}
-								}
-						}
-					else
-						windowShowing(w,false);
-				}
-			XFree(data);
-		}
-//	XUngrabServer(display);
-#endif
-}
-
-
-
-void getOpenwindowsWW(void)
-{
-	Window				rootWindow;
-	Atom				windowlist;
-	Atom				stateatom;
-	Atom				type;
-	Atom				actualType;
-	int					format;
-	unsigned long		numItems,bytesAfter;
-	unsigned char		*data;
-	XWindowAttributes	attr;
-	char				*name=NULL;
-	long				*array;
-	int					status;
-	int					form;
-	unsigned long		remain,len;
-	unsigned char		*list;
-	Window				w;
-	int					screen_x,screen_y;
-	Window				dummy;
-	bool				windowchanged=false;
+	Atom _NET_WM_WINDOW_TYPE=XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
+	Atom _NET_WM_WINDOW_TYPE_NORMAL=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
 
 	XGrabServer(display);
-
 	rootWindow=RootWindow(display,screen);
-	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
-	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
+	Atom _NET_CLIENT_LIST=XInternAtom(display, "_NET_CLIENT_LIST" , true);
+	status=XGetWindowProperty(display,rootWindow,_NET_CLIENT_LIST,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
 
 	if((status==Success) && (numItems>0))
 		{
-			name=NULL;
 			array=(long*)data;
-			for(long k=0;k<numItems;k++)
+			for(long k=0; k<numItems; k++)
 				{
 					w=(Window)array[k];
-					XGetWindowAttributes(display,w,&attr);
 
-					if((attr.map_state==IsViewable))
+					status=XGetWindowProperty(display,w,_NET_WM_WINDOW_TYPE,0L,1L,False,XA_ATOM,&real_type,&real_format,&items_read,&items_left,&data);
+					atoms=(Atom *)data;
+					for(i=0;i<items_read;i++)
 						{
-							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
-							type=0;
-							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
-
-							if (status == Success)
+							if(atoms[i]==_NET_WM_WINDOW_TYPE_NORMAL)
 								{
-									if(len==0)
-										{
-											XGetWindowAttributes(display,w,&attr);
-											windowchanged=checkForWindowChange(w,&attr);
-										}
+									skipErrors(true);
+									XGetWindowAttributes(display,w,&attr);
+									checkForWindowChange(w,&attr);
+									skipErrors(false);
 								}
 						}
-					else
-						windowShowing(w,false);
 				}
 			XFree(data);
 		}
+
 	XUngrabServer(display);
+
 }
+
