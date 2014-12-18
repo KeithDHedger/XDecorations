@@ -494,6 +494,118 @@ void getOpenwindows(void)
 {
 	Window				rootWindow;
 	Atom				windowlist;
+//	Atom				stateatom;
+//	Atom				type;
+	Atom				actualType;
+	int					format;
+	unsigned long		numItems,bytesAfter;
+//	unsigned char		*data;
+	XWindowAttributes	attr;
+	char				*name=NULL;
+	long				*array;
+//	int					status;
+//	int					form;
+//	unsigned long		remain,len;
+//	unsigned char		*list;
+	Window				w;
+//	int					screen_x,screen_y;
+//	Window				dummy;
+	bool				windowchanged=false;
+ 
+ Atom  _NET_WM_STATE=XInternAtom(display,"_NET_WM_STATE",False);
+ Atom _NET_WM_WINDOW_TYPE=XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
+ Atom _NET_WM_STATE_SKIP_TASKBAR=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
+ Atom _NET_WM_WINDOW_TYPE_NORMAL=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
+       unsigned char *data;
+        Atom *atoms;
+        int status, real_format;
+        Atom real_type;
+        unsigned long items_read, items_left, i;
+        int result = 1;
+
+	rootWindow=RootWindow(display,screen);
+	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
+	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
+
+	if((status==Success) && (numItems>0))
+		{
+			name=NULL;
+			array=(long*)data;
+			for(long k=0;k<numItems;k++)
+				{
+					w=(Window)array[k];
+					
+//status = XGetWindowProperty(display,w,_NET_WM_WINDOW_TYPE,0L,8192L,False,XA_ATOM,&real_type,&real_format,&items_read, &items_left, &data);
+status = XGetWindowProperty(display, w, _NET_WM_WINDOW_TYPE,0L, 1L, False, XA_ATOM, &real_type, &real_format, &items_read, &items_left, &data);
+ atoms = (Atom *)data;
+ for(i = 0; i < items_read; i++)
+ 	{
+ 	//printf("i=%i\n");
+ 		if( atoms[i] == _NET_WM_WINDOW_TYPE_NORMAL)
+ 			{
+ 				skipErrors(true);
+ 				XGetWindowAttributes(display,w,&attr);
+ 				//if((attr.map_state==IsViewable))
+				//	windowShowing(w,true);
+			//		
+			//	else
+			//		windowShowing(w,false);
+				windowchanged=checkForWindowChange(w,&attr);
+ 				skipErrors(false);
+			}
+ 	}
+	}
+		}
+
+
+return;
+#if 0
+
+//	XGrabServer(display);
+
+	rootWindow=RootWindow(display,screen);
+	windowlist=XInternAtom(display, "_NET_CLIENT_LIST" , true);
+	status=XGetWindowProperty(display,rootWindow,windowlist,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
+
+	if((status==Success) && (numItems>0))
+		{
+			name=NULL;
+			array=(long*)data;
+			for(long k=0;k<numItems;k++)
+				{
+					w=(Window)array[k];
+					XGetWindowAttributes(display,w,&attr);
+
+					if((attr.map_state==IsViewable))
+						{
+							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
+							type=0;
+							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
+
+							if (status == Success)
+								{
+									if(len==0)
+										{
+											XGetWindowAttributes(display,w,&attr);
+											windowchanged=checkForWindowChange(w,&attr);
+										}
+								}
+						}
+					else
+						windowShowing(w,false);
+				}
+			XFree(data);
+		}
+//	XUngrabServer(display);
+#endif
+}
+
+
+
+void getOpenwindowsWW(void)
+{
+	Window				rootWindow;
+	Atom				windowlist;
 	Atom				stateatom;
 	Atom				type;
 	Atom				actualType;
@@ -532,6 +644,7 @@ void getOpenwindows(void)
 							stateatom=XInternAtom(display,"_NET_WM_STATE",False);
 							type=0;
 							status=XGetWindowProperty(display,w,stateatom,0,(~0L),false,AnyPropertyType,&type,&form,&len,&remain,&list);
+
 							if (status == Success)
 								{
 									if(len==0)

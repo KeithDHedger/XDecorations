@@ -771,8 +771,6 @@ int main(int argc,char* argv[])
 			usleep(mainDelay);
 			runCounter++;
 
-			getOpenwindows();
-
 			if(lampSet!=0)
 				{
 					if((runCounter % lampSpeed)==0)
@@ -812,12 +810,12 @@ int main(int argc,char* argv[])
 				}
 
 			eraseRects();
+			drawWindowSnow();
 			drawTreeLamps();
 			drawFigure();
 			drawFlyers();
 			drawLamps();
 			drawSettled();
-			drawWindowSnow();
 			drawFalling();
 
 			if(useBuffer==true)
@@ -825,6 +823,8 @@ int main(int argc,char* argv[])
 
 			if(watchConfig==true)
 				reloadConfig();
+
+			getOpenwindows();
 		}
 
 	if(useWindow==false)

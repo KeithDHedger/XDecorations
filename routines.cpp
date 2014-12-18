@@ -9,6 +9,8 @@
 
 #include "globals.h"
 
+XErrorHandler	oldHandler=(XErrorHandler)0;
+
 int randInt(int maxVal)
 {
 	return rand() % maxVal;
@@ -87,4 +89,23 @@ int translateGravity(char* str)
 
 	return(retcode);
 
+}
+
+int justSkip(Display *display,XErrorEvent *theEvent)
+{
+    return 0 ;
+}
+
+void skipErrors(bool skip)
+{
+	XSync(display,true);
+	XFlush(display);
+
+	if(skip==true)
+		oldHandler=XSetErrorHandler(justSkip);
+	else
+		XSetErrorHandler(oldHandler);
+
+	XFlush(display);
+	XSync(display,false);
 }
