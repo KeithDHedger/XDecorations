@@ -406,12 +406,6 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 		{
 			if(windowSnow[j].wid==wid)
 				{
-					newwindow=false;
-					if(attr->map_state!=IsViewable)
-						windowSnow[j].showing=false;
-					else
-						windowSnow[j].showing=true;
-
 					XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
 					screen_x=abs(screen_x);
 					screen_y=abs(screen_y);
@@ -439,6 +433,17 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 
 			if(windowSnow[j].wid==wid)
 				{
+					if(attr.wdth<50)
+						{
+							XFetchName(display,wid,&name);
+							if(name!=NULL)
+								{
+									printf("xid=%i name=%s changed\n",(int)(long)wid,name);
+									printf("width=%i\n",attr->width);
+								}
+						
+						}
+						
 					newwindow=false;
 					if(attr->map_state!=IsViewable)
 						windowSnow[j].showing=false;
