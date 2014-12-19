@@ -185,16 +185,11 @@ bool checkOnWindow(movement *mov)
 				{
 					if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width+windowSnow[j].x)))
 						{
-							//if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->object->h[0])))
 							if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->stepY)))
 								{
 									updateWindowSnow(mov,j);
 									return(true);
 								}
-//							if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->object->h[0])))
-//								{
-//									return(true);
-//								}
 						}
 				}
 		}
@@ -411,6 +406,12 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 		{
 			if(windowSnow[j].wid==wid)
 				{
+					newwindow=false;
+					if(attr->map_state!=IsViewable)
+						windowSnow[j].showing=false;
+					else
+						windowSnow[j].showing=true;
+
 					XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
 					screen_x=abs(screen_x);
 					screen_y=abs(screen_y);
