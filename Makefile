@@ -6,7 +6,7 @@ PREFIX = /usr
 DESTDIR = ${DESTDIR:-""}
 LOCALDATADIR = "`/bin/pwd`/pixmaps"
 INSTALLDATADIR = $(PREFIX)/share/$(PROGRAM)/pixmaps
-#-Wunused
+
 all:
 	g++ -o $(PROGRAM) -DDATADIR=\"${LOCALDATADIR}\" -Wunused $(SRC) $(LIBS)
 

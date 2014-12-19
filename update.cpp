@@ -200,7 +200,7 @@ bool checkOnWindow(movement *mov)
 				{
 					if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width+windowSnow[j].x)))
 						{
-							if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->stepY)))
+							if((mov->y<=windowSnow[j].y) && (mov->y>=(windowSnow[j].y-mov->stepY)))
 								{
 									updateWindowSnow(mov,j);
 									return(true);
