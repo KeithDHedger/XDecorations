@@ -1,4 +1,5 @@
 0.1.7
+Added packaging script thanks to Mario for that.
 Added different max settling height to windows.
 Changed some option names.
 Added falling settling on windows.

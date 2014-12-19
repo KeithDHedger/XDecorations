@@ -15,8 +15,7 @@ install:
 	mkdir -vp $(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/share/doc/$(APPNAME) ||true
 	cp -r pixmaps/* $(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps||true
 	cp $(PROGRAM) $(DESTDIR)$(PREFIX)/bin||true
-	cp xdecorations.rc $(DESTDIR)$(PREFIX)/share/doc/$(APPNAME) ||true
-	
+	cp INSTALL xdecorations.rc $(DESTDIR)$(PREFIX)/share/doc/$(APPNAME) ||true
 
 uninstall:
 	rm -r $(DESTDIR)$(PREFIX)/bin/$(PROGRAM) $(DESTDIR)$(PREFIX)/share/$(PROGRAM)

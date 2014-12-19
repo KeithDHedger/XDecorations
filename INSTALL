@@ -33,6 +33,8 @@ Linux Mint KDE
 The window manager doesn't seem to be placing the windows on all desktops -- TO BE FIXED.
 With KDE use kstart --alldesktops ./xdecorations
 
+A simple packaging script is supplied ( thanks to Mario for that ), that will build a simple rpm/deb cpack if you prefer to install via your package manager, you will need ruby, which is pretty standard and you wil need fpm which can be installed by:
+gem install fpm
 
 USAGE EXAMPLES
 Presuming you are in the XDecorations folder and have run make.

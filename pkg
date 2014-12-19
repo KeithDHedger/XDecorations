@@ -1,6 +1,8 @@
 #!/bin/sh
 
-#You must set version and arch manualkly at the moment
+#Original script provided by Mario and mucked about by me.
+#You must set version and arch manualkly at the moment.
+#Packages are created in /tmp.
 
 VERSION=0.1.7
 DESCRIPTION="X11 eye candy/animations with holiday themes
