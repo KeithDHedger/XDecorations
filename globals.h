@@ -76,7 +76,6 @@ struct					settled
 	int					width;
 	int					x,y;
 	bool				showing;
-	bool				valid;
 };
 
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
@@ -128,14 +127,9 @@ extern bool				lampsNeedsUpdate;
 //settled
 extern settled			windowSnow[MAXWINDOWS];
 extern settled			bottomSnow;
-extern int				maxWindows;
 
-//extern int				*down;
-//extern Pixmap			settledPixmap;
-//extern Pixmap			settledPixmapMask;
 extern int				maxBottomHeight;
 extern int				settleRate;
-//extern bool				keepSettling;
 extern int				blackColor;
 extern int				whiteColor;
 extern bool				clearOnMaxHeight;

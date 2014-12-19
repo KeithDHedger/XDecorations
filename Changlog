@@ -1,4 +1,5 @@
 0.1.7
+Added falling settling on windows.
 Split source code into seperate files.
 Added falling settling at bottom of screen.
 

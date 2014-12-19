@@ -185,11 +185,16 @@ bool checkOnWindow(movement *mov)
 				{
 					if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width+windowSnow[j].x)))
 						{
-							if(mov->y>windowSnow[j].y)
+							//if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->object->h[0])))
+							if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->stepY)))
 								{
 									updateWindowSnow(mov,j);
 									return(true);
 								}
+//							if((mov->y>windowSnow[j].y) && (mov->y<(windowSnow[j].y+mov->object->h[0])))
+//								{
+//									return(true);
+//								}
 						}
 				}
 		}
@@ -467,7 +472,6 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 			XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
 			windowSnow[newwinid].x=abs(screen_x);
 			windowSnow[newwinid].y=abs(screen_y);
-			//windowSnow[newwinid].valid=true;
 			clearWindowSnow(newwinid,true);
 			retval=true;
 			XFetchName(display,wid,&name);
@@ -479,15 +483,6 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 		}
 
 	return(retval);
-}
-
-void windowShowing(Window wid,bool show)
-{
-	for(int j=0; j<MAXWINDOWS; j++)
-		{
-			if(windowSnow[j].wid==wid)
-				windowSnow[j].showing=show;
-		}
 }
 
 void getOpenwindows(void)
@@ -516,7 +511,7 @@ void getOpenwindows(void)
 	if((status==Success) && (numItems>0))
 		{
 			array=(long*)data;
-			for(long k=0; k<numItems; k++)
+			for(unsigned long k=0; k<numItems; k++)
 				{
 					w=(Window)array[k];
 
@@ -537,6 +532,5 @@ void getOpenwindows(void)
 		}
 
 	XUngrabServer(display);
-
 }
 

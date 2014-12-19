@@ -183,7 +183,6 @@ void removeInvalidWindow(void)
 	windowSnow[windowid].x=-1;
 	windowSnow[windowid].y=-1;
 	windowSnow[windowid].showing=false;
-	windowSnow[windowid].valid=false;
 }
 
 int ApplicationErrorHandler(Display *display,XErrorEvent *theEvent)

@@ -46,31 +46,12 @@ bool			figureNeedsUpdate=false;
 bool			fallingNeedsUpdate=false;
 bool			lampsNeedsUpdate=false;
 
-//settled on windows
-//int				*down;
-//Pixmap			settledPixmap;
-//Pixmap			settledPixmapMask;
-//int				maxBottomHeight;
-//int				settleRate;
-//bool			keepSettling=true;
-//int				blackColor;
-//int				whiteColor;
-//bool			clearOnMaxHeight;
-
-
 //settled
-
 settled			windowSnow[MAXWINDOWS];
 settled			bottomSnow;
 
-int				maxWindows=0;
-
-//int				*down;
-//Pixmap			settledPixmap;
-//Pixmap			settledPixmapMask;
 int				maxBottomHeight;
 int				settleRate;
-//bool			keepSettling=true;
 int				blackColor;
 int				whiteColor;
 bool			clearOnMaxHeight;
