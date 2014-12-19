@@ -2,7 +2,7 @@
 
 #©keithhedger Wed 22 May 19:55:26 BST 2013 kdhedger68713@gmail.com
 
-VERSION=$(sed -n 's/#define VERSION\ "\(.*\)"/\1/p' xdecorations.cpp)
+VERSION=$(sed -n 's/#define VERSION\ "\(.*\)"/\1/p' globals.h)
 
 svn commit -m ""
 cd /tmp

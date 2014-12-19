@@ -32,10 +32,9 @@
 #define MAXFALLINGOBJECTS 5000
 #define	MAXFALLINGANIMATION 48
 #define MAXSWIRL 2
-//#define MAXSETTLED 8000
 #define MAXWINDOWS 100
 
-#define VERSION "0.1.5"
+#define VERSION "0.1.7"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 struct					objects
