@@ -433,7 +433,7 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 
 			if(windowSnow[j].wid==wid)
 				{
-					if(attr.wdth<50)
+					if(attr->width<50)
 						{
 							XFetchName(display,wid,&name);
 							if(name!=NULL)
