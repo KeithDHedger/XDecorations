@@ -399,7 +399,7 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 	bool	retval=false;
 	bool	newwindow=true;
 	int		newwinid=-1;
-	char	*name=NULL;
+//	char	*name=NULL;
 	Window	dummy;
 
 	for(int j=0; j<MAXWINDOWS; j++)
@@ -421,12 +421,12 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 									return(true);
 								}
 
-							XFetchName(display,wid,&name);
-							if(name!=NULL)
-								{
-									printf("xid=%i name=%s changed\n",(int)(long)wid,name);
-									printf("width=%i\n",attr->width);
-								}
+//							XFetchName(display,wid,&name);
+//							if(name!=NULL)
+//								{
+//									printf("xid=%i name=%s changedn",(int)(long)wid,name);
+//									printf("width=%in",attr->width);
+//								}
 							return(false);
 						}
 				}
@@ -436,8 +436,8 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 					newwindow=false;
 					if(attr->map_state!=IsViewable)
 						windowSnow[j].showing=false;
-					//else
-					//	windowSnow[j].showing=true;
+					else
+						windowSnow[j].showing=true;
 					break;
 				}
 		}
@@ -470,37 +470,19 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 			windowSnow[newwinid].showing=true;
 			clearWindowSnow(newwinid,true);
 			retval=true;
-			XFetchName(display,wid,&name);
-			if(name!=NULL)
-				{
-					printf("xid=%i name=%s added\n",(int)(long)wid,name);
-					printf("width=%i x=%i y=%i maxhite=%i\n",attr->width,windowSnow[newwinid].x,windowSnow[newwinid].y,windowSnow[newwinid].maxHeight);
-				}
+//			XFetchName(display,wid,&name);
+//			if(name!=NULL)
+//				{
+//					printf("xid=%i name=%s addedn",(int)(long)wid,name);
+//					printf("width=%i x=%i y=%i maxhite=%in",attr->width,windowSnow[newwinid].x,windowSnow[newwinid].y,windowSnow[newwinid].maxHeight);
+//				}
 		}
 
 	return(retval);
 }
 
-bool Window_Has_Property(Display * dpy, Window win, Atom atom)
+void turnOff(void)
 {
-    Atom type_ret;
-    int format_ret;
-    unsigned char *prop_ret;
-    unsigned long bytes_after, num_ret;
-
-    type_ret = None;
-    prop_ret = NULL;
-    XGetWindowProperty(dpy, win, atom, 0, 0, False, AnyPropertyType,
-                       &type_ret, &format_ret, &num_ret,
-                       &bytes_after, &prop_ret);
-    if (prop_ret)
-        XFree(prop_ret);
-
-if(type_ret==None)
-	return(false);
-
-return(true);
- //   return (type_ret != None) ? true : false;
 }
 
 void getOpenwindows(void)
@@ -520,10 +502,6 @@ void getOpenwindows(void)
 
 	Atom _NET_WM_WINDOW_TYPE=XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
 	Atom _NET_WM_WINDOW_TYPE_NORMAL=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
-	Atom _NET_WM_STATE=XInternAtom(display,"_NET_WM_STATE",False);
-	Atom _NET_WM_STATE_HIDDEN=XInternAtom(display,"_NET_WM_STATE_HIDDEN",False);
-	Atom _NET_WM_ALLOWED_ACTIONS=XInternAtom(display,"_NET_WM_ALLOWED_ACTIONS",False);
-	Atom WM_STATE=XInternAtom(display,"WM_STATE",False);
 
 	XGrabServer(display);
 	rootWindow=RootWindow(display,screen);
@@ -533,32 +511,23 @@ void getOpenwindows(void)
 	if((status==Success) && (numItems>0))
 		{
 			array=(long*)data;
+			for(unsigned long g=0;g<numItems;g++)
+				{
+					for(int j=0;j<MAXWINDOWS;j++)
+						windowSnow[j].showing=false;
+
+					for(int j=0; j<MAXWINDOWS; j++)
+						{
+							//w=(Window)array[g];
+							if(windowSnow[j].wid==array[g])
+								windowSnow[j].showing=true;
+						}
+				}
+
 			for(unsigned long k=0; k<numItems; k++)
 				{
 					w=(Window)array[k];
-									XGetWindowAttributes(display,w,&attr);
-									if(w==44046144)
-										{
-											printf("wm stae=%i\n",(int)Window_Has_Property(display,w,_NET_WM_STATE));
-											printf("map state %i\n",attr.map_state);
-											printf("wid %i\n",attr.width);
-											printf("height %i\n",attr.height);
-											printf("border %i\n",attr.border_width);
-										}
 
-									if (Window_Has_Property(display,w,_NET_WM_STATE)==false)
-										{
-					   						for(int j=0; j<MAXWINDOWS; j++)
-												{
-															printf("XXXXXXXXXXXX\n");
-													if(windowSnow[j].wid==w)
-														{
-														exit(0);
-															printf("XXXXXXXXXXXX\n");
-															windowSnow[j].showing=false;
-														}
-												}
-										}
 					status=XGetWindowProperty(display,w,_NET_WM_WINDOW_TYPE,0L,1L,False,XA_ATOM,&real_type,&real_format,&items_read,&items_left,&data);
 					atoms=(Atom *)data;
 					for(i=0;i<items_read;i++)
@@ -571,91 +540,6 @@ void getOpenwindows(void)
 									skipErrors(false);
 								}
 						}
-
-//XWMHints *hin=NULL;
-//hin=XGetWMHints(display, w);
-//if(hin!=NULL)
-//{
-//if(hin->initial_state==WithdrawnState)
-//{
-//    					for(int j=0; j<MAXWINDOWS; j++)
-//							{
-//								if(windowSnow[j].wid==w)
-//									{
-//										printf("XXXXXXXXXXXXn");
-//										windowSnow[j].showing=false;
-//									}
-//							}
-//}
-//}
- //   if (Window_Has_Property(display,w,WM_STATE))
-//    {
-//    	status=XGetWindowProperty(display,w,WM_STATE,0,0,False,AnyPropertyType,&real_type,&real_format,&items_read,&items_left,&data);
-//					atoms=(Atom *)data;
-//					//for(i=0;i<items_read;i++)
-//					if(data)
-//						{
-//							//printf("%in",data);
-//							char* com;
-//							asprintf(&com,"echo win=%i %i >>/tmp/dataxx",(long)w,data);
-//							//system(com);
-//							free(com);
-//						}
-//					else
-//   					 {
-//    					for(int j=0; j<MAXWINDOWS; j++)
-//							{
-//								if(windowSnow[j].wid==w)
-//									{
-//										windowSnow[j].showing=false;
-//										printf("XXXXXXXXXXXXXXn");
-//									}
-//							}
-//
-//   					}
-//    }
-//    					else
-//   					 {
-//    					for(int j=0; j<MAXWINDOWS; j++)
-//							{
-//								if(windowSnow[j].wid==w)
-//									{
-//										windowSnow[j].showing=false;
-//										printf("ZZZZZZZZZZZZZZZZZzn");
-//									}
-//							}
-//
-//   					}
-
-
-
-//					status=XGetWindowProperty(display,w,_NET_WM_STATE,0L,8192L,False,XA_ATOM,&real_type,&real_format,&items_read,&items_left,&data);
-//					atoms=(Atom *)data;
-//					if(items_read==0)
-//						{
-//							for(int h=0;h<MAXWINDOWS;h++)
-//								{
-//									if(windowSnow[h].wid==w)
-//										{
-//											windowSnow[h].showing=false;
-//										}
-//								}						
-//						}
-					//if(status!=Success)
-					//	exit(0);
-//					for(i=0;i<items_read;i++)
-//						{
-//							if(atoms[i]==_NET_WM_STATE_HIDDEN)
-//								{
-								//printf("XXXXXXXXXn");
-//								exit(0);
-//									skipErrors(true);
-//									XGetWindowAttributes(display,w,&attr);
-//									checkForWindowChange(w,&attr);
-//									skipErrors(false);
-//								}
-//						}
-
 				}
 			XFree(data);
 		}
