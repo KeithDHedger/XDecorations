@@ -47,30 +47,38 @@ void clearWindowSnow(int winid,bool newrsrc)
 			windowSnow[winid].pixmap=XCreatePixmap(display,drawOnThis,windowSnow[winid].width,windowSnow[winid].maxHeight,depth);
 			windowSnow[winid].mask=XCreatePixmap(display,drawOnThis,windowSnow[winid].width,windowSnow[winid].maxHeight,1);
 			windowSnow[winid].maskgc=XCreateGC(display,windowSnow[winid].mask,0,NULL);
-		}
 
-	windowSnow[winid].lasty=(int*)malloc(sizeof(int)*windowSnow[winid].width);
+			windowSnow[winid].lasty=(int*)malloc(sizeof(int)*windowSnow[winid].width);
+		}
 
 	for(int j=0; j<windowSnow[winid].width; j++)
 		windowSnow[winid].lasty[j]=windowSnow[winid].maxHeight;
 
-	//XSetClipMask(display,windowSnow[winid].maskgc,0);
-	XSetClipMask(display,windowSnow[winid].maskgc,0);
-	XSetClipOrigin(display,windowSnow[winid].maskgc,0,0);
+	if(windowSnow[winid].mask!=0)
+		{
+			XSetClipMask(display,windowSnow[winid].maskgc,0);
+			XSetClipOrigin(display,windowSnow[winid].maskgc,0,0);
 
-	//XSetForeground(display,windowSnow[winid].maskgc,blackColor);
-	XSetForeground(display,windowSnow[winid].maskgc,whiteColor);
-	XSetFillStyle(display,windowSnow[winid].maskgc,FillSolid);
-	XFillRectangle(display,windowSnow[winid].mask,windowSnow[winid].maskgc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
+			//XSetForeground(display,windowSnow[winid].maskgc,blackColor);
+			XSetForeground(display,windowSnow[winid].maskgc,whiteColor);
+			XSetFillStyle(display,windowSnow[winid].maskgc,FillSolid);
+			XFillRectangle(display,windowSnow[winid].mask,windowSnow[winid].maskgc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
 
-	XSetClipMask(display,gc,0);
-	XSetClipOrigin(display,gc,0,0);
+			XSetClipMask(display,gc,0);
+			XSetClipOrigin(display,gc,0,0);
 
-	XSetForeground(display,gc,blackColor);
-	//XSetForeground(display,gc,whiteColor);
-	XSetFillStyle(display,gc,FillSolid);
-	XFillRectangle(display,windowSnow[winid].pixmap,gc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
-	windowSnow[winid].keepSettling=true;
+			XSetForeground(display,gc,blackColor);
+			//XSetForeground(display,gc,whiteColor);
+			XSetFillStyle(display,gc,FillSolid);
+			XFillRectangle(display,windowSnow[winid].pixmap,gc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
+			windowSnow[winid].keepSettling=true;
+		}
+}
+
+void clearAllWindowSnow(bool newrsrc)
+{
+	for(int j=0;j<MAXWINDOWS;j++)
+		clearWindowSnow(j,false);
 }
 
 void doGusts(void)
@@ -123,6 +131,7 @@ void doGusts(void)
 				}
 			gustOffSet=realGustSpeed;
 			clearBottomSnow();
+			clearAllWindowSnow(false);
 		}
 }
 
@@ -149,6 +158,9 @@ void updateWindowSnow(movement *mov,int windownum)
 {
 	int		downx;
 	Pixmap	*pmm;
+
+	if(maxWindowHeight==0)
+		return;
 
 	if((windowSnow[windownum].showing==true) && (windowSnow[windownum].keepSettling==true))
 		{
@@ -179,6 +191,9 @@ void updateWindowSnow(movement *mov,int windownum)
 
 bool checkOnWindow(movement *mov)
 {
+	if(maxWindowHeight==0)
+		return(false);
+
 	for(int j=0; j<MAXWINDOWS; j++)
 		{
 			if((windowSnow[j].wid>0) && (windowSnow[j].showing==true))
@@ -200,6 +215,9 @@ void updateBottomSnow(movement *mov)
 {
 	int		downx;
 	Pixmap	*pmm;
+
+	if(maxBottomHeight==0)
+		return;
 
 	if(bottomSnow.keepSettling==true)
 		{
@@ -399,8 +417,10 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 	bool	retval=false;
 	bool	newwindow=true;
 	int		newwinid=-1;
-//	char	*name=NULL;
 	Window	dummy;
+
+	if(maxWindowHeight==0)
+		return(false);
 
 	for(int j=0; j<MAXWINDOWS; j++)
 		{
@@ -420,13 +440,6 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 									clearWindowSnow(j,true);
 									return(true);
 								}
-
-//							XFetchName(display,wid,&name);
-//							if(name!=NULL)
-//								{
-//									printf("xid=%i name=%s changedn",(int)(long)wid,name);
-//									printf("width=%in",attr->width);
-//								}
 							return(false);
 						}
 				}
@@ -460,7 +473,7 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 	if(newwindow==true)
 		{
 			windowSnow[newwinid].keepSettling=true;
-			windowSnow[newwinid].maxHeight=maxBottomHeight;
+			windowSnow[newwinid].maxHeight=maxWindowHeight;
 			windowSnow[newwinid].lasty=NULL;
 			windowSnow[newwinid].wid=wid;
 			windowSnow[newwinid].width=attr->width;
@@ -470,19 +483,9 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 			windowSnow[newwinid].showing=true;
 			clearWindowSnow(newwinid,true);
 			retval=true;
-//			XFetchName(display,wid,&name);
-//			if(name!=NULL)
-//				{
-//					printf("xid=%i name=%s addedn",(int)(long)wid,name);
-//					printf("width=%i x=%i y=%i maxhite=%in",attr->width,windowSnow[newwinid].x,windowSnow[newwinid].y,windowSnow[newwinid].maxHeight);
-//				}
 		}
 
 	return(retval);
-}
-
-void turnOff(void)
-{
 }
 
 void getOpenwindows(void)
@@ -517,11 +520,8 @@ void getOpenwindows(void)
 						windowSnow[j].showing=false;
 
 					for(int j=0; j<MAXWINDOWS; j++)
-						{
-							//w=(Window)array[g];
-							if(windowSnow[j].wid==array[g])
-								windowSnow[j].showing=true;
-						}
+						if(windowSnow[j].wid==array[g])
+							windowSnow[j].showing=true;
 				}
 
 			for(unsigned long k=0; k<numItems; k++)

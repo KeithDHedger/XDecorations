@@ -12,11 +12,11 @@
 
 void initBottomSnow(void)
 {
-	bottomSnow.pixmap=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight,depth);
-	bottomSnow.mask=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight,1);
+	bottomSnow.pixmap=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight+1,depth);
+	bottomSnow.mask=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight+1,1);
 	bottomSnow.maskgc=XCreateGC(display,bottomSnow.mask,0,NULL);
 	bottomSnow.keepSettling=true;
-	bottomSnow.maxHeight=maxBottomHeight;
+	bottomSnow.maxHeight=maxBottomHeight+1;
 	bottomSnow.lasty=(int*)malloc(sizeof(int)*displayWidth);
 	bottomSnow.wid=0;
 	bottomSnow.width=displayWidth;
@@ -32,7 +32,7 @@ void initWindowSnow(void)
 			windowSnow[j].mask=0;
 			windowSnow[j].maskgc=0;
 			windowSnow[j].keepSettling=false;
-			windowSnow[j].maxHeight=maxBottomHeight;
+			windowSnow[j].maxHeight=maxWindowHeight+1;
 			windowSnow[j].lasty=NULL;
 			windowSnow[j].wid=0;
 			windowSnow[j].width=0;

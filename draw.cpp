@@ -176,7 +176,7 @@ void removeInvalidWindow(void)
 	windowSnow[windowid].mask=0;
 	windowSnow[windowid].maskgc=0;
 	windowSnow[windowid].keepSettling=false;
-	windowSnow[windowid].maxHeight=maxBottomHeight;
+	windowSnow[windowid].maxHeight=maxWindowHeight;
 	windowSnow[windowid].lasty=NULL;
 	windowSnow[windowid].wid=0;
 	windowSnow[windowid].width=0;

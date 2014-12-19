@@ -107,7 +107,7 @@ args				xdecorations_rc[]=
 	{"fallingspeed",TYPEINT,&fallSpeed},
 	{"minfallspeed",TYPEINT,&minFallSpeed},
 	{"fallinanimdelay",TYPEINT,&fallingAnimSpeed},
-	{"maxxstep",TYPEINT,&maxXStep},
+	{"drift",TYPEINT,&maxXStep},
 
 //wind
 	{"wind",TYPEINT,&windSpeed},
@@ -117,7 +117,8 @@ args				xdecorations_rc[]=
 	{"gustspeed",TYPEINT,&gustSpeed},
 
 //settling
-	{"settleheight",TYPEINT,&maxBottomHeight},
+	{"bsettleheight",TYPEINT,&maxBottomHeight},
+	{"wsettleheight",TYPEINT,&maxWindowHeight},
 	{"settlerate",TYPEINT,&settleRate},
 	{"clearonmaxhight",TYPEBOOL,&clearOnMaxHeight},
 
@@ -365,7 +366,7 @@ void doHelp(void)
 	printf("\tDistance falling objects move in Y direction in one go\n");
 	printf("-minfallspeed INTEGER\n");
 	printf("\tMin distance falling objects move in Y direction in one go ( MUST be less than fallingspeed )\n");
-	printf("-maxxstep INTEGER\n");
+	printf("-drift INTEGER\n");
 	printf("\tFalling objects max X step\n");
 	printf("-fallinanimdelay INTEGER\n");
 	printf("\tDelay for animation of falling objects\n\n");
@@ -385,14 +386,16 @@ void doHelp(void)
 	printf("\tSpeed of gusts of wind\n\n");
 
 //settling
-	printf("-settleheight INTEGER\n");
-	printf("\tHeight of settled snow etc, 0 = Don't let snow settle\n");
+	printf("-bsettleheight INTEGER\n");
+	printf("\tHeight of settled snow etc on bottom of desktop, 0 = Don't let snow settle\n");
+	printf("-wsettleheight INTEGER\n");
+	printf("\tHeight of settled snow etc on windows, 0 = Don't let snow settle\n");
 	printf("-settlerate INTEGER\n");
 	printf("\tRate at which settling occurs - lower the number slower but better\n");
 	printf("\tSettled snow etc is swept clean at the end of a gust\n");
-	printf("\tYou should set maxxstep > 1 for a more relaistic settle after being swept clean\n");
+	printf("\tYou should set drift > 1 for a more relaistic settle after being swept clean\n");
 	printf("-clearonmaxheight/-no-clearonmaxheight\n");
-	printf("\tClear the snow etc when it reaches the maximum height set by settleheight\n");
+	printf("\tClear the snow etc when it reaches the maximum height set by bsettleheight/wsettleheight\n");
 
 	printf("\n");
 	exit(0);
@@ -423,6 +426,7 @@ void setDefaults(void)
 	flyerNumber=0;
 	numberOfFlyers=20;
 	maxBottomHeight=100;
+	maxWindowHeight=50;
 	settleRate=2;
 	clearOnMaxHeight=true;
 }
@@ -630,7 +634,7 @@ int main(int argc,char* argv[])
 				fallSpeed=atol(argv[++argnum]);
 			if(strcmp(argstr,"-minfallspeed")==0)//max xstep =4
 				minFallSpeed=atol(argv[++argnum]);
-			if(strcmp(argstr,"-maxxstep")==0)//max xstep =4
+			if(strcmp(argstr,"-drift")==0)//max xstep =4
 				maxXStep=atol(argv[++argnum]);
 			if(strcmp(argstr,"-fallinanimdelay")==0)//max xstep =4
 				fallingAnimSpeed=atol(argv[++argnum]);
@@ -648,8 +652,10 @@ int main(int argc,char* argv[])
 				gustSpeed=atol(argv[++argnum]);
 
 //settling
-			if(strcmp(argstr,"-settleheight")==0)//maxBottomHeight=100
+			if(strcmp(argstr,"-bsettleheight")==0)//maxBottomHeight=100
 				maxBottomHeight=atol(argv[++argnum]);
+			if(strcmp(argstr,"-wsettleheight")==0)//maxBottomHeight=100
+				maxWindowHeight=atol(argv[++argnum]);
 			if(strcmp(argstr,"-settlerate")==0)//settleRate=2
 				settleRate=atol(argv[++argnum]);
 

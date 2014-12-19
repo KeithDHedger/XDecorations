@@ -129,6 +129,7 @@ extern settled			windowSnow[MAXWINDOWS];
 extern settled			bottomSnow;
 
 extern int				maxBottomHeight;
+extern int				maxWindowHeight;
 extern int				settleRate;
 extern int				blackColor;
 extern int				whiteColor;

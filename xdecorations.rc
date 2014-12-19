@@ -171,9 +171,9 @@ minfallspeed 1
 
 #Falling objects are randomly set to fall at a rate between fallingspeed and minfallspeed, to make all objects fall at the same rate make both values the same
 
-#Falling objects max X step
+#Falling objects max drift in X direction
 #Defaults to 4
-maxxstep 4
+drift 4
 
 #Animation delay for falling objects
 #Defaults to 8
@@ -201,16 +201,21 @@ gustdelay 10000
 gustspeed 60
 
 ##### Settling #####
-#Settle snow etc height.
+#Settle snow etc height at bottom of desktop.
 #Defaults to 100.
 #Set to 0 to disable settling.
-settleheight 100
+bsettleheight 100
+
+#Settle snow etc height on windows.
+#Defaults to 100.
+#Set to 0 to disable settling.
+wsettleheight 50
 
 #Settle rate of snow etc.
 #Defaults to 2
 #the lower the number the slower snow etc settles but the better it looks.
 #Gusts should be enabled as a gust of wind will clear the settled snow.
-#You should set maxxstep >1 for a more realistic effect.
+#You should set drift >1 for a more realistic effect.
 #The settle rate should be lower than the height of the smallest falling object.
 settlerate 2
 

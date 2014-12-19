@@ -51,6 +51,7 @@ settled			windowSnow[MAXWINDOWS];
 settled			bottomSnow;
 
 int				maxBottomHeight;
+int				maxWindowHeight;
 int				settleRate;
 int				blackColor;
 int				whiteColor;

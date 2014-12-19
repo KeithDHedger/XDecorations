@@ -1,4 +1,6 @@
 0.1.7
+Added different max settling height to windows.
+Changed some option names.
 Added falling settling on windows.
 Split source code into seperate files.
 Added falling settling at bottom of screen.
