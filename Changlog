@@ -1,4 +1,5 @@
 0.1.7
+Installed INSTALL file to /usr/share/doc/XDecorations/.
 This is the last release that will write to the root window as most distros seem to block this one way or another.
 Added y offsets for snow etc settling on windows.
 Added y offsets for snow etc settling on bottom.
@@ -10,7 +11,7 @@ Split source code into seperate files.
 Added falling settling at bottom of screen.
 
 0.1.7
-Adde 'retro' xsnow snow, for us old timer's.
+Added 'retro' xsnow snow, for us old timer's.
 Installed example config to /usr/share/doc/XDecorations/xdecorations.rc.
 Added doc folder to /usr/share/doc.
 Falling snow etc now settles at bottom of window. 

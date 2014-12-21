@@ -1,19 +1,20 @@
 #!/bin/sh
 
 #Original script provided by Mario and mucked about by me.
-#You must set version and arch manualkly at the moment.
+#You must set version and arch manually at the moment.
 #Packages are created in /tmp.
 
 VERSION=0.1.7
 DESCRIPTION="X11 eye candy/animations with holiday themes
 Adds animated objects to the desktop, in the style of Xpenguins/Xsnow."
 URL="http://keithhedger.hostingsiteforfree.com/pages/xdecorations/xdecorations.html"
+ARCH=amd64
 
 make DESTDIR=/tmp/XDecorations install
 
 
-for PKG in rpm deb sh #tar
+for PKG in rpm deb sh tar
 do
-   fpm -t $PKG -n "xdecorations" -C /tmp/XDecorations --package /tmp -v $VERSION -a amd64 --description "$DESCRIPTION" -m Keith --category x11 --url "$URL" -f -s dir .
+   fpm -t $PKG -n "xdecorations" -C /tmp/XDecorations --package /tmp -v $VERSION -a $ARCH --description "$DESCRIPTION" -m Keith --category x11 --url "$URL" -f -s dir .
 done
 
