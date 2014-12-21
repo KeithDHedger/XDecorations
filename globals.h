@@ -133,6 +133,8 @@ extern int				settleRate;
 extern int				blackColor;
 extern int				whiteColor;
 extern bool				clearOnMaxHeight;
+extern int				windowYOffset;
+extern int				bottomYOffset;
 
 //falling
 extern objects			floating[MAXFLOAT];

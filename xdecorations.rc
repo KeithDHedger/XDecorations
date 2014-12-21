@@ -223,6 +223,14 @@ settlerate 2
 #Defaults to 1
 clearonmaxheight 1
 
+#Offset the start point of settling snow etc from the top of the windows.
+#Defaults to 0
+woffsety	0
+
+#Offset the start point of settling snow etc from the bottom of the screen.
+#Defaults to 0
+boffsety	0
+
 #### EXTRAS #####
 #These are not used in the config file but are command line switches ONLY.
 #Don't load the default config file ( ~/.config/xdecorations.rc ).

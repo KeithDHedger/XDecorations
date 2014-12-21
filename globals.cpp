@@ -56,6 +56,8 @@ int				settleRate;
 int				blackColor;
 int				whiteColor;
 bool			clearOnMaxHeight;
+int				windowYOffset;
+int				bottomYOffset;
 
 //falling
 objects			floating[MAXFLOAT];

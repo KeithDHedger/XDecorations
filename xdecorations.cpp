@@ -121,6 +121,8 @@ args				xdecorations_rc[]=
 	{"wsettleheight",TYPEINT,&maxWindowHeight},
 	{"settlerate",TYPEINT,&settleRate},
 	{"clearonmaxhight",TYPEBOOL,&clearOnMaxHeight},
+	{"woffsety",TYPEINT,&windowYOffset},
+	{"boffsety",TYPEINT,&bottomYOffset},
 
 	{NULL,0,NULL}
 };
@@ -397,6 +399,12 @@ void doHelp(void)
 	printf("-clearonmaxheight/-no-clearonmaxheight\n");
 	printf("\tClear the snow etc when it reaches the maximum height set by bsettleheight/wsettleheight\n");
 
+	printf("As some window managers include the decorations in the reported window size and some don't you may need to add an offset to where the snow etc starts to settle, KDE will need this xfce4wm may or may not need this.\nThe bottom offset is to raise the start of settled snow etc from the bottom of the screen if you have a bottom panel.");
+	printf("-woffsety INTEGER\n");
+	printf("\tOffset the settled layer on windows by INTEGER\n");
+	printf("-boffsety INTEGER\n");
+	printf("\tOffset the settled layer froom the bottom by INTEGER\n");
+
 	printf("\n");
 	exit(0);
 }
@@ -429,6 +437,8 @@ void setDefaults(void)
 	maxWindowHeight=50;
 	settleRate=2;
 	clearOnMaxHeight=true;
+	windowYOffset=0;
+	bottomYOffset=0;
 }
 
 void reloadConfig(void)
@@ -658,6 +668,11 @@ int main(int argc,char* argv[])
 				maxWindowHeight=atol(argv[++argnum]);
 			if(strcmp(argstr,"-settlerate")==0)//settleRate=2
 				settleRate=atol(argv[++argnum]);
+			if(strcmp(argstr,"-woffsety")==0)//window settled y offset=0
+				windowYOffset=atol(argv[++argnum]);
+			if(strcmp(argstr,"-boffsety")==0)//bottom settled y offset=0
+				bottomYOffset=atol(argv[++argnum]);
+
 
 //print help
 			if(strcmp(argstr,"-help")==0)

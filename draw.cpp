@@ -209,8 +209,8 @@ void drawWindowSnow(void)
 					windowid=j;
 					XGetWindowAttributes(display,windowSnow[j].wid,&attr);
 					XSetClipMask(display,gc,0);
-					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight);
-					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight);
+					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight-windowYOffset);
+					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight-windowYOffset);
 				}
 		}
 
@@ -222,8 +222,8 @@ void drawWindowSnow(void)
 void drawSettled(void)
 {
 	XSetClipMask(display,gc,bottomSnow.mask);
-	XSetClipOrigin(display,gc,0,displayHeight-bottomSnow.maxHeight);
-	XCopyArea(display,bottomSnow.pixmap,drawOnThis,gc,0,0,displayWidth,bottomSnow.maxHeight,0,displayHeight-bottomSnow.maxHeight);
+	XSetClipOrigin(display,gc,0,displayHeight-bottomSnow.maxHeight-bottomYOffset);
+	XCopyArea(display,bottomSnow.pixmap,drawOnThis,gc,0,0,displayWidth,bottomSnow.maxHeight,0,displayHeight-bottomSnow.maxHeight-bottomYOffset);
 }
 
 void drawFalling(void)
