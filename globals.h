@@ -123,6 +123,8 @@ extern bool				figureNeedsUpdate;
 extern bool				fallingNeedsUpdate;
 extern bool				lampsNeedsUpdate;
 
+extern bool				usingRootWindow;
+
 //settled
 extern settled			windowSnow[MAXWINDOWS];
 extern settled			bottomSnow;

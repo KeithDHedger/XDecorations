@@ -12,6 +12,10 @@
 
 void initBottomSnow(void)
 {
+
+	if(maxBottomHeight==0)
+		return;
+
 	bottomSnow.pixmap=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight+1,depth);
 	bottomSnow.mask=XCreatePixmap(display,drawOnThis,displayWidth,maxBottomHeight+1,1);
 	bottomSnow.maskgc=XCreateGC(display,bottomSnow.mask,0,NULL);
@@ -26,6 +30,9 @@ void initBottomSnow(void)
 
 void initWindowSnow(void)
 {
+	if(maxWindowHeight==0)
+		return;
+
 	for(int j=0;j<MAXWINDOWS;j++)
 		{
 			windowSnow[j].pixmap=0;

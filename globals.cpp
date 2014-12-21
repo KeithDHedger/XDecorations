@@ -46,6 +46,8 @@ bool			figureNeedsUpdate=false;
 bool			fallingNeedsUpdate=false;
 bool			lampsNeedsUpdate=false;
 
+bool			usingRootWindow=false;
+
 //settled
 settled			windowSnow[MAXWINDOWS];
 settled			bottomSnow;

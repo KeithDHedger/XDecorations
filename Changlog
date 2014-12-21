@@ -1,4 +1,7 @@
 0.1.7
+This is the last release that will write to the root window as most distros seem to block this one way or another.
+Added y offsets for snow etc settling on windows.
+Added y offsets for snow etc settling on bottom.
 Added packaging script thanks to Mario for that.
 Added different max settling height to windows.
 Changed some option names.

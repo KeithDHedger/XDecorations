@@ -59,6 +59,8 @@ If no command line otions are used and no config file exists at ~/.config/xdecor
 CAVEATS:
 You MUST have a composite manager running to use the windowing option ( default ), semi transparent images can ONLY be used when in window mode, when writing to the root window ( -no-usewindow ) the alpha blend of the images will be ignored.
 
+Snow etc settling on windows and at the bottom of the screen is only available if you are writing to a window ( -usewindow ) and NOT if you are writing to the root window ( -no-usewindow ), this is the last version - 0.1.7 that will support writing to the root window.
+
 Bugs suggestions etc to:
 
 kdhedger68713@gmail.com

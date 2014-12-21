@@ -221,6 +221,9 @@ void drawWindowSnow(void)
 
 void drawSettled(void)
 {
+	if(maxBottomHeight==0)
+		return;
+
 	XSetClipMask(display,gc,bottomSnow.mask);
 	XSetClipOrigin(display,gc,0,displayHeight-bottomSnow.maxHeight-bottomYOffset);
 	XCopyArea(display,bottomSnow.pixmap,drawOnThis,gc,0,0,displayWidth,bottomSnow.maxHeight,0,displayHeight-bottomSnow.maxHeight-bottomYOffset);

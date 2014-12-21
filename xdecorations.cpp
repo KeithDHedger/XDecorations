@@ -693,6 +693,7 @@ int main(int argc,char* argv[])
 			visual=DefaultVisual(display,screen);
 			useBuffer=false;
 			drawOnThis=rootWin;
+			usingRootWindow=true;
 		}
 	else
 		{
@@ -752,7 +753,8 @@ int main(int argc,char* argv[])
 					printf("Can't get ARGB, do you have a composite manager running\n");
 					drawOnThis=rootWin;
 					useBuffer=false;
-				}
+					usingRootWindow=true;
+			}
 		}
 
 	gc=XCreateGC(display,drawOnThis,0,NULL);
@@ -761,6 +763,12 @@ int main(int argc,char* argv[])
 
 	blackColor=BlackPixel(display,screen);
 	whiteColor=WhitePixel(display,screen);
+
+	if(usingRootWindow==true)
+		{
+			maxBottomHeight=0;
+			maxWindowHeight=0;
+		}
 
 	initBottomSnow();
 	initWindowSnow();
@@ -845,7 +853,8 @@ int main(int argc,char* argv[])
 			if(watchConfig==true)
 				reloadConfig();
 
-			getOpenwindows();
+			if(usingRootWindow==false)
+				getOpenwindows();
 		}
 
 	if(useWindow==false)

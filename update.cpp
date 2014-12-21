@@ -12,6 +12,9 @@
 
 void clearBottomSnow(void)
 {
+	if(maxBottomHeight==0)
+		return;
+
 	for(int j=0; j<displayWidth; j++)
 		bottomSnow.lasty[j]=maxBottomHeight;
 
