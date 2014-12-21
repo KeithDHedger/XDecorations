@@ -510,6 +510,7 @@ void getOpenwindows(void)
 	Atom _NET_WM_WINDOW_TYPE_NORMAL=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
 
 	XGrabServer(display);
+	skipErrors(true);
 	rootWindow=RootWindow(display,screen);
 	Atom _NET_CLIENT_LIST=XInternAtom(display,"_NET_CLIENT_LIST" , true);
 	status=XGetWindowProperty(display,rootWindow,_NET_CLIENT_LIST,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
@@ -546,7 +547,7 @@ void getOpenwindows(void)
 				}
 			XFree(data);
 		}
-
+	skipErrors(true);
 	XUngrabServer(display);
 }
 

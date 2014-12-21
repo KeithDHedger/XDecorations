@@ -1,6 +1,7 @@
 0.1.7
 Installed INSTALL file to /usr/share/doc/XDecorations/.
 This is the last release that will write to the root window as most distros seem to block this one way or another.
+Settling snow etc does NOT work on ubuntu unity but is fine for xfce,kde,mint gnome,lxde.
 Added y offsets for snow etc settling on windows.
 Added y offsets for snow etc settling on bottom.
 Added packaging script thanks to Mario for that.
