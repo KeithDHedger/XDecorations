@@ -1,3 +1,6 @@
+0.1.8
+Snow on windows now in front of figures and flyers.
+
 0.1.7
 Installed INSTALL file to /usr/share/doc/XDecorations/.
 This is the last release that will write to the root window as most distros seem to block this one way or another.

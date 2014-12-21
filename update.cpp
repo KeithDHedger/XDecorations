@@ -62,8 +62,8 @@ void clearWindowSnow(int winid,bool newrsrc)
 			XSetClipMask(display,windowSnow[winid].maskgc,0);
 			XSetClipOrigin(display,windowSnow[winid].maskgc,0,0);
 
-			//XSetForeground(display,windowSnow[winid].maskgc,blackColor);
-			XSetForeground(display,windowSnow[winid].maskgc,whiteColor);
+			XSetForeground(display,windowSnow[winid].maskgc,blackColor);
+			//XSetForeground(display,windowSnow[winid].maskgc,whiteColor);
 			XSetFillStyle(display,windowSnow[winid].maskgc,FillSolid);
 			XFillRectangle(display,windowSnow[winid].mask,windowSnow[winid].maskgc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
 
@@ -181,9 +181,30 @@ void updateWindowSnow(movement *mov,int windownum)
 								windowSnow[windownum].lasty[downx]=windowSnow[windownum].maxHeight;
 						}
 
-					windowSnow[windownum].lasty[downx]=windowSnow[windownum].lasty[downx]-settleRate;
+//					if((downx>0) && (downx<windowSnow[windownum].width))
+//						{
+//							int prev,next,between;
+//							between=settleRate;
+//							prev=windowSnow[windownum].lasty[downx-1];
+//							next=windowSnow[windownum].lasty[downx+1];
+//							if((windowSnow[windownum].lasty[downx]-settleRate<(prev)) || (windowSnow[windownum].lasty[downx]-settleRate<(next)))
+//								{
+//									if(prev>next)
+//										between=between-((prev-next)/2);
+//									if(prev<next)
+//										between=between-((next-prev)/2);
+//								}
+//							windowSnow[windownum].lasty[downx]=windowSnow[windownum].lasty[downx]-between;;
+//						}
+//					else
+						windowSnow[windownum].lasty[downx]=windowSnow[windownum].lasty[downx]-settleRate;
+
 					if(windowSnow[windownum].lasty[downx]<=0)
 						windowSnow[windownum].keepSettling=false;
+
+					XSetClipMask(display,windowSnow[windownum].maskgc,*(pmm));
+					XSetClipOrigin(display,windowSnow[windownum].maskgc,downx,windowSnow[windownum].lasty[downx]);
+					XCopyArea(display,*(mov->object->mask[0]),windowSnow[windownum].mask,windowSnow[windownum].maskgc,0,0,mov->object->w[0],mov->object->h[0],downx,windowSnow[windownum].lasty[downx]);
 
 					XSetClipMask(display,gc,*(pmm));
 					XSetClipOrigin(display,gc,downx,windowSnow[windownum].lasty[downx]);

@@ -208,7 +208,7 @@ void drawWindowSnow(void)
 				{
 					windowid=j;
 					XGetWindowAttributes(display,windowSnow[j].wid,&attr);
-					XSetClipMask(display,gc,0);
+					XSetClipMask(display,gc,windowSnow[j].mask);
 					XSetClipOrigin(display,gc,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight-windowYOffset);
 					XCopyArea(display,windowSnow[j].pixmap,drawOnThis,gc,0,0,windowSnow[j].width,windowSnow[j].maxHeight,windowSnow[j].x,windowSnow[j].y-windowSnow[j].maxHeight-windowYOffset);
 				}

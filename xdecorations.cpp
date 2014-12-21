@@ -839,11 +839,11 @@ int main(int argc,char* argv[])
 				}
 
 			eraseRects();
-			drawWindowSnow();
 			drawTreeLamps();
 			drawFigure();
 			drawFlyers();
 			drawLamps();
+			drawWindowSnow();
 			drawSettled();
 			drawFalling();
 
