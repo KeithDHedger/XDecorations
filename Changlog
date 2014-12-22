@@ -1,4 +1,6 @@
 0.1.8
+Code clean.
+Added CFLAGS/PREFIX to Makefile, commandline can override.
 Snow on windows now in front of figures and flyers.
 
 0.1.7

@@ -90,11 +90,10 @@ extern Window			rootWin;
 extern int				displayWidth;
 extern int				displayHeight;
 extern GC				gc;
-//extern GC				gcpm;
 
 extern Visual*			visual;
 extern int				depth;
-extern Imlib_Image		image;
+
 extern int				screen;
 extern Region			rg;
 extern XdbeBackBuffer	buffer;

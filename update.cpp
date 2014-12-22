@@ -181,23 +181,7 @@ void updateWindowSnow(movement *mov,int windownum)
 								windowSnow[windownum].lasty[downx]=windowSnow[windownum].maxHeight;
 						}
 
-//					if((downx>0) && (downx<windowSnow[windownum].width))
-//						{
-//							int prev,next,between;
-//							between=settleRate;
-//							prev=windowSnow[windownum].lasty[downx-1];
-//							next=windowSnow[windownum].lasty[downx+1];
-//							if((windowSnow[windownum].lasty[downx]-settleRate<(prev)) || (windowSnow[windownum].lasty[downx]-settleRate<(next)))
-//								{
-//									if(prev>next)
-//										between=between-((prev-next)/2);
-//									if(prev<next)
-//										between=between-((next-prev)/2);
-//								}
-//							windowSnow[windownum].lasty[downx]=windowSnow[windownum].lasty[downx]-between;;
-//						}
-//					else
-						windowSnow[windownum].lasty[downx]=windowSnow[windownum].lasty[downx]-settleRate;
+					windowSnow[windownum].lasty[downx]=windowSnow[windownum].lasty[downx]-settleRate;
 
 					if(windowSnow[windownum].lasty[downx]<=0)
 						windowSnow[windownum].keepSettling=false;
@@ -519,7 +503,7 @@ void getOpenwindows(void)
 	int					format;
 	unsigned long		numItems,bytesAfter;
 	XWindowAttributes	attr;
-	long				*array;
+	unsigned long		*array;
 	Window				w;
 	unsigned char *data;
 	Atom *atoms;
@@ -538,7 +522,7 @@ void getOpenwindows(void)
 
 	if((status==Success) && (numItems>0))
 		{
-			array=(long*)data;
+			array=(unsigned long*)data;
 			for(unsigned long g=0;g<numItems;g++)
 				{
 					for(int j=0;j<MAXWINDOWS;j++)

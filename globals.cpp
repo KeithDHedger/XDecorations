@@ -17,11 +17,10 @@ Window			rootWin;
 int				displayWidth;
 int				displayHeight;
 GC				gc;
-//GC				gcpm;
 
 Visual*			visual=NULL;
 int				depth=0;
-Imlib_Image		image;
+
 int				screen;
 Region			rg;
 XdbeBackBuffer	buffer;

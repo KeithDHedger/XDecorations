@@ -10,6 +10,8 @@
 #include "globals.h"
 #include "routines.h"
 
+Imlib_Image		image;
+
 void initBottomSnow(void)
 {
 
@@ -102,6 +104,7 @@ void initFlyers(void)
 								flyersMove[flyerCount].maxW=flyers[flyerCount].w[k];
 							if(flyers[flyerCount].h[k]>flyersMove[flyerCount].maxH)
 								flyersMove[flyerCount].maxH=flyers[flyerCount].h[k];
+							imlib_free_image();
 						}
 				}
 			if(flyers[flyerCount].anims!=0)
@@ -150,6 +153,7 @@ void initFigure(void)
 			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK]);
+			imlib_free_image();
 
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.Off.png",DATADIR,prefix,figureNumber);
 			image=imlib_load_image(pathname);
@@ -164,6 +168,7 @@ void initFigure(void)
 					figureW=imlib_image_get_width();
 					figureH=imlib_image_get_height();
 					setGravity(&figureX,&figureY,figureW,figureH);
+					imlib_free_image();
 				}
 		}
 }
@@ -183,7 +188,6 @@ void initLamps(void)
 			imlib_context_set_image(image);
 			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
-//imlib_render_image_on_drawable_at_size(0, 0, 200, 200);
 			imlib_render_pixmaps_for_whole_image(&lampsPixmap[ONPIXMAP],&lampsPixmap[ONMASK]);
 
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Lamps/%i.Off.png",DATADIR,prefix,lampSet);
@@ -195,7 +199,6 @@ void initLamps(void)
 					imlib_context_set_image(image);
 					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
-//imlib_render_image_on_drawable_at_size(0, 0, 200, 200);
 					imlib_render_pixmaps_for_whole_image(&lampsPixmap[OFFPIXMAP],&lampsPixmap[OFFMASK]);
 
 					lampWidth=imlib_image_get_width();
@@ -240,12 +243,13 @@ void initFalling(void)
 							floating[fallingCount].pixmap[k]=(Pixmap*)malloc(sizeof(Pixmap));
 							floating[fallingCount].mask[k]=(Pixmap*)malloc(sizeof(Pixmap));
 							imlib_context_set_image(image);
-							imlib_context_set_drawable(drawOnThis);
 							imlib_image_set_has_alpha(1);
+							imlib_context_set_drawable(drawOnThis);
 							imlib_render_pixmaps_for_whole_image(floating[fallingCount].pixmap[k],floating[fallingCount].mask[k]);
 							floating[fallingCount].w[k]=imlib_image_get_width();
 							floating[fallingCount].h[k]=imlib_image_get_height();
 							floating[fallingCount].anims++;
+							imlib_free_image();
 						}
 				}
 			if(floating[fallingCount].anims!=0)
@@ -297,6 +301,7 @@ void initTree(void)
 			treeWidth=imlib_image_get_width();
 			treeHeight=imlib_image_get_height();
 			setGravity(&treeX,&treeY,treeWidth,treeHeight);
+			imlib_free_image();
 		}
 
 	treeLampCount=0;
@@ -316,6 +321,7 @@ void initTree(void)
 							imlib_render_pixmaps_for_whole_image(&treeLampsPixmap[j][ONPIXMAP],&treeLampsPixmap[j][ONMASK]);
 							treeLampCount++;
 							gotsomelamps=true;
+							imlib_free_image();
 						}
 				}
 		}
@@ -332,6 +338,7 @@ void initTree(void)
 			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&starPixmap[ONPIXMAP],&starPixmap[ONMASK]);
+			imlib_free_image();
 
 			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Star.On.png",DATADIR,prefix,treeNumber);
 			image=imlib_load_image(pathname);
@@ -343,6 +350,7 @@ void initTree(void)
 					imlib_context_set_drawable(drawOnThis);
 					imlib_image_set_has_alpha(1);
 					imlib_render_pixmaps_for_whole_image(&starPixmap[OFFPIXMAP],&starPixmap[OFFMASK]);
+					imlib_free_image();
 				}
 		}
 
@@ -356,6 +364,7 @@ void initTree(void)
 			imlib_context_set_drawable(drawOnThis);
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&tinselPixmap[ONPIXMAP],&tinselPixmap[ONMASK]);
+			imlib_free_image();
 		}
 }
 

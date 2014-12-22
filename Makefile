@@ -2,16 +2,18 @@ APPNAME = XDecorations
 PROGRAM = xdecorations
 SRC =  $(PROGRAM).cpp toon_root.cpp draw.cpp globals.cpp startstop.cpp update.cpp routines.cpp
 LIBS = -L/usr/lib64 -lXext -lX11 -lm -lXpm -lImlib2 -lrt
-PREFIX = /usr
+CFLAGS = ${CFLAGS:-"-Wunused"}
+PREFIX = ${PREFIX:-/usr}
 DESTDIR = ${DESTDIR:-""}
 LOCALDATADIR = "`/bin/pwd`/pixmaps"
 INSTALLDATADIR = $(PREFIX)/share/$(PROGRAM)/pixmaps
 
 all:
-	g++ -o $(PROGRAM) -DDATADIR=\"${LOCALDATADIR}\" -Wunused $(SRC) $(LIBS)
+	g++ -o $(PROGRAM) -DDATADIR=\"${LOCALDATADIR}\" $(SRC) $(CFLAGS) $(LIBS)
 
 install:
-	g++ -o $(PROGRAM) -DDATADIR=\"${INSTALLDATADIR}\" $(SRC) $(LIBS)
+	g++ -o $(PROGRAM) -DDATADIR=\"${INSTALLDATADIR}\" $(SRC) $(CFLAGS) $(LIBS)
+	strip $(PROGRAM)
 	mkdir -vp $(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/share/doc/$(APPNAME) ||true
 	cp -r pixmaps/* $(DESTDIR)$(PREFIX)/share/$(PROGRAM)/pixmaps||true
 	cp $(PROGRAM) $(DESTDIR)$(PREFIX)/bin||true
