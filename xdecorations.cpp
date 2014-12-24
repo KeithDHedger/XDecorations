@@ -498,9 +498,13 @@ void reloadConfig(void)
 
 	setGravity(&treeX,&treeY,treeWidth,treeHeight);
 	setGravity(&figureX,&figureY,figureW,figureH);
-	lastLampAnim=lampAnim;
-	if(lampAnim==LAMPCYCLE)
-		lastLampAnim=LAMPFLASH;
+
+	if(currentLampFlashNum!=lampAnim)
+		{
+			lastLampAnim=lampAnim;
+			if(lampAnim==LAMPCYCLE)
+				lastLampAnim=LAMPFLASH;
+		}
 	free(tmptheme);
 	numberOfFlyers=abs(numberOfFlyers);
 }
@@ -782,6 +786,8 @@ int main(int argc,char* argv[])
 
 	getOpenwindows();
 
+	currentLampFlashNum=lampAnim;
+
 	while (!done)
 		{
 			while (XPending(display))
@@ -842,10 +848,10 @@ int main(int argc,char* argv[])
 			drawTreeLamps();
 			drawFigure();
 			drawFlyers();
-			drawLamps();
 			drawWindowSnow();
 			drawSettled();
 			drawFalling();
+			drawLamps();
 
 			if(useBuffer==true)
 				XdbeSwapBuffers(display,&swapInfo,1);

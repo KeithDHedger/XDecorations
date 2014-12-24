@@ -1,5 +1,8 @@
 0.1.8
+Lamps now in front of falling.
+Fixed lampflash number not being updated when using watchconfig.
 Code clean.
+Added strip command to Makefile.
 Added CFLAGS/PREFIX to Makefile, commandline can override.
 Snow on windows now in front of figures and flyers.
 

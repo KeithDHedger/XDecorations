@@ -131,6 +131,7 @@ int				lampSection;
 int				lampCountdown;
 bool			*lampState;
 int				lampCycleDelay;
+int				currentLampFlashNum;
 
 //trees
 Pixmap			treePixmap[2];

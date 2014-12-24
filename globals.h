@@ -208,6 +208,7 @@ extern int				lampSection;
 extern int				lampCountdown;
 extern bool				*lampState;
 extern int				lampCycleDelay;
+extern int				currentLampFlashNum;
 
 //trees
 extern Pixmap			treePixmap[2];
