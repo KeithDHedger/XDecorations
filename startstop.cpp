@@ -171,6 +171,24 @@ void initFigure(void)
 					imlib_free_image();
 				}
 		}
+//GC fgc=XCreateGC(display,figurePixmap[ONMASK],0,NULL);
+//			XSetClipMask(display,fgc,0);
+//			XSetClipOrigin(display,fgc,0,0);
+//
+//			//XSetForeground(display,fgc,blackColor);
+//			XSetForeground(display,fgc,whiteColor);
+//			XSetFillStyle(display,fgc,FillSolid);
+//			XFillRectangle(display,figurePixmap[ONMASK],fgc,0,0,277,512);
+//
+//fgc=XCreateGC(display,figurePixmap[OFFMASK],0,NULL);
+//			XSetClipMask(display,fgc,0);
+//			XSetClipOrigin(display,fgc,0,0);
+//
+//			//XSetForeground(display,fgc,blackColor);
+//			XSetForeground(display,fgc,whiteColor);
+//			XSetFillStyle(display,fgc,FillSolid);
+//			XFillRectangle(display,figurePixmap[OFFMASK],fgc,0,0,277,512);
+
 }
 
 void initLamps(void)
