@@ -44,6 +44,7 @@ struct					objects
 	int					h[MAXFALLINGANIMATION];
 	int					w[MAXFALLINGANIMATION];
 	int					anims;
+//	Imlib_Image			image;
 };
 
 struct					movement
@@ -61,6 +62,7 @@ struct					movement
 	int					maxW;
 	int					maxH;
 	bool				direction;
+	Imlib_Image			image;
 };
 
 struct					settled
@@ -191,6 +193,7 @@ extern int				figureW;
 extern int				figureH;
 extern int				figureOnOff;
 extern int				figureNumber;
+extern Imlib_Image		figureImage[2];
 
 //lamps
 extern Pixmap			lampsPixmap[4];

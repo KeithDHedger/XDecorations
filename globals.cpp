@@ -114,6 +114,7 @@ int				figureW;
 int				figureH;
 int				figureOnOff=0;
 int				figureNumber=1;
+Imlib_Image		figureImage[2];
 
 //lamps
 Pixmap			lampsPixmap[4];

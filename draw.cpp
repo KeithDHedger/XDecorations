@@ -69,6 +69,14 @@ void drawFigure(void)
 	if(figureNumber==0)
 		return;
 
+//			imlib_context_set_drawable(drawOnThis);
+//			imlib_context_set_blend(0);
+//			imlib_context_set_filter(NULL);
+//			imlib_context_set_mask(figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
+//			imlib_context_set_image(figureImage[figureOnOff]);
+//			imlib_context_set_operation(IMLIB_OP_SUBTRACT);
+//			imlib_render_image_on_drawable(figureX,figureY);
+
 	XSetClipMask(display,gc,figurePixmap[_SELECTPIXMAP(ONMASK,figureOnOff)]);
 	XSetClipOrigin(display,gc,figureX,figureY);
 	XCopyArea(display,figurePixmap[_SELECTPIXMAP(ONPIXMAP,figureOnOff)],drawOnThis,gc,0,0,figureW,figureH,figureX,figureY);
@@ -239,7 +247,9 @@ void drawFalling(void)
 			XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
 			XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
 			XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],moving[j].x,moving[j].y);
-
+//			imlib_context_set_blend(1);
+//			imlib_context_set_image(moving[j].object->image);
+//			imlib_render_image_on_drawable(moving[j].x,moving[j].y);
 			moving[j].countDown--;
 			if(moving[j].countDown==0)
 				{
