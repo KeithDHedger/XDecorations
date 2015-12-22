@@ -34,7 +34,7 @@
 #define MAXSWIRL 2
 #define MAXWINDOWS 100
 
-#define VERSION "0.1.7"
+#define VERSION "0.1.9"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 
 struct					objects

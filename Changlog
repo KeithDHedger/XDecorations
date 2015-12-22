@@ -1,3 +1,6 @@
+0.1.9
+Rearranged layers so that flyers trees and figures don't appear in front of settled snow.
+
 0.1.8
 Lamps now in front of falling.
 Fixed lampflash number not being updated when using watchconfig.
