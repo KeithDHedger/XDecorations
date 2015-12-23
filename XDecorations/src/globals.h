@@ -36,7 +36,7 @@
 
 #define VERSION "0.1.9"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
-
+#define MYEMAIL "keithhedger@keithhedger.darktech.org"
 struct					objects
 {
 	Pixmap*				pixmap[MAXFALLINGANIMATION];

@@ -690,6 +690,12 @@ int main(int argc,char* argv[])
 //print help
 			if(strcmp(argstr,"-help")==0)
 				doHelp();
+			if(strcmp(argstr,"-version")==0)
+				{
+					printf("XDecorations %s\n(c)2014-2015 K. D. Hedger - %s\n",VERSION,MYEMAIL);
+					printf("Released under the gpl-3.0 license\n\n");
+					exit(0);
+				}
 		}
 
 	srand((int)time((long* )NULL));
