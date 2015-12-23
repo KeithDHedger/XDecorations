@@ -1,0 +1,313 @@
+.TH "XDECORATIONS" "1" "0.1.9" "K.D.Hedger" "User Commands"
+.SH "NAME"
+xdecorations - manual page for xdecorations 0.1.9
+.br
+.SH "DESCRIPTION"
+Some eye candy for the holidays, including lights, trees, snowmen, pumpkins, flying sleighs and witches, snow and autumn leaves.
+.br
+
+This is along the lines of xsnow/xpenguins, and allows you to set themeable decorations on the desktop, you can choose ( at the moment ) Halloween, Xmas, Autumn or Weather themes or you can add your own.
+.br
+You can set the speed of the various parts of the theme and their positions, either from the command line or from a config file, ( there is a documented default config file included ).
+.br
+
+This works with a number of different WM's, but please see the INSTALL file for details on building/running and some work arounds.
+.br
+
+Please see the INSTALL file for basic usage and the documented .rc config file.
+.br
+
+Got to my webpage to see some short movies of XDecorations in action with config files.
+.br
+.SH "MAIN OPTIONS"
+These are the application options.
+.br
+
+\fB-theme \fRSTRING
+.br
+	Set theme name ( default 'Xmas' )
+.br
+
+\fB-delay \fRINTEGER
+.br
+	Set main delay
+.br
+
+\fB-configfile \fRFILEPATH
+.br
+	Set new config file ( using only one instance of this makes any sense )
+.br
+
+\fB-writeconfig \fRFILEPATH
+.br
+	Write out a new config file including currently loaded config file,defaults and command line options then exit Options after this are ignored
+.br
+
+\fB-noconfig\fR
+.br
+	Dont't load the default config file ( ~/.config/xdecorations.rc )
+.br
+
+\fB-usewindow\fR/-no-usewindow
+.br
+	Use a transparent window instead of the root window
+.br
+
+\fB-usebuffer\fR/-no-usebuffer
+.br
+	Use double buffering Using double buffering gives best graphical results but is slower The default is to use a transparent window with double buffering
+.br
+
+\fB-watchconfig\fR/-no-watchconfig
+.br
+	Monitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )
+.br
+
+\fB-data \fRFOLDERPATH
+.br
+	Set path to folder containing pixmap data, default is PREFIX/share/XDecorations/pixmaps.
+.br
+
+.SH "LAMPS OPTIONS"
+These are the options for controlling the lamps.
+.br
+
+\fB-lampset\fR INTEGER
+.br
+	The number of the lamp set to use ( 0=no lamps )
+.br
+
+\fB-lampy\fR INTEGER
+.br
+	Lamp Y position
+.br
+
+\fB-lampdelay\fR INTEGER
+.br
+	Delay for flashing lamps
+.br
+
+\fB-lampflash\fR INTEGER
+.br
+	Lamp flash type 0=flash, 1=inverted chase, 2=chase ,3=random, 4=cycle
+.br
+
+\fB-lampcycledelay\fR INTEGER
+.br
+	Delay before cycling to the next flash type
+.br
+.SH "FLYERS OPTIONS"
+These are the options for controlling the flyers.
+.br
+
+\fB-flyer\fR INTEGER
+.br
+	Flying object set ( 0=disable flyers )
+.br
+
+\fB-maxflyers\fR INTEGER
+.br
+	Number of flying objects to use <100 If the number of flyers are > 0 then the image is chosen randomly from the available flyers If the number of flyers are < 0 then tthe image is chosen sequentially
+.br
+
+\fB-flyermaxy\fR INTEGER
+.br
+	Lowest point on screen for flying objects
+.br
+
+\fB-spread\fR INTEGER
+.br
+	Random delay for flying objects
+.br
+
+\fB-flydelay\fR INTEGER
+.br
+	Flying objects delay
+.br
+
+\fB-flystep\fR INTEGER
+.br
+	Amount to move flying objects
+.br
+
+\fB-flyanimdelay\fR INTEGER
+.br
+	Delay for animation of flying objects
+.br
+.SH "TREES OPTIONS"
+These are the options for controlling the trees.
+.br
+
+\fB-tree\fR INTEGER
+.br
+	The number of the tree to use ( 0=no tree ) If no trees are shown star/treelights/tinsel are also disabled
+.br
+
+\fB-treex\fR INTEGER
+.br
+	Absolute X position of tree
+.br
+
+\fB-treey\fR INTEGER
+.br
+	Absolute Y position of tree You can also use the terms left/centre/right with treex to position the tree You can also use the terms top/centre/bottom with treey to position the tree
+.br
+
+\fB-showstar\fR/\fB-no-showstar\fR
+.br
+	Show star
+.br
+
+\fB-stardelay\fR INTEGER
+.br
+	Delay for star
+.br
+
+\fB-showtinsel\fR/\fB-no-showtinsel\fR
+.br
+	Show tinsel
+.br
+
+\fB-treelampset\fR INTEGER
+.br
+	Lampset to use on tree
+.br
+
+\fB-treelampdelay\fR INTEGER
+.br
+	Tree lamps delay
+.br
+.SH "FIGURE OPTIONS"
+These are the options for controlling the figure.
+.br
+
+\fB-figure\fR INTEGER
+.br
+	The number of figure to use ( 0=no figure )
+.br
+
+\fB-figurex\fR INTEGER
+.br
+	Absolute X position of figure
+.br
+
+\fB-figurey\fR INTEGER
+.br
+	Absolute Y position of figure You can also use the terms left/centre/right with figurex to position the figure You can also use the terms top/centre/bottom with figurey to position the figure
+.br
+
+\fB-figuredelay\fR INTEGER
+.br
+	Delay for figure
+.br
+.SH "FALLING OPTIONS"
+These are the options for controlling the falling objects.
+.br
+
+\fB-falling\fR INTEGER
+.br
+	The set number of the falling objects to use ( 0=no falling objects )
+.br
+
+\fB-falldelay\fR INTEGER
+.br
+	Delay for falling objects
+.br
+
+\fB-maxfalling\fR INTEGER
+.br
+	Maximum number of falling objects INTEGER<5000
+.br
+
+\fB-fallingspread\fR INTEGER
+.br
+	Random deleay between new falling objects appearing
+.br
+
+\fB-fallingspeed\fR INTEGER
+.br
+	Distance falling objects move in Y direction in one go
+.br
+
+\fB-minfallspeed\fR INTEGER
+.br
+	Min distance falling objects move in Y direction in one go ( MUST be less than fallingspeed )
+.br
+
+\fB-drift\fR INTEGER
+.br
+	Falling objects max X step
+.br
+
+\fB-fallinanimdelay\fR INTEGER
+.br
+	Delay for animation of falling objects
+.br
+.SH "WIND OPTIONS"
+These are the options for controlling the wind.
+.br
+
+\fB-wind\fR INTEGER
+.br
+	Wind speed/direction ( +INTEGER wind>>> -INTEGER wind<<< 0 no wind )
+.br
+
+\fB-usegusts\fR/\fB-no-usegusts\fR
+.br
+	Use/don't use gusts of wind
+.br
+
+\fB-gustlen\fR INTEGER
+.br
+	Duration of gusts of wind
+.br
+
+\fB-gustdelay\fR INTEGER
+.br
+	Random delay between gusts of wind
+.br
+
+\fB-gustspeed\fR INTEGER
+.br
+	Speed of gusts of wind
+.br
+
+\fB-bsettleheight\fR INTEGER
+.br
+	Height of settled snow etc on bottom of desktop, 0 = Don't let snow settle
+.br
+
+\fB-wsettleheight\fR INTEGER
+.br
+	Height of settled snow etc on windows, 0 = Don't let snow settle
+.br
+
+\fB-settlerate\fR INTEGER
+.br
+	Rate at which settling occurs - lower the number slower but better Settled snow etc is swept clean at the end of a gust You should set drift > 1 for a more relalistic settle after being swept clean
+.br
+
+\fB-clearonmaxheight\fR/\fB-no-clearonmaxheight\fR
+.br
+	Clear the snow etc when it reaches the maximum height set by bsettleheight/wsettleheight
+.br
+
+As some window managers include the decorations in the reported window size and some don't you may need to add an offset to where the snow etc starts to settle, KDE will need this xfce4wm may or may not need this.  The bottom offset is to raise the start of settled snow etc from the bottom of the screen if you have a bottom panel.
+.br
+
+\fB-woffsety\fR INTEGER
+.br
+	Offset the settled layer on windows by INTEGER
+.br
+
+\fB-boffsety\fR INTEGER
+.br
+	Offset the settled layer froom the bottom by INTEGER
+.br
+.SH "AUTHORS"
+K.D.Hedger.
+.br
+keithhedger@keithhedger.darktech.org
+.br
+Bugs etc to the above email address.
+.br
