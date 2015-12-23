@@ -66,7 +66,7 @@ args				xdecorations_rc[]=
 	{"usewindow",TYPEBOOL,&useWindow},
 	{"usebuffer",TYPEBOOL,&useDBOveride},
 	{"offsety",TYPEINT,&offSetY},
-
+	{"data",TYPESTRING,&pixmapPath},
 //lamps
 	{"lampset",TYPEINT,&lampSet},
 	{"lampy",TYPEINT,&lampY},
@@ -279,10 +279,13 @@ void doHelp(void)
 	printf("\tUse a transparent window instead of the root window\n");
 	printf("-usebuffer/-no-usebuffer\n");
 	printf("\tUse double buffering\n\tUsing double buffering gives best graphical results but is slower\n");
-	printf("\tThe default is to use a transparent window with double buffering\n\n");
+	printf("\tThe default is to use a transparent window with double buffering\n");
 
 	printf("-watchconfig/-no-watchconfig\n");
 	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
+
+	printf("-data FOLDERPATH\n");
+	printf("\tSet path to folder containing pixmap data, default is PREFIX/share/XDecorations.\n\n");
 
 //lamps
 	printf("LAMPS\n");
@@ -439,6 +442,7 @@ void setDefaults(void)
 	clearOnMaxHeight=true;
 	windowYOffset=0;
 	bottomYOffset=0;
+	pixmapPath=strdup(DATADIR);
 }
 
 void reloadConfig(void)
@@ -546,7 +550,12 @@ int main(int argc,char* argv[])
 		{
 			argstr=argv[argnum];
 
-
+			if(strcmp(argstr,"-data")==0)//path to data
+				{
+					if(pixmapPath!=NULL)
+						free(pixmapPath);
+					pixmapPath=strdup(argv[++argnum]);
+				}
 //app
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
@@ -773,7 +782,7 @@ int main(int argc,char* argv[])
 			maxBottomHeight=0;
 			maxWindowHeight=0;
 		}
-
+	
 	initBottomSnow();
 	initWindowSnow();
 	initLamps();

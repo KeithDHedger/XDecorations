@@ -11,6 +11,7 @@
 
 char			pathname[MAXPATHNAMELEN];
 char			*configFilePath;
+char			*pixmapPath=NULL;
 
 Display*		display;
 Window			rootWin;

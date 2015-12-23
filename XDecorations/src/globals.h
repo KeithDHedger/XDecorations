@@ -86,6 +86,7 @@ enum {LAMPFLASH=0,INVERTLAMPCHASE,LAMPCHASE,LAMPRANDOM,LAMPCYCLE,NUMOPTIONS};
 
 extern char				pathname[MAXPATHNAMELEN];
 extern char				*configFilePath;
+extern char				*pixmapPath;
 
 extern Display*			display;
 extern Window			rootWin;

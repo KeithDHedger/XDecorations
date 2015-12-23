@@ -9,6 +9,7 @@
 
 #include "globals.h"
 #include "routines.h"
+#include <unistd.h>
 
 Imlib_Image		image;
 
@@ -87,7 +88,7 @@ void initFlyers(void)
 			flyersMove[flyerCount].maxH=0;
 			for(int k=0; k<MAXFALLINGANIMATION; k++)
 				{
-					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.%i.%i.png",DATADIR,prefix,flyerNumber,j+1,k+1);
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Flying/%i.%i.%i.png",pixmapPath,prefix,flyerNumber,j+1,k+1);
 					image=imlib_load_image(pathname);
 					if(image!=NULL)
 						{
@@ -143,7 +144,7 @@ void initFigurezzz(void)
 //	imlib_context_set_display(display);
 //	imlib_context_set_visual(visual);
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.On.png",DATADIR,prefix,figureNumber);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.On.png",pixmapPath,prefix,figureNumber);
 	figureImage[0]=imlib_load_image(pathname);
 	if(figureImage[0]==NULL)
 		figureNumber=0;
@@ -156,7 +157,7 @@ void initFigurezzz(void)
 			imlib_render_pixmaps_for_whole_image(&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK]);
 //			imlib_free_image();
 //
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.Off.png",DATADIR,prefix,figureNumber);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.Off.png",pixmapPath,prefix,figureNumber);
 			figureImage[1]=imlib_load_image(pathname);
 			if(figureImage[1]==NULL)
 				figureNumber=0;
@@ -180,7 +181,7 @@ void initFigure(void)
 	imlib_context_set_display(display);
 	imlib_context_set_visual(visual);
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.On.png",DATADIR,prefix,figureNumber);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.On.png",pixmapPath,prefix,figureNumber);
 	image=imlib_load_image(pathname);
 	if(image==NULL)
 		figureNumber=0;
@@ -193,7 +194,7 @@ void initFigure(void)
 			imlib_render_pixmaps_for_whole_image(&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK]);
 			imlib_free_image();
 
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.Off.png",DATADIR,prefix,figureNumber);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.Off.png",pixmapPath,prefix,figureNumber);
 			image=imlib_load_image(pathname);
 			if(image==NULL)
 				figureNumber=0;
@@ -209,24 +210,6 @@ void initFigure(void)
 					imlib_free_image();
 				}
 		}
-//GC fgc=XCreateGC(display,figurePixmap[ONMASK],0,NULL);
-//			XSetClipMask(display,fgc,0);
-//			XSetClipOrigin(display,fgc,0,0);
-//
-//			//XSetForeground(display,fgc,blackColor);
-//			XSetForeground(display,fgc,whiteColor);
-//			XSetFillStyle(display,fgc,FillSolid);
-//			XFillRectangle(display,figurePixmap[ONMASK],fgc,0,0,277,512);
-//
-//fgc=XCreateGC(display,figurePixmap[OFFMASK],0,NULL);
-//			XSetClipMask(display,fgc,0);
-//			XSetClipOrigin(display,fgc,0,0);
-//
-//			//XSetForeground(display,fgc,blackColor);
-//			XSetForeground(display,fgc,whiteColor);
-//			XSetFillStyle(display,fgc,FillSolid);
-//			XFillRectangle(display,figurePixmap[OFFMASK],fgc,0,0,277,512);
-
 }
 
 void initLamps(void)
@@ -235,7 +218,8 @@ void initLamps(void)
 	imlib_context_set_display(display);
 	imlib_context_set_visual(visual);
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Lamps/%i.On.png",DATADIR,prefix,lampSet);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Lamps/%i.On.png",pixmapPath,prefix,lampSet);
+	
 	image=imlib_load_image(pathname);
 	if(image==NULL)
 		lampSet=0;
@@ -246,7 +230,7 @@ void initLamps(void)
 			imlib_image_set_has_alpha(1);
 			imlib_render_pixmaps_for_whole_image(&lampsPixmap[ONPIXMAP],&lampsPixmap[ONMASK]);
 
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Lamps/%i.Off.png",DATADIR,prefix,lampSet);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Lamps/%i.Off.png",pixmapPath,prefix,lampSet);
 			image=imlib_load_image(pathname);
 			if(image==NULL)
 				lampSet=0;
@@ -292,7 +276,7 @@ void initFalling(void)
 			floating[fallingCount].anims=0;
 			for(int k=0; k<MAXFALLINGANIMATION; k++)
 				{
-					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Falling/%i.%i.%i.png",DATADIR,prefix,fallingNumber,j+1,k+1);
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Falling/%i.%i.%i.png",pixmapPath,prefix,fallingNumber,j+1,k+1);
 					image=imlib_load_image(pathname);
 					if(image!=NULL)
 						{
@@ -365,7 +349,7 @@ void initTree(void)
 	imlib_context_set_display(display);
 	imlib_context_set_visual(visual);
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.png",DATADIR,prefix,treeNumber);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.png",pixmapPath,prefix,treeNumber);
 
 	image=imlib_load_image(pathname);
 	if(image==NULL)
@@ -390,7 +374,7 @@ void initTree(void)
 			showTreeLamps=true;
 			for(int j=0; j<MAXNUMBEROFTREELIGHTS; j++)
 				{
-					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/Lights.%i.%i.png",DATADIR,prefix,treeLampSet,j+1);
+					snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/Lights.%i.%i.png",pixmapPath,prefix,treeLampSet,j+1);
 					image=imlib_load_image(pathname);
 					if(image!=NULL)
 						{
@@ -407,7 +391,7 @@ void initTree(void)
 	if(gotsomelamps==false)
 		showTreeLamps=false;
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Star.Off.png",DATADIR,prefix,treeNumber);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Star.Off.png",pixmapPath,prefix,treeNumber);
 	image=imlib_load_image(pathname);
 	if(image==NULL)
 		showStar=false;
@@ -419,7 +403,7 @@ void initTree(void)
 			imlib_render_pixmaps_for_whole_image(&starPixmap[ONPIXMAP],&starPixmap[ONMASK]);
 			imlib_free_image();
 
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Star.On.png",DATADIR,prefix,treeNumber);
+			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Star.On.png",pixmapPath,prefix,treeNumber);
 			image=imlib_load_image(pathname);
 			if(image==NULL)
 				showStar=false;
@@ -433,7 +417,7 @@ void initTree(void)
 				}
 		}
 
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Tinsel.png",DATADIR,prefix,treeNumber);
+	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Tree/%i.Tinsel.png",pixmapPath,prefix,treeNumber);
 	image=imlib_load_image(pathname);
 	if(image==NULL)
 		showTinsel=false;

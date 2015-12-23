@@ -1,0 +1,10 @@
+
+AM_CPPFLAGS =	-I$(top_srcdir) \
+				$(XEXT_CFLAGS) \
+				$(X11_CFLAGS) \
+				$(IMLIB_CFLAGS) \
+				-DDATADIR=\""${pkgdatadir}/pixmaps"\"
+
+LIBS =			$(XEXT_LIBS) \
+				$(X11_LIBS) \
+				$(IMLIB_LIBS)

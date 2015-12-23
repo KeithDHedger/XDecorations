@@ -8,6 +8,7 @@
 ******************************************************/
 
 #include "globals.h"
+#include <sys/stat.h>
 
 XErrorHandler	oldHandler=(XErrorHandler)0;
 
@@ -108,4 +109,10 @@ void skipErrors(bool skip)
 
 	XFlush(display);
 	XSync(display,false);
+}
+
+int fileExists(const char *name)
+{
+	struct stat buffer;
+	return (stat(name,&buffer));
 }
