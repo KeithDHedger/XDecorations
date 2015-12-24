@@ -1,4 +1,4 @@
-.TH "XDECORATIONS" "1" "0.1.9" "K.D.Hedger" "User Commands"
+.TH "XDECORATIONS" "1" "0.1.10" "K.D.Hedger" "User Commands"
 .SH "NAME"
 xdecorations - manual page for xdecorations 0.1.9
 .br
@@ -150,7 +150,7 @@ These are the options for controlling the trees.
 
 \fB-treey\fR INTEGER
 .br
-	Absolute Y position of tree You can also use the terms left/centre/right with treex to position the tree You can also use the terms top/centre/bottom with treey to position the tree
+	Absolute Y position of tree
 .br
 
 \fB-showstar\fR/\fB-no-showstar\fR
@@ -177,6 +177,13 @@ These are the options for controlling the trees.
 .br
 	Tree lamps delay
 .br
+
+You can also use the terms left/centre/right on the command line with \fB-treex\fR to position the tree.
+.br
+You can also use the terms top/centre/bottom ont the commandline with \fB-treey\fR to position the tree.
+.br
+To use top, left etc in the config file substitute the following values, LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000
+.br
 .SH "FIGURE OPTIONS"
 These are the options for controlling the figure.
 .br
@@ -193,12 +200,19 @@ These are the options for controlling the figure.
 
 \fB-figurey\fR INTEGER
 .br
-	Absolute Y position of figure You can also use the terms left/centre/right with figurex to position the figure You can also use the terms top/centre/bottom with figurey to position the figure
+	Absolute Y position of figure
 .br
 
 \fB-figuredelay\fR INTEGER
 .br
 	Delay for figure
+.br
+
+You can also use the terms left/centre/right on the command line with \fB-figurex\fR to position the figure.
+.br
+You can also use the terms top/centre/bottom ont the commandline with \fB-figurey\fR to position the figure.
+.br
+To use top, left etc in the config file substitute the following values, LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000
 .br
 .SH "FALLING OPTIONS"
 These are the options for controlling the falling objects.
@@ -310,4 +324,7 @@ K.D.Hedger.
 keithhedger@keithhedger.darktech.org
 .br
 Bugs etc to the above email address.
+.br
+.SH "SEE ALSO"
+Commented example configfile installed in $(pkgdatadir)/docs ( usually /usr/share/XDecorations/docs ).
 .br

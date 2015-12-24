@@ -1,6 +1,6 @@
 #
 #
-AC_INIT([XDecorations],[0.1.9],[XXX],[XDecorations])
+AC_INIT([XDecorations],[0.1.10],[XXX],[XDecorations])
 
 AC_CONFIG_HEADER([config.h])
 AC_PROG_CXX

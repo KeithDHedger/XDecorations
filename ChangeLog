@@ -1,3 +1,9 @@
+0.1.10
+Added gpl txt to $(pkgdatadir)/docs.
+Added example config file to $(pkgdatadir)/docs.
+Fixed some info errors in manpage.
+Updated manpage.
+
 0.1.9
 Added manpage.
 Added path to pixmaps folder to config and options.
