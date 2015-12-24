@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include "config.h"
+
 #define MAXPATHNAMELEN 4096
 #define MAXNUMBEROFFLYERS 100
 #define MAXFLYER 10
@@ -34,7 +36,6 @@
 #define MAXSWIRL 2
 #define MAXWINDOWS 100
 
-#define VERSION "0.1.9"
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
 #define MYEMAIL "keithhedger@keithhedger.darktech.org"
 struct					objects
