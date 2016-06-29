@@ -1,1 +1,1 @@
-COMMONSRC = ../src/draw.cpp ../src/globals.cpp ../src/routines.cpp ../src/startstop.cpp ../src/toon_root.cpp ../src/update.cpp ../src/xdecorations.cpp
+COMMONSRC = ../src/draw.cpp ../src/globals.cpp ../src/internet.cpp ../src/routines.cpp ../src/startstop.cpp ../src/toon_root.cpp ../src/update.cpp ../src/xdecorations.cpp

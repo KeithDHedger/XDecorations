@@ -25,6 +25,7 @@
 #include <ctype.h>
 
 #include "config.h"
+#include "internet.h"
 
 #define MAXPATHNAMELEN 4096
 #define MAXNUMBEROFFLYERS 100
@@ -37,7 +38,7 @@
 #define MAXWINDOWS 100
 
 #define _SELECTPIXMAP(a,b) (a+(2*b))//a=ONPIXMAP b=xxxOnOff
-#define MYEMAIL "keithhedger@keithhedger.darktech.org"
+
 struct					objects
 {
 	Pixmap*				pixmap[MAXFALLINGANIMATION];

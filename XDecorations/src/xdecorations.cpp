@@ -258,7 +258,7 @@ int get_argb_visual(Visual** vis, int *depth)
 
 void doHelp(void)
 {
-	printf("XDecorations (c)2014 K. D. Hedger - Version %s\n",VERSION);
+	printf("XDecorations %s - Version %s\n",COPYRITE,VERSION);
 	printf("Released under the gpl-3.0 license\n\n");
 	printf("Values are set to defaults then set to values contained in ~/.config/xdecorations.rc and then overridden on the command line\n\n");
 
@@ -692,7 +692,7 @@ int main(int argc,char* argv[])
 				doHelp();
 			if(strcmp(argstr,"-version")==0)
 				{
-					printf("XDecorations %s\n(c)2014-2015 K. D. Hedger - %s\n",VERSION,MYEMAIL);
+					printf("XDecorations %s\n%s, %s\n",VERSION,COPYRITE,MYEMAIL);
 					printf("Released under the gpl-3.0 license\n\n");
 					exit(0);
 				}

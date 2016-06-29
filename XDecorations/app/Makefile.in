@@ -103,9 +103,9 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = ../src/draw.$(OBJEXT) ../src/globals.$(OBJEXT) \
-	../src/routines.$(OBJEXT) ../src/startstop.$(OBJEXT) \
-	../src/toon_root.$(OBJEXT) ../src/update.$(OBJEXT) \
-	../src/xdecorations.$(OBJEXT)
+	../src/internet.$(OBJEXT) ../src/routines.$(OBJEXT) \
+	../src/startstop.$(OBJEXT) ../src/toon_root.$(OBJEXT) \
+	../src/update.$(OBJEXT) ../src/xdecorations.$(OBJEXT)
 am_xdecorations_OBJECTS = $(am__objects_1)
 xdecorations_OBJECTS = $(am_xdecorations_OBJECTS)
 xdecorations_LDADD = $(LDADD)
@@ -308,7 +308,7 @@ AM_CPPFLAGS = -I$(top_srcdir) \
 				$(IMLIB_CFLAGS) \
 				-DDATADIR=\""${pkgdatadir}/pixmaps"\"
 
-COMMONSRC = ../src/draw.cpp ../src/globals.cpp ../src/routines.cpp ../src/startstop.cpp ../src/toon_root.cpp ../src/update.cpp ../src/xdecorations.cpp
+COMMONSRC = ../src/draw.cpp ../src/globals.cpp ../src/internet.cpp ../src/routines.cpp ../src/startstop.cpp ../src/toon_root.cpp ../src/update.cpp ../src/xdecorations.cpp
 xdecorations_SOURCES = $(COMMONSRC)
 man1_MANS = ../resources/man/xdecorations.1
 docfilesdir = $(pkgdatadir)/docs
@@ -399,6 +399,8 @@ clean-binPROGRAMS:
 	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/globals.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
+../src/internet.$(OBJEXT): ../src/$(am__dirstamp) \
+	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/routines.$(OBJEXT): ../src/$(am__dirstamp) \
 	../src/$(DEPDIR)/$(am__dirstamp)
 ../src/startstop.$(OBJEXT): ../src/$(am__dirstamp) \
@@ -423,6 +425,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/draw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/globals.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/internet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/routines.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/startstop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@../src/$(DEPDIR)/toon_root.Po@am__quote@
