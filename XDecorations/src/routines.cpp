@@ -71,7 +71,6 @@ void setGravity(int *x,int *y,int w,int h)
 int translateGravity(char* str)
 {
 	int retcode=0;
-
 	if(isalpha(str[0]))
 		{
 			if(strcasecmp(str,"left")==0)
@@ -87,9 +86,7 @@ int translateGravity(char* str)
 		}
 	else
 		retcode=atol(str);
-
 	return(retcode);
-
 }
 
 int justSkip(Display *display,XErrorEvent *theEvent)

@@ -1,4 +1,5 @@
 0.1.10
+Added falling pumpkins to Halloween theme.
 Added gpl txt to $(pkgdatadir)/docs.
 Added example config file to $(pkgdatadir)/docs.
 Fixed some info errors in manpage.
