@@ -9,3 +9,7 @@ This works with a number of different WM's, but please see the INSTALL file for 
 Please see the INSTALL file for basic usage and the documented .rc config file.
 
 Got to my webpage to see some short movies of XDecorations in action with config files.
+
+![alt text](screenshots/screenhalloween.jpg)
+![alt text](screenshots/screenxmas2.jpg)
+![alt text](screenshots/screenxmas.jpg)
