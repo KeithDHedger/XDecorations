@@ -1,25 +1,22 @@
-#if 0
-©Keith Hedger Mon 20 Oct 14:21:11 BST 2014 kdhedger68713@gmail.com
-*   This program is free software;
-you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation;
-either version 2 of the License,or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY;
-without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should hargve received a copy of the GNU General Public License
-*   along with this program;
-if not,write to the Free Software
-*   Foundation,Inc.,59 Temple Place,Suite 330,Boston,MA  02111-1307  USA
+/*
+ *
+ * ©K. D. Hedger. Tue 31 Jul 13:46:25 BST 2018 keithdhedger@gmail.com
 
-*   toon_root.c Copyright (C) 1999-2001  Robin Hogan
-#endif
+ * This file (xdecorations.cpp) is part of XDecorations.
+
+ * XDecorations is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+
+ * XDecorations is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with XDecorations.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <X11/Intrinsic.h>
 #include <X11/Xlib.h>

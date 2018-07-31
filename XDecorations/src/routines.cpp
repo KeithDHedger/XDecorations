@@ -1,11 +1,22 @@
-/******************************************************
-*
-*     ©keithhedger Wed 17 Dec 11:18:33 GMT 2014
-*     kdhedger68713@gmail.com
-*
-*     routines.cpp
-* 
-******************************************************/
+/*
+ *
+ * ©K. D. Hedger. Tue 31 Jul 13:44:33 BST 2018 keithdhedger@gmail.com
+
+ * This file (routines.cpp) is part of XDecorations.
+
+ * XDecorations is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * at your option) any later version.
+
+ * XDecorations is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with XDecorations.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "globals.h"
 #include <sys/stat.h>
