@@ -117,18 +117,14 @@ extern Region			rg;
 extern XdbeBackBuffer	buffer;
 extern XdbeSwapInfo		swapInfo;
 extern Drawable			drawOnThis;
-extern bool				useBuffer;
-extern bool				useDBOveride;
 
 extern int				done;
 extern long				mainDelay;
 
 extern uint				runCounter;
-extern bool				useWindow;
 extern int				offSetY;
 extern bool				watchConfig;
 extern uint				runCounter;
-//extern bool				useWindow;
 extern int				offSetY;
 extern bool				watchConfig;
 extern bool				needsSwap;

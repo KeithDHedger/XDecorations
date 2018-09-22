@@ -1,4 +1,5 @@
 0.1.10
+Removed refs to usewindow/usebuffer.
 Speed improvements.
 Options -usewindow/-usebuffer now ignored from config file/command line.
 Now requires double buffering ( needs X11/extensions/Xdbe.h ).

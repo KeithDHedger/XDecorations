@@ -60,8 +60,6 @@ args				xdecorations_rc[]=
 //app
 	{"theme",TYPESTRING,&prefix},
 	{"delay",TYPEINT,&mainDelay},
-//	{"usewindow",TYPEBOOL,&useWindow},
-//	{"usebuffer",TYPEBOOL,&useDBOveride},
 	{"offsety",TYPEINT,&offSetY},
 	{"data",TYPESTRING,&pixmapPath},
 //lamps
@@ -272,11 +270,6 @@ void doHelp(void)
 	printf("\tOptions after this are ignored\n");
 	printf("-noconfig\n");
 	printf("\tDont't load the default config file ( ~/.config/xdecorations.rc )\n");
-	printf("-usewindow/-no-usewindow\n");
-	printf("\tUse a transparent window instead of the root window\n");
-	printf("-usebuffer/-no-usebuffer\n");
-	printf("\tUse double buffering\n\tUsing double buffering gives best graphical results but is slower\n");
-	printf("\tThe default is to use a transparent window with double buffering\n");
 
 	printf("-watchconfig/-no-watchconfig\n");
 	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
@@ -510,17 +503,6 @@ void reloadConfig(void)
 	numberOfFlyers=abs(numberOfFlyers);
 }
 
-int refreshRate=2;
-
-//void  alarmCallBack(int sig)
-//{
-//	XExposeEvent	event;
-//printf("in alarm\n");
-//	if(useBuffer==true)
-//		XdbeSwapBuffers(display,&swapInfo,1);
-//	alarm(refreshRate);
-//}
-
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -578,8 +560,6 @@ int main(int argc,char* argv[])
 					return(0);
 				}
 
-			//showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
-			//showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
 			showUnShow(argstr,"watchconfig",&watchConfig);//watch config file for changes
 			showUnShow(argstr,"clearonmaxheight",&clearOnMaxHeight);//clear settletled snow when reaches max hite
 
@@ -714,76 +694,48 @@ int main(int argc,char* argv[])
 	signal(SIGINT,(sighandler_t)signalHandler);
 	signal(SIGHUP,(sighandler_t)signalHandler);
 
-//	if(useWindow==false)
-//		{
-////			rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-////			visual=DefaultVisual(display,screen);
-////			useBuffer=false;
-////			drawOnThis=rootWin;
-////			usingRootWindow=true;
-//		}
-//	else
+	rc=get_argb_visual(&visual,&depth);
+	if(rc==0)
 		{
-			rc=get_argb_visual(&visual,&depth);
-			if(rc==0)
-				{
-					XSetWindowAttributes attr;
-					attr.colormap=XCreateColormap(display,DefaultRootWindow(display),visual,AllocNone);
-					attr.border_pixel=0;
-					attr.background_pixel=0;
+			XSetWindowAttributes attr;
+			attr.colormap=XCreateColormap(display,DefaultRootWindow(display),visual,AllocNone);
+			attr.border_pixel=0;
+			attr.background_pixel=0;
 
-					rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,displayHeight,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
-					XSelectInput(display,rootWin,StructureNotifyMask);
+			rootWin=XCreateWindow(display,DefaultRootWindow(display),0,0,displayWidth,displayHeight,0,depth,InputOutput,visual,CWColormap | CWBorderPixel | CWBackPixel,&attr);
+			XSelectInput(display,rootWin,StructureNotifyMask);
 
-					xa=XInternAtom(display,"_NET_WM_STATE",False);
-					xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
-					xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
-					xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
-					xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
-					xa_prop[4]=XInternAtom(display,"_NET_WM_ACTION_CHANGE_DESKTOP",False);
-					xa_prop[9]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
+			xa=XInternAtom(display,"_NET_WM_STATE",False);
+			xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
+			xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
+			xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
+			xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
+			xa_prop[4]=XInternAtom(display,"_NET_WM_ACTION_CHANGE_DESKTOP",False);
+			xa_prop[9]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
 
-					xa=XInternAtom(display,"_NET_WM_STATE",False);
-					if(xa!=None)
-						XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,5);
+			xa=XInternAtom(display,"_NET_WM_STATE",False);
+			if(xa!=None)
+				XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,5);
 
-					hints.flags=2;
-					hints.decorations=0;
-					XChangeProperty(display,rootWin,xa_prop[9],xa_prop[9],32,PropModeReplace,(unsigned char *)&hints,5);
+			hints.flags=2;
+			hints.decorations=0;
+			XChangeProperty(display,rootWin,xa_prop[9],xa_prop[9],32,PropModeReplace,(unsigned char *)&hints,5);
 
-					rg=XCreateRegion();
-					XMapWindow(display,rootWin);
-					XSync(display, False);
+			rg=XCreateRegion();
+			XMapWindow(display,rootWin);
+			XSync(display, False);
 
-					XMoveWindow(display,rootWin,0,0);
-					XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
+			XMoveWindow(display,rootWin,0,0);
+			XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
 
-					swapInfo.swap_window = rootWin;
-					swapInfo.swap_action = XdbeBackground;
-					buffer=XdbeAllocateBackBufferName(display,rootWin,swapInfo.swap_action);
-
-					if((XdbeSwapBuffers(display,&swapInfo,1)) && (useDBOveride==true))
-						{
-							useBuffer=true;
-							drawOnThis=buffer;
-						}
-					else
-						{
-							printf("no double buffering\n");
-							useBuffer=false;
-							drawOnThis=rootWin;
-						}
-				}
-			else
-				{
-//					rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-//					visual=DefaultVisual(display,screen);
-					fprintf(stderr,"Can't get ARGB, do you have a composite manager running, exiting ...\n");
-					exit(0);
-					//drawOnThis=rootWin;
-					//useBuffer=false;
-					//usingRootWindow=true;
-			}
+			swapInfo.swap_window = rootWin;
+			swapInfo.swap_action = XdbeBackground;
+			buffer=XdbeAllocateBackBufferName(display,rootWin,swapInfo.swap_action);
+		}
+	else
+		{
+			fprintf(stderr,"Can't get ARGB, do you have a composite manager running, exiting ...\n");
+			exit(0);
 		}
 
 	gc=XCreateGC(display,drawOnThis,0,NULL);
@@ -798,7 +750,7 @@ int main(int argc,char* argv[])
 			maxBottomHeight=0;
 			maxWindowHeight=0;
 		}
-	
+
 	initBottomSnow();
 	initWindowSnow();
 	initLamps();
@@ -886,7 +838,7 @@ int main(int argc,char* argv[])
 			if(useGusts==true)
 				updateGusts();
 
-			if((useBuffer==true) && (needsSwap==true))
+			if(needsSwap==true)
 				{
 					drawFlyers();
 					drawTreeLamps();
@@ -895,7 +847,7 @@ int main(int argc,char* argv[])
 					drawSettled();
 					drawFalling();
 					drawLamps();
-			
+
 					XdbeSwapBuffers(display,&swapInfo,1);
 					needsSwap=false;
 
@@ -907,8 +859,6 @@ int main(int argc,char* argv[])
 				reloadConfig();
 		}
 
-//	if(useWindow==false)
-//		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 
 	destroyFalling();
