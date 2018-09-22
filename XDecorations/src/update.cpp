@@ -149,7 +149,6 @@ void doGusts(void)
 		}
 }
 
-
 void updateGusts(void)
 {
 	if(doingGusts==false)
@@ -337,6 +336,7 @@ void updateLamps(void)
 
 					lampCountdown=lampCycleDelay;
 				}
+			
 		}
 	else
 		lampCountdown--;
@@ -383,50 +383,6 @@ void updateFlyers(void)
 						flyersMove[j].use=true;
 				}
 		}
-}
-
-void eraseRects(void)
-{
-	int	j;
-
-	if((figureNumber!=0) && (figureNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				XClearArea(display,drawOnThis,figureX,figureY,figureW,figureH,False);
-			updateFigure();
-		}
-
-	if((showTree==true) && (treeNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				XClearArea(display,drawOnThis,treeX,treeY,treeWidth,treeHeight,False);
-			updateTreeLamps();
-		}
-
-	if((showFlyers==true) && (flyerNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				{
-					for(j=0; j<flyerCount; j++)
-						XClearArea(display,drawOnThis,flyersMove[j].x,flyersMove[j].y,flyersMove[j].maxW,flyersMove[j].maxH,False);
-				}
-			updateFlyers();
-		}
-
-	if((showFalling==true) && (fallingNeedsUpdate==true))
-		{
-			if(useBuffer==false)
-				{
-					for(int j=0; j<numberOfFalling; j++)
-						XClearArea(display,drawOnThis,moving[j].x,moving[j].y,moving[j].object->w[0],moving[j].object->h[0],False);
-				}
-			updateFalling();
-		}
-
-	treeNeedsUpdate=false;
-	figureNeedsUpdate=false;
-	flyerNeedsUpdate=false;
-	fallingNeedsUpdate=false;
 }
 
 bool checkForWindowChange(Window wid,XWindowAttributes *attr)

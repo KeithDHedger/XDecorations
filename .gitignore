@@ -5,3 +5,12 @@ xdecorations
 Untitled-1
 XDecorations/app/.deps
 autom4te.cache
+*.o
+Makefile
+.*
+clipart
+config.h
+config.log
+config.status
+stamp-h1
+

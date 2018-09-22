@@ -1,4 +1,7 @@
 0.1.10
+Speed improvements.
+Options -usewindow/-usebuffer now ignored from config file/command line.
+Now requires double buffering ( needs X11/extensions/Xdbe.h ).
 Added falling pumpkins to Halloween theme.
 Added gpl txt to $(pkgdatadir)/docs.
 Added example config file to $(pkgdatadir)/docs.

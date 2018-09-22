@@ -60,8 +60,8 @@ args				xdecorations_rc[]=
 //app
 	{"theme",TYPESTRING,&prefix},
 	{"delay",TYPEINT,&mainDelay},
-	{"usewindow",TYPEBOOL,&useWindow},
-	{"usebuffer",TYPEBOOL,&useDBOveride},
+//	{"usewindow",TYPEBOOL,&useWindow},
+//	{"usebuffer",TYPEBOOL,&useDBOveride},
 	{"offsety",TYPEINT,&offSetY},
 	{"data",TYPESTRING,&pixmapPath},
 //lamps
@@ -510,6 +510,17 @@ void reloadConfig(void)
 	numberOfFlyers=abs(numberOfFlyers);
 }
 
+int refreshRate=2;
+
+void  alarmCallBack(int sig)
+{
+	XExposeEvent	event;
+printf("in alarm\n");
+	if(useBuffer==true)
+		XdbeSwapBuffers(display,&swapInfo,1);
+	alarm(refreshRate);
+}
+
 int main(int argc,char* argv[])
 {
 	int		argnum;
@@ -567,8 +578,8 @@ int main(int argc,char* argv[])
 					return(0);
 				}
 
-			showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
-			showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
+			//showUnShow(argstr,"usewindow",&useWindow);//use/don't use window
+			//showUnShow(argstr,"usebuffer",&useDBOveride);//use/don'tdouble buffering
 			showUnShow(argstr,"watchconfig",&watchConfig);//watch config file for changes
 			showUnShow(argstr,"clearonmaxheight",&clearOnMaxHeight);//clear settletled snow when reaches max hite
 
@@ -747,9 +758,10 @@ int main(int argc,char* argv[])
 					XMoveWindow(display,rootWin,0,0);
 					XShapeCombineRegion(display,rootWin,ShapeInput,0,0,rg,ShapeSet);
 
-					buffer=XdbeAllocateBackBufferName(display,rootWin,XdbeBackground);
 					swapInfo.swap_window = rootWin;
 					swapInfo.swap_action = XdbeBackground;
+					buffer=XdbeAllocateBackBufferName(display,rootWin,swapInfo.swap_action);
+
 					if((XdbeSwapBuffers(display,&swapInfo,1)) && (useDBOveride==true))
 						{
 							useBuffer=true;
@@ -799,10 +811,12 @@ int main(int argc,char* argv[])
 	getOpenwindows();
 
 	currentLampFlashNum=lampAnim;
+	needsSwap=true;
+	lampsNeedsUpdate=true;
 
 	while (!done)
 		{
-			while (XPending(display))
+			while(XPending(display))
 				XNextEvent(display,&ev);
 
 			switch(ev.type)
@@ -814,65 +828,82 @@ int main(int argc,char* argv[])
 
 					break;
 				}
-
 			usleep(mainDelay);
 			runCounter++;
 
 			if(lampSet!=0)
 				{
 					if((runCounter % lampSpeed)==0)
-						updateLamps();
+						{
+							updateLamps();
+							needsSwap=true;
+						}
 				}
 
 			if(showTree==true)
 				{
 					if((runCounter % treelampSpeed)==0)
-						treeNeedsUpdate=true;
+						{
+							updateTreeLamps();
+							needsSwap=true;
+						}
 
 					if((runCounter % starSpeed)==0 && showStar==true)
-						updateStar();
+						{
+							updateStar();
+							needsSwap=true;
+						}
 				}
 
 			if(figureNumber!=0)
 				{
 					if((runCounter % figureSpeed)==0)
-						figureNeedsUpdate=true;
+						{
+							updateFigure();
+							needsSwap=true;
+						}
 				}
 
 			if(showFlyers==true)
 				{
 					if((runCounter % flyersSpeed)==0)
-						flyerNeedsUpdate=true;
+						{
+							updateFlyers();
+							needsSwap=true;
+						}
 				}
 
 			if(showFalling==true)
 				{
 					if((runCounter % fallingDelay)==0)
-						fallingNeedsUpdate=true;
+						{
+							updateFalling();
+							needsSwap=true;
+						}
 				}
 
 			if(useGusts==true)
+				updateGusts();
+
+			if((useBuffer==true) && (needsSwap==true))
 				{
-					updateGusts();
+					drawFlyers();
+					drawTreeLamps();
+					drawFigure();
+					drawWindowSnow();
+					drawSettled();
+					drawFalling();
+					drawLamps();
+			
+					XdbeSwapBuffers(display,&swapInfo,1);
+					needsSwap=false;
+
+					if(usingRootWindow==false)
+						getOpenwindows();
 				}
-
-			eraseRects();
-			drawTreeLamps();
-			drawFigure();
-			drawFlyers();
-			drawWindowSnow();
-			drawSettled();
-			drawFalling();
-			drawLamps();
-
-			if(useBuffer==true)
-				XdbeSwapBuffers(display,&swapInfo,1);
 
 			if(watchConfig==true)
 				reloadConfig();
-
-			if(usingRootWindow==false)
-				getOpenwindows();
 		}
 
 	if(useWindow==false)

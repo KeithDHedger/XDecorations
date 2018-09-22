@@ -129,13 +129,14 @@ extern uint				runCounter;
 extern bool				useWindow;
 extern int				offSetY;
 extern bool				watchConfig;
+extern bool				needsSwap;
 
 extern char				*prefix;
 
-extern bool				treeNeedsUpdate;
-extern bool				flyerNeedsUpdate;
-extern bool				figureNeedsUpdate;
-extern bool				fallingNeedsUpdate;
+//extern bool				treeNeedsUpdate;
+//extern bool				flyerNeedsUpdate;
+//extern bool				figureNeedsUpdate;
+//extern bool				fallingNeedsUpdate;
 extern bool				lampsNeedsUpdate;
 
 extern bool				usingRootWindow;
