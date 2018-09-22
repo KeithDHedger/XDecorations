@@ -270,11 +270,6 @@ void doHelp(void)
 	printf("\tOptions after this are ignored\n");
 	printf("-noconfig\n");
 	printf("\tDont't load the default config file ( ~/.config/xdecorations.rc )\n");
-	printf("-usewindow/-no-usewindow\n");
-	printf("\tUse a transparent window instead of the root window\n");
-	printf("-usebuffer/-no-usebuffer\n");
-	printf("\tUse double buffering\n\tUsing double buffering gives best graphical results but is slower\n");
-	printf("\tThe default is to use a transparent window with double buffering\n");
 
 	printf("-watchconfig/-no-watchconfig\n");
 	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
@@ -397,7 +392,7 @@ void doHelp(void)
 	printf("-clearonmaxheight/-no-clearonmaxheight\n");
 	printf("\tClear the snow etc when it reaches the maximum height set by bsettleheight/wsettleheight\n");
 
-	printf("As some window managers include the decorations in the reported window size and some don't you may need to add an offset to where the snow etc starts to settle, KDE will need this xfce4wm may or may not need this.\nThe bottom offset is to raise the start of settled snow etc from the bottom of the screen if you have a bottom panel.");
+	printf("\nAs some window managers include the decorations in the reported window size and some don't you may need to add an offset to where the snow etc starts to settle, KDE will need this xfce4wm may or may not need this.\nThe bottom offset is to raise the start of settled snow etc from the bottom of the screen if you have a bottom panel.\n");
 	printf("-woffsety INTEGER\n");
 	printf("\tOffset the settled layer on windows by INTEGER\n");
 	printf("-boffsety INTEGER\n");
@@ -737,17 +732,7 @@ int main(int argc,char* argv[])
 			swapInfo.swap_action = XdbeBackground;
 			buffer=XdbeAllocateBackBufferName(display,rootWin,swapInfo.swap_action);
 
-//			if((XdbeSwapBuffers(display,&swapInfo,1)) && (useDBOveride==true))
-//				{
-//					useBuffer=true;
-					drawOnThis=buffer;
-//				}
-//			else
-//				{
-//					printf("no double buffering\n");
-//					useBuffer=false;
-//					drawOnThis=rootWin;
-//				}
+			drawOnThis=buffer;
 		}
 	else
 		{
@@ -761,12 +746,6 @@ int main(int argc,char* argv[])
 
 	blackColor=BlackPixel(display,screen);
 	whiteColor=WhitePixel(display,screen);
-
-//	if(usingRootWindow==true)
-//		{
-//			maxBottomHeight=0;
-//			maxWindowHeight=0;
-//		}
 
 	initBottomSnow();
 	initWindowSnow();
@@ -855,7 +834,6 @@ int main(int argc,char* argv[])
 			if(useGusts==true)
 				updateGusts();
 
-			//if((useBuffer==true) && (needsSwap==true))
 			if(needsSwap==true)
 				{
 					drawFlyers();
@@ -868,8 +846,6 @@ int main(int argc,char* argv[])
 
 					XdbeSwapBuffers(display,&swapInfo,1);
 					needsSwap=false;
-
-					//if(usingRootWindow==false)
 					getOpenwindows();
 				}
 

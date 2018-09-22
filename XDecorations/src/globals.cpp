@@ -38,7 +38,6 @@ Region			rg;
 XdbeBackBuffer	buffer;
 XdbeSwapInfo	swapInfo;
 Drawable		drawOnThis;
-//bool			useBuffer=true;
 bool			useDBOveride=true;
 
 int				done=0;
@@ -52,13 +51,7 @@ bool			needsSwap=false;
 
 char*			prefix;
 
-//bool			treeNeedsUpdate=false;
-//bool			flyerNeedsUpdate=false;
-//bool			figureNeedsUpdate=false;
-//bool			fallingNeedsUpdate=false;
 bool			lampsNeedsUpdate=false;
-
-//bool			usingRootWindow=false;
 
 //settled
 settled			windowSnow[MAXWINDOWS];

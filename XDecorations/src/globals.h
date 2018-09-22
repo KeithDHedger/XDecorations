@@ -117,7 +117,6 @@ extern Region			rg;
 extern XdbeBackBuffer	buffer;
 extern XdbeSwapInfo		swapInfo;
 extern Drawable			drawOnThis;
-//extern bool				useBuffer;
 extern bool				useDBOveride;
 
 extern int				done;
@@ -133,13 +132,7 @@ extern bool				needsSwap;
 
 extern char				*prefix;
 
-//extern bool				treeNeedsUpdate;
-//extern bool				flyerNeedsUpdate;
-//extern bool				figureNeedsUpdate;
-//extern bool				fallingNeedsUpdate;
 extern bool				lampsNeedsUpdate;
-
-//extern bool				usingRootWindow;
 
 //settled
 extern settled			windowSnow[MAXWINDOWS];
