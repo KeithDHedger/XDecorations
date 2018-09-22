@@ -33,5 +33,6 @@ void updateFigure(void);
 void updateFlyers(void);
 void getOpenwindows(void);
 void clearWindowSnow(int winid);
+void clearAllWindowSnow(bool newrsrc);
 
 #endif

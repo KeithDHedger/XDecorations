@@ -447,6 +447,7 @@ void reloadConfig(void)
 	int tmplamps=lampSet;
 	char*	tmptheme;
 	bool	force=false;
+	bool	changed=false;
 
 	tmptheme=strdup(prefix);
 	numflyobjects=abs(numberOfFlyers);
@@ -460,12 +461,14 @@ void reloadConfig(void)
 		{
 			destroyFlyers();
 			initFlyers();
+			changed=true;
 		}
 
 	if((numfallobjects<numberOfFalling) || (fallsetnumber!=fallingNumber) || (force==true))
 		{
 			destroyFalling();
 			initFalling();
+			changed=true;
 		}
 
 	if((treeNumber!=tmptree) || (tmptreelampset!=treeLampSet) || (force==true))
@@ -473,6 +476,7 @@ void reloadConfig(void)
 			destroyTree();
 			treeOnOff=0;
 			initTree();
+			changed=true;
 		}
 
 	if((tmpfig!=figureNumber) || (force==true))
@@ -480,6 +484,7 @@ void reloadConfig(void)
 			destroyFigure();
 			figureOnOff=0;
 			initFigure();
+			changed=true;
 		}
 
 	if((tmplamps!=lampSet) || (force==true))
@@ -488,6 +493,7 @@ void reloadConfig(void)
 			lampsOnOff=0;
 			lastLampAnim=0;
 			initLamps();
+			changed=true;
 		}
 
 	setGravity(&treeX,&treeY,treeWidth,treeHeight);
@@ -501,6 +507,12 @@ void reloadConfig(void)
 		}
 	free(tmptheme);
 	numberOfFlyers=abs(numberOfFlyers);
+
+	if(changed==true)
+		{
+			clearBottomSnow();
+			clearAllWindowSnow(false);
+		}
 }
 
 int main(int argc,char* argv[])
