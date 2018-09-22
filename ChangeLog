@@ -1,4 +1,6 @@
 0.1.10
+Code clean.
+Bad window bug fix.
 Removed refs to usewindow/usebuffer.
 Speed improvements.
 Options -usewindow/-usebuffer now ignored from config file/command line.

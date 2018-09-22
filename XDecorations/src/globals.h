@@ -59,7 +59,6 @@ struct					objects
 	int					h[MAXFALLINGANIMATION];
 	int					w[MAXFALLINGANIMATION];
 	int					anims;
-//	Imlib_Image			image;
 };
 
 struct					movement
@@ -117,7 +116,6 @@ extern Region			rg;
 extern XdbeBackBuffer	buffer;
 extern XdbeSwapInfo		swapInfo;
 extern Drawable			drawOnThis;
-extern bool				useDBOveride;
 
 extern int				done;
 extern long				mainDelay;

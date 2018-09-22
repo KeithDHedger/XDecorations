@@ -26,7 +26,6 @@ Imlib_Image		image;
 
 void initBottomSnow(void)
 {
-
 	if(maxBottomHeight==0)
 		return;
 
@@ -149,43 +148,6 @@ void initFlyers(void)
 		}
 }
 
-void initFigurezzz(void)
-{
-//	imlib_context_set_dither(0);
-//	imlib_context_set_display(display);
-//	imlib_context_set_visual(visual);
-
-	snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.On.png",pixmapPath,prefix,figureNumber);
-	figureImage[0]=imlib_load_image(pathname);
-	if(figureImage[0]==NULL)
-		figureNumber=0;
-	else
-		{
-//			
-			imlib_context_set_image(figureImage[0]);
-			imlib_context_set_drawable(drawOnThis);
-			imlib_image_set_has_alpha(1);
-			imlib_render_pixmaps_for_whole_image(&figurePixmap[ONPIXMAP],&figurePixmap[ONMASK]);
-//			imlib_free_image();
-//
-			snprintf(pathname,MAXPATHNAMELEN,"%s/%s/Figure/%i.Off.png",pixmapPath,prefix,figureNumber);
-			figureImage[1]=imlib_load_image(pathname);
-			if(figureImage[1]==NULL)
-				figureNumber=0;
-			else
-				{
-					imlib_context_set_image(figureImage[1]);
-					imlib_context_set_drawable(drawOnThis);
-					imlib_image_set_has_alpha(1);
-					imlib_render_pixmaps_for_whole_image(&figurePixmap[OFFPIXMAP],&figurePixmap[OFFMASK]);
-					figureW=imlib_image_get_width();
-					figureH=imlib_image_get_height();
-					setGravity(&figureX,&figureY,figureW,figureH);
-					//imlib_free_image();
-				}
-		}
-}
-
 void initFigure(void)
 {
 	imlib_context_set_dither(0);
@@ -300,30 +262,7 @@ void initFalling(void)
 							floating[fallingCount].w[k]=imlib_image_get_width();
 							floating[fallingCount].h[k]=imlib_image_get_height();
 							floating[fallingCount].anims++;
-//							floating[fallingCount].image=image;
 							imlib_free_image();
-							//floating[fallingCount].mask[k]=floating[fallingCount].pixmap[k];
-//							GC fgc=XCreateGC(display,*(floating[fallingCount].pixmap[k]),0,NULL);
-//							fgc=gc;
-//							XSetClipMask(display,fgc,0);
-//							XSetClipOrigin(display,fgc,0,0);
-//
-//			//				XSetForeground(display,fgc,blackColor);
-//							XSetForeground(display,fgc,whiteColor);
-//							XSetFillStyle(display,fgc,FillSolid);
-//							XFillRectangle(display,*(floating[fallingCount].pixmap[k]),fgc,0,0,floating[fallingCount].w[k],floating[fallingCount].h[k]);
-//
-//fgc=XCreateGC(display,figurePixmap[OFFMASK],0,NULL);
-//			XSetClipMask(display,fgc,0);
-//			XSetClipOrigin(display,fgc,0,0);
-//
-//			//XSetForeground(display,fgc,blackColor);
-//			XSetForeground(display,fgc,whiteColor);
-//			XSetFillStyle(display,fgc,FillSolid);
-//			XFillRectangle(display,figurePixmap[OFFMASK],fgc,0,0,277,512);
-
-							
-							
 						}
 				}
 			if(floating[fallingCount].anims!=0)

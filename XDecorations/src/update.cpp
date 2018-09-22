@@ -74,7 +74,6 @@ void clearWindowSnow(int winid,bool newrsrc)
 			XSetClipOrigin(display,windowSnow[winid].maskgc,0,0);
 
 			XSetForeground(display,windowSnow[winid].maskgc,blackColor);
-			//XSetForeground(display,windowSnow[winid].maskgc,whiteColor);
 			XSetFillStyle(display,windowSnow[winid].maskgc,FillSolid);
 			XFillRectangle(display,windowSnow[winid].mask,windowSnow[winid].maskgc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
 
@@ -82,7 +81,6 @@ void clearWindowSnow(int winid,bool newrsrc)
 			XSetClipOrigin(display,gc,0,0);
 
 			XSetForeground(display,gc,blackColor);
-			//XSetForeground(display,gc,whiteColor);
 			XSetFillStyle(display,gc,FillSolid);
 			XFillRectangle(display,windowSnow[winid].pixmap,gc,0,0,windowSnow[winid].width,windowSnow[winid].maxHeight);
 			windowSnow[winid].keepSettling=true;

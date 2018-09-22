@@ -742,7 +742,6 @@ int main(int argc,char* argv[])
 
 	gc=XCreateGC(display,drawOnThis,0,NULL);
 	XSetFillStyle(display,gc,FillSolid);
-	XSelectInput(display,rootWin,ExposureMask | SubstructureNotifyMask);
 
 	blackColor=BlackPixel(display,screen);
 	whiteColor=WhitePixel(display,screen);
@@ -853,8 +852,6 @@ int main(int argc,char* argv[])
 				reloadConfig();
 		}
 
-//	if(useWindow==false)
-//		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 
 	destroyFalling();

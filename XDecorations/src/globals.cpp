@@ -38,16 +38,14 @@ Region			rg;
 XdbeBackBuffer	buffer;
 XdbeSwapInfo	swapInfo;
 Drawable		drawOnThis;
-//bool			useDBOveride=true;
 
 int				done=0;
 long			mainDelay;
 
 uint			runCounter=0;
-//bool			useWindow=true;
 int				offSetY=0;
 bool			watchConfig=false;
-bool			needsSwap=false;
+bool			needsSwap=true;
 
 char*			prefix;
 
