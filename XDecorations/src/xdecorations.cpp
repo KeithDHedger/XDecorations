@@ -270,6 +270,11 @@ void doHelp(void)
 	printf("\tOptions after this are ignored\n");
 	printf("-noconfig\n");
 	printf("\tDont't load the default config file ( ~/.config/xdecorations.rc )\n");
+	printf("-usewindow/-no-usewindow\n");
+	printf("\tUse a transparent window instead of the root window\n");
+	printf("-usebuffer/-no-usebuffer\n");
+	printf("\tUse double buffering\n\tUsing double buffering gives best graphical results but is slower\n");
+	printf("\tThe default is to use a transparent window with double buffering\n");
 
 	printf("-watchconfig/-no-watchconfig\n");
 	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
@@ -731,6 +736,18 @@ int main(int argc,char* argv[])
 			swapInfo.swap_window = rootWin;
 			swapInfo.swap_action = XdbeBackground;
 			buffer=XdbeAllocateBackBufferName(display,rootWin,swapInfo.swap_action);
+
+//			if((XdbeSwapBuffers(display,&swapInfo,1)) && (useDBOveride==true))
+//				{
+//					useBuffer=true;
+					drawOnThis=buffer;
+//				}
+//			else
+//				{
+//					printf("no double buffering\n");
+//					useBuffer=false;
+//					drawOnThis=rootWin;
+//				}
 		}
 	else
 		{
@@ -838,7 +855,7 @@ int main(int argc,char* argv[])
 			if(useGusts==true)
 				updateGusts();
 
-			if(needsSwap==true)
+			if((useBuffer==true) && (needsSwap==true))
 				{
 					drawFlyers();
 					drawTreeLamps();
@@ -859,6 +876,8 @@ int main(int argc,char* argv[])
 				reloadConfig();
 		}
 
+//	if(useWindow==false)
+//		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 
 	destroyFalling();

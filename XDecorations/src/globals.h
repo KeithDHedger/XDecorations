@@ -117,6 +117,8 @@ extern Region			rg;
 extern XdbeBackBuffer	buffer;
 extern XdbeSwapInfo		swapInfo;
 extern Drawable			drawOnThis;
+extern bool				useBuffer;
+extern bool				useDBOveride;
 
 extern int				done;
 extern long				mainDelay;
