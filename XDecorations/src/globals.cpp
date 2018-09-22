@@ -38,7 +38,7 @@ Region			rg;
 XdbeBackBuffer	buffer;
 XdbeSwapInfo	swapInfo;
 Drawable		drawOnThis;
-bool			useDBOveride=true;
+//bool			useDBOveride=true;
 
 int				done=0;
 long			mainDelay;
