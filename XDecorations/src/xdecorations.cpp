@@ -762,11 +762,11 @@ int main(int argc,char* argv[])
 	blackColor=BlackPixel(display,screen);
 	whiteColor=WhitePixel(display,screen);
 
-	if(usingRootWindow==true)
-		{
-			maxBottomHeight=0;
-			maxWindowHeight=0;
-		}
+//	if(usingRootWindow==true)
+//		{
+//			maxBottomHeight=0;
+//			maxWindowHeight=0;
+//		}
 
 	initBottomSnow();
 	initWindowSnow();
@@ -855,7 +855,8 @@ int main(int argc,char* argv[])
 			if(useGusts==true)
 				updateGusts();
 
-			if((useBuffer==true) && (needsSwap==true))
+			//if((useBuffer==true) && (needsSwap==true))
+			if(needsSwap==true)
 				{
 					drawFlyers();
 					drawTreeLamps();
@@ -869,7 +870,7 @@ int main(int argc,char* argv[])
 					needsSwap=false;
 
 					//if(usingRootWindow==false)
-						getOpenwindows();
+					getOpenwindows();
 				}
 
 			if(watchConfig==true)

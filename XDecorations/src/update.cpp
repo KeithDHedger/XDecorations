@@ -236,7 +236,6 @@ void updateBottomSnow(movement *mov)
 
 	if(maxBottomHeight==0)
 		return;
-
 	if(bottomSnow.keepSettling==true)
 		{
 			downx=mov->x;
