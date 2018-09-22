@@ -1,4 +1,5 @@
 0.1.10
+Clear window/bottom snow on config change.
 Code clean.
 Bad window bug fix.
 Removed refs to usewindow/usebuffer.
