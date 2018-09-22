@@ -4492,8 +4492,8 @@ $as_echo "no" >&6; }
 fi
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XEXT" >&5
-$as_echo_n "checking for XEXT... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $XEXT_MODULES" >&5
+$as_echo_n "checking for $XEXT_MODULES... " >&6; }
 
 if test -n "$XEXT_CFLAGS"; then
     pkg_cv_XEXT_CFLAGS="$XEXT_CFLAGS"
@@ -4533,7 +4533,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -4560,7 +4560,7 @@ Alternatively, you may set the environment variables XEXT_CFLAGS
 and XEXT_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -4587,8 +4587,8 @@ fi
 X11_MODULES="x11 >= 1.6.2"
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for X11" >&5
-$as_echo_n "checking for X11... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $X11_MODULES" >&5
+$as_echo_n "checking for $X11_MODULES... " >&6; }
 
 if test -n "$X11_CFLAGS"; then
     pkg_cv_X11_CFLAGS="$X11_CFLAGS"
@@ -4628,7 +4628,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -4655,7 +4655,7 @@ Alternatively, you may set the environment variables X11_CFLAGS
 and X11_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -4682,8 +4682,8 @@ fi
 IMLIB_MODULES="imlib2 >= 1.4.6"
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for IMLIB" >&5
-$as_echo_n "checking for IMLIB... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $IMLIB_MODULES" >&5
+$as_echo_n "checking for $IMLIB_MODULES... " >&6; }
 
 if test -n "$IMLIB_CFLAGS"; then
     pkg_cv_IMLIB_CFLAGS="$IMLIB_CFLAGS"
@@ -4723,7 +4723,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -4750,7 +4750,7 @@ Alternatively, you may set the environment variables IMLIB_CFLAGS
 and IMLIB_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}

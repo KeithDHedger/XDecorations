@@ -45,7 +45,7 @@ int				done=0;
 long			mainDelay;
 
 uint			runCounter=0;
-bool			useWindow=true;
+//bool			useWindow=true;
 int				offSetY=0;
 bool			watchConfig=false;
 bool			needsSwap=false;

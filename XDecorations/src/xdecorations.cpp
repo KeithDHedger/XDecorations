@@ -26,13 +26,13 @@
 #include <X11/extensions/shape.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/Xdbe.h>
+#include <X11/Xos.h>
 
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "toon.h"
 #include "globals.h"
 #include "draw.h"
 #include "startstop.h"
@@ -512,14 +512,14 @@ void reloadConfig(void)
 
 int refreshRate=2;
 
-void  alarmCallBack(int sig)
-{
-	XExposeEvent	event;
-printf("in alarm\n");
-	if(useBuffer==true)
-		XdbeSwapBuffers(display,&swapInfo,1);
-	alarm(refreshRate);
-}
+//void  alarmCallBack(int sig)
+//{
+//	XExposeEvent	event;
+//printf("in alarm\n");
+//	if(useBuffer==true)
+//		XdbeSwapBuffers(display,&swapInfo,1);
+//	alarm(refreshRate);
+//}
 
 int main(int argc,char* argv[])
 {
@@ -714,15 +714,15 @@ int main(int argc,char* argv[])
 	signal(SIGINT,(sighandler_t)signalHandler);
 	signal(SIGHUP,(sighandler_t)signalHandler);
 
-	if(useWindow==false)
-		{
-			rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-			visual=DefaultVisual(display,screen);
-			useBuffer=false;
-			drawOnThis=rootWin;
-			usingRootWindow=true;
-		}
-	else
+//	if(useWindow==false)
+//		{
+////			rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+////			visual=DefaultVisual(display,screen);
+////			useBuffer=false;
+////			drawOnThis=rootWin;
+////			usingRootWindow=true;
+//		}
+//	else
 		{
 			rc=get_argb_visual(&visual,&depth);
 			if(rc==0)
@@ -776,12 +776,13 @@ int main(int argc,char* argv[])
 				}
 			else
 				{
-					rootWin=ToonGetRootWindow(display,screen,&parentWindow);
-					visual=DefaultVisual(display,screen);
-					printf("Can't get ARGB, do you have a composite manager running\n");
-					drawOnThis=rootWin;
-					useBuffer=false;
-					usingRootWindow=true;
+//					rootWin=ToonGetRootWindow(display,screen,&parentWindow);
+//					visual=DefaultVisual(display,screen);
+					fprintf(stderr,"Can't get ARGB, do you have a composite manager running, exiting ...\n");
+					exit(0);
+					//drawOnThis=rootWin;
+					//useBuffer=false;
+					//usingRootWindow=true;
 			}
 		}
 
@@ -906,8 +907,8 @@ int main(int argc,char* argv[])
 				reloadConfig();
 		}
 
-	if(useWindow==false)
-		XClearWindow(display,rootWin);
+//	if(useWindow==false)
+//		XClearWindow(display,rootWin);
 	XCloseDisplay(display);
 
 	destroyFalling();

@@ -36,7 +36,9 @@
 #include <ctype.h>
 
 #include "config.h"
-#include "internet.h"
+
+#define MYEMAIL "keithdhedger@gmail.com"
+#define COPYRITE "©K.D.Hedger 2013-2018"
 
 #define MAXPATHNAMELEN 4096
 #define MAXNUMBEROFFLYERS 100
@@ -126,7 +128,7 @@ extern bool				useWindow;
 extern int				offSetY;
 extern bool				watchConfig;
 extern uint				runCounter;
-extern bool				useWindow;
+//extern bool				useWindow;
 extern int				offSetY;
 extern bool				watchConfig;
 extern bool				needsSwap;
