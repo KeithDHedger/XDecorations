@@ -868,7 +868,7 @@ int main(int argc,char* argv[])
 					XdbeSwapBuffers(display,&swapInfo,1);
 					needsSwap=false;
 
-					if(usingRootWindow==false)
+					//if(usingRootWindow==false)
 						getOpenwindows();
 				}
 
