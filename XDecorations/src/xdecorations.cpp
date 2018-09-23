@@ -437,15 +437,15 @@ void setDefaults(void)
 
 void reloadConfig(void)
 {
-	int numflyobjects;
-	int flysetnumber=flyerNumber;
-	int numfallobjects=numberOfFalling;
-	int fallsetnumber=fallingNumber;
-	int	tmptree=treeNumber;
-	int	tmptreelampset=treeLampSet;
-	int	tmpfig=figureNumber;
-	int tmplamps=lampSet;
-	char*	tmptheme;
+	int		numflyobjects;
+	int		flysetnumber=flyerNumber;
+	int		numfallobjects=numberOfFalling;
+	int		fallsetnumber=fallingNumber;
+	int		tmptree=treeNumber;
+	int		tmptreelampset=treeLampSet;
+	int		tmpfig=figureNumber;
+	int		tmplamps=lampSet;
+	char	*tmptheme;
 	bool	force=false;
 	bool	changed=false;
 

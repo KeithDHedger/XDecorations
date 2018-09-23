@@ -250,6 +250,7 @@ void drawFalling(void)
 			XSetClipMask(display,gc,*(moving[j].object->mask[moving[j].imageNum]));
 			XSetClipOrigin(display,gc,moving[j].x,moving[j].y);
 			XCopyArea(display,*(moving[j].object->pixmap[moving[j].imageNum]),drawOnThis,gc,0,0,moving[j].object->w[0],moving[j].object->h[0],moving[j].x,moving[j].y);
+
 			moving[j].countDown--;
 			if(moving[j].countDown==0)
 				{
