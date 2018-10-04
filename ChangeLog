@@ -1,6 +1,7 @@
 0.1.10
+Better window settling.
 Speed tweaks.
-Added extra halloeen falling images.
+Added extra halloween falling images.
 Clear window/bottom snow on config change.
 Code clean.
 Bad window bug fix.

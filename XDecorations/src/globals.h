@@ -136,6 +136,12 @@ extern bool				lampsNeedsUpdate;
 extern settled			windowSnow[MAXWINDOWS];
 extern settled			bottomSnow;
 
+//wm extents
+extern bool				gotWMExtents;
+extern Atom				wmFrameExtents;
+extern long				*wmExtents;
+enum {WMEXTLEFT=0,WMEXTRIGHT,WMEXTTOP,WMEXTBOTTOM};
+
 extern int				maxBottomHeight;
 extern int				maxWindowHeight;
 extern int				settleRate;

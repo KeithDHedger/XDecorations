@@ -176,7 +176,7 @@ void updateWindowSnow(movement *mov,int windownum)
 	if((windowSnow[windownum].showing==true) && (windowSnow[windownum].keepSettling==true))
 		{
 			downx=mov->x;
-			if((downx>windowSnow[windownum].x) && (downx<(windowSnow[windownum].width+windowSnow[windownum].x)))
+			if((downx>windowSnow[windownum].x) && (downx<(windowSnow[windownum].width+windowSnow[windownum].x-(mov->object->w[mov->imageNum]))))
 				{
 					pmm=mov->object->mask[0];
 					downx=mov->x-windowSnow[windownum].x;
@@ -214,7 +214,7 @@ bool checkOnWindow(movement *mov)
 		{
 			if((windowSnow[j].wid>0) && (windowSnow[j].showing==true))
 				{
-					if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width+windowSnow[j].x)))
+					if((mov->x>windowSnow[j].x) && (mov->x<(windowSnow[j].width+windowSnow[j].x-mov->maxW)))
 						{
 							if((mov->y<=windowSnow[j].y) && (mov->y>=(windowSnow[j].y-mov->stepY)))
 								{
@@ -385,7 +385,6 @@ void updateFlyers(void)
 
 bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 {
-	Window	rootWindow=RootWindow(display,screen);
 	int		screen_x,screen_y;
 	bool	retval=false;
 	bool	newwindow=true;
@@ -399,7 +398,7 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 		{
 			if(windowSnow[j].wid==wid)
 				{
-					XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
+					XTranslateCoordinates(display,rootWin,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
 					screen_x=abs(screen_x);
 					screen_y=abs(screen_y);
 
@@ -450,7 +449,7 @@ bool checkForWindowChange(Window wid,XWindowAttributes *attr)
 			windowSnow[newwinid].lasty=NULL;
 			windowSnow[newwinid].wid=wid;
 			windowSnow[newwinid].width=attr->width;
-			XTranslateCoordinates(display,rootWindow,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
+			XTranslateCoordinates(display,rootWin,wid,attr->x,attr->y,&screen_x,&screen_y,&dummy);
 			windowSnow[newwinid].x=abs(screen_x);
 			windowSnow[newwinid].y=abs(screen_y);
 			windowSnow[newwinid].showing=true;
@@ -485,6 +484,7 @@ void getOpenwindows(void)
 	Atom _NET_CLIENT_LIST=XInternAtom(display,"_NET_CLIENT_LIST" , true);
 	status=XGetWindowProperty(display,rootWindow,_NET_CLIENT_LIST,0L,(~0L),false,AnyPropertyType,&actualType,&format,&numItems,&bytesAfter,&data);
 
+	gotWMExtents=false;
 	if((status==Success) && (numItems>0))
 		{
 			array=(unsigned long*)data;
@@ -509,7 +509,33 @@ void getOpenwindows(void)
 							if(atoms[i]==_NET_WM_WINDOW_TYPE_NORMAL)
 								{
 									skipErrors(true);
+									attr.width=0;
 									XGetWindowAttributes(display,w,&attr);
+									if((attr.width>0) && (gotWMExtents==false))
+										{
+											//fprintf(stderr,"attr.wid=%i\n",attr.width);
+											unsigned long itemcnt;
+											unsigned long todo;
+											Atom atomtype;
+											int format;
+											unsigned char *data=0;
+											wmExtents=NULL;
+
+											XGetWindowProperty(display,w,wmFrameExtents,0,4,false,AnyPropertyType,&atomtype,&format,&itemcnt,&todo,&data);
+											wmExtents=(long*) data;
+											if((wmExtents!=NULL) && (wmExtents[2]>0))
+												{
+													gotWMExtents=true;
+													//fprintf (stderr,"Got frame extents: left %i right %i top %i bottom %i gotWMExtents=%i\n",wmExtents[0], wmExtents[1], wmExtents[2], wmExtents[3],gotWMExtents);
+												}
+										}
+									if(gotWMExtents==true)
+										{
+											attr.x=attr.x-wmExtents[WMEXTLEFT];
+											//attr.width=attr.width+wmExtents[WMEXTRIGHT]+wmExtents[WMEXTLEFT];
+											//attr.y=attr.y+wmExtents[WMEXTTOP];
+										}
+											
 									checkForWindowChange(w,&attr);
 									skipErrors(false);
 								}

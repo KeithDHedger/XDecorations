@@ -723,7 +723,8 @@ int main(int argc,char* argv[])
 			xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
 			xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
 			xa_prop[4]=XInternAtom(display,"_NET_WM_ACTION_CHANGE_DESKTOP",False);
-			xa_prop[9]=XInternAtom(display,"_MOTIF_WM_HINTS",True);
+			xa_prop[9]=XInternAtom(display,"_MOTIF_WM_HINTS",false);
+			wmFrameExtents=XInternAtom(display, "_NET_FRAME_EXTENTS",false);
 
 			xa=XInternAtom(display,"_NET_WM_STATE",False);
 			if(xa!=None)

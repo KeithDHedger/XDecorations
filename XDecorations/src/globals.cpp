@@ -55,6 +55,11 @@ bool			lampsNeedsUpdate=false;
 settled			windowSnow[MAXWINDOWS];
 settled			bottomSnow;
 
+//wm extents
+bool			gotWMExtents=false;
+Atom			wmFrameExtents;
+long			*wmExtents=NULL;
+
 int				maxBottomHeight;
 int				maxWindowHeight;
 int				settleRate;
