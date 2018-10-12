@@ -169,6 +169,7 @@ void updateWindowSnow(movement *mov,int windownum)
 {
 	int		downx;
 	Pixmap	*pmm;
+	int		imgnumber=mov->imageNum;
 
 	if(maxWindowHeight==0)
 		return;
@@ -178,7 +179,7 @@ void updateWindowSnow(movement *mov,int windownum)
 			downx=mov->x;
 			if((downx>windowSnow[windownum].x) && (downx<(windowSnow[windownum].width+windowSnow[windownum].x-(mov->object->w[mov->imageNum]))))
 				{
-					pmm=mov->object->mask[0];
+					pmm=mov->object->mask[imgnumber];
 					downx=mov->x-windowSnow[windownum].x;
 
 					if(windowSnow[windownum].lasty[downx]-settleRate<=0)
@@ -196,11 +197,11 @@ void updateWindowSnow(movement *mov,int windownum)
 
 					XSetClipMask(display,windowSnow[windownum].maskgc,*(pmm));
 					XSetClipOrigin(display,windowSnow[windownum].maskgc,downx,windowSnow[windownum].lasty[downx]);
-					XCopyArea(display,*(mov->object->mask[0]),windowSnow[windownum].mask,windowSnow[windownum].maskgc,0,0,mov->object->w[0],mov->object->h[0],downx,windowSnow[windownum].lasty[downx]);
+					XCopyArea(display,*(mov->object->mask[imgnumber]),windowSnow[windownum].mask,windowSnow[windownum].maskgc,0,0,mov->object->w[0],mov->object->h[0],downx,windowSnow[windownum].lasty[downx]);
 
 					XSetClipMask(display,gc,*(pmm));
 					XSetClipOrigin(display,gc,downx,windowSnow[windownum].lasty[downx]);
-					XCopyArea(display,*(mov->object->pixmap[0]),windowSnow[windownum].pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,windowSnow[windownum].lasty[downx]);
+					XCopyArea(display,*(mov->object->pixmap[imgnumber]),windowSnow[windownum].pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,windowSnow[windownum].lasty[downx]);
 				}
 		}
 }
@@ -231,6 +232,7 @@ void updateBottomSnow(movement *mov)
 {
 	int		downx;
 	Pixmap	*pmm;
+	int		imgnumber=mov->imageNum;
 
 	if(maxBottomHeight==0)
 		return;
@@ -240,7 +242,7 @@ void updateBottomSnow(movement *mov)
 			downx=mov->x;
 			if((downx>=0) && (downx<displayWidth) && (maxBottomHeight>0))
 				{
-					pmm=mov->object->mask[0];
+					pmm=mov->object->mask[imgnumber];
 
 					if(bottomSnow.lasty[downx]-settleRate<=0)
 						{
@@ -255,11 +257,11 @@ void updateBottomSnow(movement *mov)
 
 					XSetClipMask(display,bottomSnow.maskgc,*(pmm));
 					XSetClipOrigin(display,bottomSnow.maskgc,downx,bottomSnow.lasty[downx]);
-					XCopyArea(display,*(mov->object->mask[0]),bottomSnow.mask,bottomSnow.maskgc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
+					XCopyArea(display,*(mov->object->mask[imgnumber]),bottomSnow.mask,bottomSnow.maskgc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
 
 					XSetClipMask(display,gc,*(pmm));
 					XSetClipOrigin(display,gc,downx,bottomSnow.lasty[downx]);
-					XCopyArea(display,*(mov->object->pixmap[0]),bottomSnow.pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
+					XCopyArea(display,*(mov->object->pixmap[imgnumber]),bottomSnow.pixmap,gc,0,0,mov->object->w[0],mov->object->h[0],downx,bottomSnow.lasty[downx]);
 				}
 		}
 }
