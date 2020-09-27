@@ -93,6 +93,12 @@ struct					settled
 	bool				showing;
 };
 
+struct varStrings
+{
+	char				*name;
+	char				*data;
+};
+
 enum {ONPIXMAP=0,ONMASK,OFFPIXMAP,OFFMASK};
 enum {LEFT=-1000,CENTRE=-2000,RIGHT=-3000,TOP=-4000,BOTTOM=-5000};
 enum {TYPEINT=1,TYPESTRING,TYPEBOOL};

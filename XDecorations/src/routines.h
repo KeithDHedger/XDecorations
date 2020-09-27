@@ -28,5 +28,7 @@ void setGravity(int *x,int *y,int w,int h);
 int translateGravity(char* str);
 void skipErrors(bool skip);
 int fileExists(const char *name);
+varStrings* allocVStrings(char *string);
+void freeAndNull(char** ptr);
 
 #endif

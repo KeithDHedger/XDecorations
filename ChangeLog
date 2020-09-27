@@ -1,4 +1,6 @@
 0.1.10
+Fixed deprecated calls to sscanf.
+Settled objects now keep current anim when settled.
 Better window settling.
 Speed tweaks.
 Added extra halloween falling images.

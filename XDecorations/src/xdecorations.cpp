@@ -159,8 +159,7 @@ void loadVarsFromFile(char* filepath,args* dataptr)
 	FILE*	fd=NULL;
 	char	buffer[2048];
 	int		cnt;
-	char*	argname=NULL;
-	char*	strarg=NULL;
+	varStrings	*vs=NULL;
 
 	fd=fopen(filepath,"r");
 	if(fd!=NULL)
@@ -169,35 +168,29 @@ void loadVarsFromFile(char* filepath,args* dataptr)
 				{
 					buffer[0]=0;
 					fgets(buffer,2048,fd);
-					sscanf(buffer,"%as %as",&argname,&strarg);
+					vs=allocVStrings(buffer);
 					cnt=0;
 					while(dataptr[cnt].name!=NULL)
 						{
-							if((strarg!=NULL) && (argname!=NULL) && (strcmp(argname,dataptr[cnt].name)==0))
+							if((vs->data!=NULL) &&(vs->name!=NULL) &&(strcmp(vs->name,dataptr[cnt].name)==0))
 								{
 									switch(dataptr[cnt].type)
 										{
 										case TYPEINT:
-											*(int*)dataptr[cnt].data=atoi(strarg);
+											*(int*)dataptr[cnt].data=atoi(vs->data);
 											break;
 										case TYPESTRING:
-											if(*(char**)(dataptr[cnt].data)!=NULL)
-												free(*(char**)(dataptr[cnt].data));
-											sscanf(buffer,"%*s %a[^\n]s",(char**)dataptr[cnt].data);
+												if(*(char**)(dataptr[cnt].data)!=NULL)
+													freeAndNull(&*(char**)(dataptr[cnt].data));
+												*(char**)(dataptr[cnt].data)=(char*)strdup(vs->data);
 											break;
 										case TYPEBOOL:
-											*(bool*)dataptr[cnt].data=(bool)atoi(strarg);
+											*(bool*)dataptr[cnt].data=(bool)atoi(vs->data);
 											break;
 										}
 								}
 							cnt++;
 						}
-					if(argname!=NULL)
-						free(argname);
-					if(strarg!=NULL)
-						free(strarg);
-					argname=NULL;
-					strarg=NULL;
 				}
 			fclose(fd);
 		}

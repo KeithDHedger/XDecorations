@@ -124,3 +124,34 @@ int fileExists(const char *name)
 	struct stat buffer;
 	return (stat(name,&buffer));
 }
+
+varStrings* allocVStrings(char *string)
+{
+	int	namelen=0;
+	int	datalen=0;
+	int	totalcnt=0;
+
+	varStrings	*vs=(varStrings*)calloc(1,sizeof(varStrings));
+	vs->name=NULL;
+	vs->data=NULL;
+
+//var name
+	sscanf(string,"%*s%n",&namelen);
+	vs->name=strndup(string,namelen);
+	totalcnt=namelen;
+
+//var type
+	sscanf(string,"%*s %n%*[^\n]s",&totalcnt);
+	datalen=(int)(long)((long)strchr(string,'\n')-(long)string)-totalcnt;
+	vs->data=strndup(&string[totalcnt],datalen);
+
+	return(vs);
+}
+
+void freeAndNull(char** ptr)
+{
+	if(*ptr!=NULL)
+		free(*ptr);
+
+	*ptr=NULL;
+}
