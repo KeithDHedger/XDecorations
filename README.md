@@ -12,7 +12,6 @@ Go to my webpage to see some short movies of XDecorations in action with config 
 
 
 To run without installing set the -data otions like so (presuming you are in the main XDecorations folder):
-
 XDecorations/app/xdecorations -data XDecorations/resources/pixmaps/
 
 XDecorations usually runs below other windows but if you want it on top use the -ontop option.
