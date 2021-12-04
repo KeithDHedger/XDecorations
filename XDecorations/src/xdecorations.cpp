@@ -268,7 +268,10 @@ void doHelp(void)
 	printf("\tMonitor changes to last loaded config file and apply any changes in real time ( experimental be warned! )\n");
 
 	printf("-data FOLDERPATH\n");
-	printf("\tSet path to folder containing pixmap data, default is PREFIX/share/XDecorations.\n\n");
+	printf("\tSet path to folder containing pixmap data, default is PREFIX/share/XDecorations.\n");
+
+	printf("-ontop\n");
+	printf("\tSet decorations above over windows ( default is below, can NOT be set in config file\n\n");
 
 //lamps
 	printf("LAMPS\n");
@@ -402,7 +405,7 @@ void setDefaults(void)
 	figureNumber=1;
 	showFlyers=false;
 	fallingNumber=1;
-	fallingSpread=2000;
+	fallingSpread=1000;
 	lampSpeed=20;
 	gustEvent=1500;
 	gustDuration=100;
@@ -414,8 +417,8 @@ void setDefaults(void)
 	lastLampAnim=LAMPFLASH;
 	lampCycleDelay=30;
 	lampCountdown=lampCycleDelay;
-	mainDelay=25000;
-	fallSpeed=1;
+	mainDelay=40000;
+	fallSpeed=6;
 	minFallSpeed=1;
 	flyerNumber=0;
 	numberOfFlyers=20;
@@ -510,15 +513,16 @@ void reloadConfig(void)
 
 int main(int argc,char* argv[])
 {
-	int		argnum;
-	const	char* argstr;
-	XEvent	ev;
-	Window	parentWindow;
-	int		rc=0;
-	Hints	hints;
-	Atom	xa;
-	Atom	xa_prop[10];
-	struct timespec now;
+	int				argnum;
+	const			char* argstr;
+	XEvent			ev;
+	Window			parentWindow;
+	int				rc=0;
+	Hints			hints;
+	Atom			xa;
+	Atom			xa_prop[10];
+	struct timespec	now;
+	bool			ontop=false;
 
 	clock_gettime(CLOCK_MONOTONIC,&now);
 	srandom(now.tv_nsec);
@@ -541,7 +545,7 @@ int main(int argc,char* argv[])
 		}
 
 //command line options.
-	for (argnum=1; argnum<argc; argnum++)
+	for (argnum=1;argnum<argc;argnum++)
 		{
 			argstr=argv[argnum];
 
@@ -551,6 +555,10 @@ int main(int argc,char* argv[])
 						free(pixmapPath);
 					pixmapPath=strdup(argv[++argnum]);
 				}
+
+			if(strcmp(argstr,"-ontop")==0)//app on top
+				ontop=true;
+
 //app
 			if(strcmp(argstr,"-configfile")==0)//~/.config/xdecorations.rc
 				{
@@ -712,7 +720,11 @@ int main(int argc,char* argv[])
 
 			xa=XInternAtom(display,"_NET_WM_STATE",False);
 			xa_prop[0]=XInternAtom(display,"_NET_WM_STATE_STICKY",False);
-			xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
+			if(ontop==false)
+				xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_BELOW",False);
+			else
+				xa_prop[1]=XInternAtom(display,"_NET_WM_STATE_ABOVE",False);
+
 			xa_prop[2]=XInternAtom(display,"_NET_WM_STATE_SKIP_PAGER",False);
 			xa_prop[3]=XInternAtom(display,"_NET_WM_STATE_SKIP_TASKBAR",False);
 			xa_prop[4]=XInternAtom(display,"_NET_WM_ACTION_CHANGE_DESKTOP",False);
