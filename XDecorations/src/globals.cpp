@@ -139,7 +139,7 @@ int				lampAnim;
 int				lastLampAnim;
 int				lampSection;
 int				lampCountdown;
-bool			*lampState;
+bool				*lampState;
 int				lampCycleDelay;
 int				currentLampFlashNum;
 
