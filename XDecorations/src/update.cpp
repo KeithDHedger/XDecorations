@@ -508,6 +508,8 @@ void getOpenwindows(void)
 					atoms=(Atom *)data;
 					for(i=0;i<items_read;i++)
 						{
+							if(w==rootWin)
+								continue;
 							if(atoms[i]==_NET_WM_WINDOW_TYPE_NORMAL)
 								{
 									skipErrors(true);

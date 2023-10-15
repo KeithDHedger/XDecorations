@@ -1,0 +1,73 @@
+#!/bin/bash -e
+
+#©keithhedger Fri 9 Dec 16:44:05 GMT 2022 kdhedger68713@gmail.com
+
+. "$1"
+
+CHANGEWINDSPEEDCNT=1
+CHANGEFALLINGCNT=1
+CHANGELAMPSCNT=1
+CHANGEFLYERSCNT=1
+CHANGEFIGURECNT=1
+CHANGETREECNT=1
+
+while true
+	do
+		((CHANGEWINDSPEEDCNT++))
+		((CHANGEFALLINGCNT++))
+		((CHANGELAMPSCNT++))
+		((CHANGEFLYERSCNT++))
+		((CHANGEFIGURECNT++))
+		((CHANGETREECNT++))
+
+		if [ $CHANGELAMPS -eq 1 ];then
+			if [ $CHANGELAMPSCNT -gt $CHANGELAMPSCNTMAX ];then
+				CHANGELAMPSCNT=1
+				sed -i "s/^\blampset\b[[:space:]]*[[:digit:]]*/lampset\t$(( $RANDOM % $LAMPSMAX + 1 ))/g" "$CONFIGFILE"
+				sed -i "s/^\blampflash\b[[:space:]]*[[:digit:]]*/lampflash\t$(( $RANDOM % $LAMPSFLASH + 1 ))/g" "$CONFIGFILE"
+			fi
+		fi
+
+		if [ $CHANGEFALLING -eq 1 ];then
+			if [ $CHANGEFALLINGCNT -gt $CHANGEFALLINGCNTMAX ];then
+				CHANGEFALLINGCNT=1
+				sed -i "s/^\bfalling\b[[:space:]]*[[:digit:]]*/falling\t$(( $RANDOM % $FALLINGMAX + 1 ))/g" "$CONFIGFILE"
+			fi
+		fi
+
+		if [ $CHANGEWINDSPEED -eq 1 ];then
+			if [ $CHANGEWINDSPEEDCNT -gt $CHANGEWINDSPEEDCNTMAX ];then
+				CHANGEWINDSPEEDCNT=1
+				if (($RANDOM % 2 == 0));then
+					sed -i "s/^\bwind\b[[:space:]]*[-[:digit:]]*/wind\t$(( $RANDOM % $MAXWINDSPEED + 1 ))/g" "$CONFIGFILE"
+				else
+					sed -i "s/^\bwind\b[[:space:]]*[-[:digit:]]*/wind\t-$(( $RANDOM % $MAXWINDSPEED + 1 ))/g" "$CONFIGFILE"
+				fi
+			fi
+		fi
+
+		if [ $CHANGEFLYERS -eq 1 ];then
+			if [ $CHANGEFLYERSCNT -gt $CHANGEFLYERSCNTMAX ];then
+				CHANGEFLYERSCNT=1
+				sed -i "s/^\bflyer\b[[:space:]]*[[:digit:]]*/flyer\t$(( $RANDOM % $MAXFLYERS + 1 ))/g" "$CONFIGFILE"
+			fi
+		fi
+
+		if [ $CHANGEFIGURE -eq 1 ];then
+			if [ $CHANGEFIGURECNT -gt $CHANGEFIGURECNTMAX ];then
+				CHANGEFIGURECNT=1
+				sed -i "s/^figure[[:space:]]*[[:digit:]]*/figure\t$(( $RANDOM % $MAXFIGURE + 1 ))/g" "$CONFIGFILE"
+			fi
+		fi
+
+		if [ $CHANGETREE -eq 1 ];then
+			if [ $CHANGETREECNT -gt $CHANGETREECNTMAX ];then
+				CHANGETREECNT=1
+				maxtree=$(( $RANDOM % $MAXTREE + 1 ))
+				sed -i "s/^\btree\b[[:space:]]*[[:digit:]]*/tree\t$maxtree/g" "$CONFIGFILE"
+				sed -i "s/^\btreelampset\b[[:space:]]*[[:digit:]]*/treelampset\t$maxtree/g" "$CONFIGFILE"
+			fi
+		fi
+
+		sleep $DELAY
+	done

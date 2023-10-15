@@ -1,4 +1,5 @@
 0.1.10
+Minor ui fix.
 Added -ontop option to put decorations above other windows.
 Fixed deprecated calls to sscanf.
 Settled objects now keep current anim when settled.
