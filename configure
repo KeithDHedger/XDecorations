@@ -672,9 +672,6 @@ AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
-CSCOPE
-ETAGS
-CTAGS
 am__fastdepCXX_FALSE
 am__fastdepCXX_TRUE
 CXXDEPMODE
@@ -4006,20 +4003,6 @@ else
 fi
 
 
-# Variables for tags utilities; see am/tags.am
-if test -z "$CTAGS"; then
-  CTAGS=ctags
-fi
-
-if test -z "$ETAGS"; then
-  ETAGS=etags
-fi
-
-if test -z "$CSCOPE"; then
-  CSCOPE=cscope
-fi
-
-
 
 # POSIX will say in a future version that running "rm -f" with no argument
 # is OK; and we want to be able to make that assumption in our Makefile
@@ -5358,14 +5341,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-                XEXT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$XEXT_MODULES" 2>&1`
+	        XEXT_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$XEXT_MODULES" 2>&1`
         else
-                XEXT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$XEXT_MODULES" 2>&1`
+	        XEXT_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$XEXT_MODULES" 2>&1`
         fi
-        # Put the nasty error message in config.log where it belongs
-        echo "$XEXT_PKG_ERRORS" >&5
+	# Put the nasty error message in config.log where it belongs
+	echo "$XEXT_PKG_ERRORS" >&5
 
-        as_fn_error $? "Package requirements ($XEXT_MODULES) were not met:
+	as_fn_error $? "Package requirements ($XEXT_MODULES) were not met:
 
 $XEXT_PKG_ERRORS
 
@@ -5378,7 +5361,7 @@ See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-        { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+	{ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -5391,8 +5374,8 @@ See the pkg-config man page for more details.
 To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details" "$LINENO" 5; }
 else
-        XEXT_CFLAGS=$pkg_cv_XEXT_CFLAGS
-        XEXT_LIBS=$pkg_cv_XEXT_LIBS
+	XEXT_CFLAGS=$pkg_cv_XEXT_CFLAGS
+	XEXT_LIBS=$pkg_cv_XEXT_LIBS
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
@@ -5453,14 +5436,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-                X11_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$X11_MODULES" 2>&1`
+	        X11_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$X11_MODULES" 2>&1`
         else
-                X11_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$X11_MODULES" 2>&1`
+	        X11_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$X11_MODULES" 2>&1`
         fi
-        # Put the nasty error message in config.log where it belongs
-        echo "$X11_PKG_ERRORS" >&5
+	# Put the nasty error message in config.log where it belongs
+	echo "$X11_PKG_ERRORS" >&5
 
-        as_fn_error $? "Package requirements ($X11_MODULES) were not met:
+	as_fn_error $? "Package requirements ($X11_MODULES) were not met:
 
 $X11_PKG_ERRORS
 
@@ -5473,7 +5456,7 @@ See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-        { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+	{ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -5486,8 +5469,8 @@ See the pkg-config man page for more details.
 To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details" "$LINENO" 5; }
 else
-        X11_CFLAGS=$pkg_cv_X11_CFLAGS
-        X11_LIBS=$pkg_cv_X11_LIBS
+	X11_CFLAGS=$pkg_cv_X11_CFLAGS
+	X11_LIBS=$pkg_cv_X11_LIBS
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
@@ -5548,14 +5531,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-                IMLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$IMLIB_MODULES" 2>&1`
+	        IMLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "$IMLIB_MODULES" 2>&1`
         else
-                IMLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$IMLIB_MODULES" 2>&1`
+	        IMLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "$IMLIB_MODULES" 2>&1`
         fi
-        # Put the nasty error message in config.log where it belongs
-        echo "$IMLIB_PKG_ERRORS" >&5
+	# Put the nasty error message in config.log where it belongs
+	echo "$IMLIB_PKG_ERRORS" >&5
 
-        as_fn_error $? "Package requirements ($IMLIB_MODULES) were not met:
+	as_fn_error $? "Package requirements ($IMLIB_MODULES) were not met:
 
 $IMLIB_PKG_ERRORS
 
@@ -5568,7 +5551,7 @@ See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-        { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+	{ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
 as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -5581,8 +5564,8 @@ See the pkg-config man page for more details.
 To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details" "$LINENO" 5; }
 else
-        IMLIB_CFLAGS=$pkg_cv_IMLIB_CFLAGS
-        IMLIB_LIBS=$pkg_cv_IMLIB_LIBS
+	IMLIB_CFLAGS=$pkg_cv_IMLIB_CFLAGS
+	IMLIB_LIBS=$pkg_cv_IMLIB_LIBS
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 
