@@ -738,9 +738,8 @@ int main(int argc,char* argv[])
 			xa=XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
 			xa_prop[0]=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
 
-			if(xa!=None)
-				XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeReplace,(unsigned char *)&xa_prop,1);
-
+			XChangeProperty(display,rootWin,XInternAtom(display,"_NET_WM_NAME",False),XInternAtom(display,"UTF8_STRING",False),8,PropModeReplace,( const unsigned char*)"XDecorations",strlen("xdecorations"));
+//fprintf(stderr,"wid=0x%x\n",rootWin);
 			hints.flags=2;
 			hints.decorations=0;
 			XChangeProperty(display,rootWin,xa_prop[9],xa_prop[9],32,PropModeReplace,(unsigned char *)&hints,5);
