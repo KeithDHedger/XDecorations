@@ -48,11 +48,11 @@ struct args
 
 struct Hints
 {
-	unsigned long   flags;
-	unsigned long   functions;
-	unsigned long   decorations;
-	long            inputMode;
-	unsigned long   status;
+	unsigned long   flags=0;
+	unsigned long   functions=0;
+	unsigned long   decorations=0;
+	long            inputMode=0;
+	unsigned long   status=0;
 };
 
 args				xdecorations_rc[]=
