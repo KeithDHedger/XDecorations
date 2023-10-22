@@ -737,6 +737,9 @@ int main(int argc,char* argv[])
 
 			xa=XInternAtom(display,"_NET_WM_WINDOW_TYPE",False);
 			xa_prop[0]=XInternAtom(display,"_NET_WM_WINDOW_TYPE_NORMAL",False);
+			if(xa!=None)
+				XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,1);
+
 
 			XChangeProperty(display,rootWin,XInternAtom(display,"_NET_WM_NAME",False),XInternAtom(display,"UTF8_STRING",False),8,PropModeReplace,( const unsigned char*)"XDecorations",strlen("xdecorations"));
 //fprintf(stderr,"wid=0x%x\n",rootWin);
@@ -754,7 +757,7 @@ int main(int argc,char* argv[])
 			swapInfo.swap_window = rootWin;
 			swapInfo.swap_action = XdbeBackground;
 			buffer=XdbeAllocateBackBufferName(display,rootWin,swapInfo.swap_action);
-			XLowerWindow(display,rootWin);
+			//XLowerWindow(display,rootWin);
 			drawOnThis=buffer;
 		}
 	else
