@@ -741,7 +741,8 @@ int main(int argc,char* argv[])
 				XChangeProperty(display,rootWin,xa,XA_ATOM,32,PropModeAppend,(unsigned char *)&xa_prop,1);
 
 
-			XChangeProperty(display,rootWin,XInternAtom(display,"_NET_WM_NAME",False),XInternAtom(display,"UTF8_STRING",False),8,PropModeReplace,( const unsigned char*)"XDecorations",strlen("xdecorations"));
+			XChangeProperty(display,rootWin,XInternAtom(display,"_NET_WM_NAME",False),XInternAtom(display,"UTF8_STRING",False),8,PropModeReplace,( const unsigned char*)"XDecorations",strlen("XDecorations"));
+			XStoreName(display, rootWin, "XDecorations");
 //fprintf(stderr,"wid=0x%x\n",rootWin);
 			hints.flags=2;
 			hints.decorations=0;
