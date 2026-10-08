@@ -788,6 +788,7 @@ int main(int argc,char* argv[])
 	currentLampFlashNum=lampAnim;
 	needsSwap=true;
 	lampsNeedsUpdate=true;
+//fprintf(stderr,"drawOnThis=%x rootWin=%x\n",drawOnThis,rootWin);
 
 	while (!done)
 		{

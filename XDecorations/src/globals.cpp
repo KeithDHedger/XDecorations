@@ -20,11 +20,11 @@
 
 #include "globals.h"
 
-char			pathname[MAXPATHNAMELEN];
-char			*configFilePath;
-char			*pixmapPath=NULL;
+char				pathname[MAXPATHNAMELEN];
+char				*configFilePath;
+char				*pixmapPath=NULL;
 
-Display*		display;
+Display			*display;
 Window			rootWin;
 int				displayWidth;
 int				displayHeight;
@@ -36,20 +36,20 @@ int				depth=0;
 int				screen;
 Region			rg;
 XdbeBackBuffer	buffer;
-XdbeSwapInfo	swapInfo;
-Drawable		drawOnThis;
+XdbeSwapInfo		swapInfo;
+Drawable			drawOnThis;
 
 int				done=0;
-long			mainDelay;
+long				mainDelay;
 
-uint			runCounter=0;
+uint				runCounter=0;
 int				offSetY=0;
-bool			watchConfig=false;
-bool			needsSwap=true;
+bool				watchConfig=false;
+bool				needsSwap=true;
 
 char*			prefix;
 
-bool			lampsNeedsUpdate=false;
+bool				lampsNeedsUpdate=false;
 
 //settled
 settled			windowSnow[MAXWINDOWS];
