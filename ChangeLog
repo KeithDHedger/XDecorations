@@ -1,4 +1,5 @@
 0.1.10
+If the -ontop flag is set window type set to _NET_WM_WINDOW_TYPE_NORMAL as well as setting _NET_WM_STATE_ABOVE.
 Changed window type to _NET_WM_WINDOW_TYPE_DESKTOP.
 Minor ui fix.
 Added -ontop option to put decorations above other windows.
